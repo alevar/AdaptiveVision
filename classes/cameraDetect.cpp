@@ -9,6 +9,8 @@ CameraDetect::CameraDetect(Mat* newFrame1, Mat* newFrame2, VideoCapture newSourc
 
 	CameraDetect::setHSV(35,60,50,255,50,255);
 	CameraDetect::setResolution(640,480);
+
+	diffResolution = false;
 }
 
 void CameraDetect::setCameraDistance(float newDistanceBetweenCameras){
@@ -39,6 +41,8 @@ vector<int> CameraDetect::getHSV(){
 }
 
 void CameraDetect::setResolution(int width, int height){
+	diffResolution = false;
+
 	source1.set(CV_CAP_PROP_FRAME_WIDTH,width);
 	source1.set(CV_CAP_PROP_FRAME_HEIGHT,height);
 
@@ -49,8 +53,26 @@ void CameraDetect::setResolution(int width, int height){
 	center_frame = {width/2, height/2};
 }
 
+void CameraDetect::setResolution(int width1, int height1, int width2, int height2){
+	diffResolution = true;
+
+	source1.set(CV_CAP_PROP_FRAME_WIDTH,width1);
+	source1.set(CV_CAP_PROP_FRAME_HEIGHT,height1);
+
+	source2.set(CV_CAP_PROP_FRAME_WIDTH,width2);
+	source2.set(CV_CAP_PROP_FRAME_HEIGHT,height2);
+
+	resolutionDiff = {width1, height1, width2, height2};
+	center_frame = {width1/2, height1/2, width2/2, height2/2};
+}
+
 vector<int> CameraDetect::getResolution(){
-	return resolution;
+	if(diffResolution){
+		return resolutionDiff;
+	}
+	else{
+		return resolution;
+	}
 }
 
 void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
@@ -70,4 +92,9 @@ void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
 void CameraDetect::thresholdHSV(Mat* image1, Mat* image2){
 	inRange(*image1, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), *imageTHR1);
 	inRange(*image2, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), *imageTHR2);
+}
+
+void CameraDetect::convertRGB2HSV(Mat* image1, Mat* image2){
+	cvtColor(*image1, *imageHSV1, COLOR_BGR2HSV);
+	cvtColor(*image2, *imageHSV2, COLOR_BGR2HSV);
 }

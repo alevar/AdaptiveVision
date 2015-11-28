@@ -40,12 +40,14 @@ class CameraDetect{
 		vector<int> getHSV();
 
 		void setResolution(int,int);
+		void setResolution(int,int,int,int);
 		vector<int> getResolution();
 
 	private:
 
 		void noiseReduction(Mat*, Mat*);
 		void thresholdHSV(Mat*, Mat*);
+		void convertRGB2HSV(Mat*, Mat*);
 
 		Mat *frame1;
 		Mat *frame2;
@@ -60,7 +62,12 @@ class CameraDetect{
 		int lowH, highH, lowS, highS ,lowV, highV;
 
 		vector<int> resolution;
+		vector<int> resolutionDiff;
 		vector<int> center_frame;
+		bool diffResolution;
+
+		Mat *imageHSV1;
+		Mat *imageHSV2;
 
 		Mat *imageTHR1;
 		Mat *imageTHR2;

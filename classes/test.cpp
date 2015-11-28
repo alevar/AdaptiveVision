@@ -47,5 +47,9 @@ int main(){
 	vector<int> resolution = camera.getResolution();
 	cout << "The Resolution is:	" << resolution[0] << "x" << resolution[1] << endl;
 
+	camera.setResolution(720,480,640,480);
+	vector<int> resolution2 = camera.getResolution();
+	cout << "The Resolution is:	" << resolution2[0] << "x" << resolution2[1] << " and " << resolution2[2] << "x" << resolution2[3] << endl;
+
 	return 0;
 }
