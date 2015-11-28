@@ -67,3 +67,7 @@ void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
 	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 }
 
+void CameraDetect::thresholdHSV(Mat* image1, Mat* image2){
+	inRange(*image1, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), *imageTHR1);
+	inRange(*image2, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), *imageTHR2);
+}

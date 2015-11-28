@@ -45,6 +45,7 @@ class CameraDetect{
 	private:
 
 		void noiseReduction(Mat*, Mat*);
+		void thresholdHSV(Mat*, Mat*);
 
 		Mat *frame1;
 		Mat *frame2;
