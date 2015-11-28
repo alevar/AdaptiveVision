@@ -47,6 +47,8 @@ class CameraDetect{
 
 		void noiseReduction();
 		void findLargestContour();
+		void convertRGB2HSV();
+		void thresholdHSV();
 
 		float results[5];
 
