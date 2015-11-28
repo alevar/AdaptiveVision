@@ -53,3 +53,17 @@ vector<int> CameraDetect::getResolution(){
 	return resolution;
 }
 
+void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
+	imageReduced1 = image1;
+	imageReduced2 = image2;
+	erode(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	erode(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
+	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+}
+

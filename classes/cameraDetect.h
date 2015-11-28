@@ -44,6 +44,8 @@ class CameraDetect{
 
 	private:
 
+		void noiseReduction(Mat*, Mat*);
+
 		Mat *frame1;
 		Mat *frame2;
 
@@ -58,6 +60,12 @@ class CameraDetect{
 
 		vector<int> resolution;
 		vector<int> center_frame;
+
+		Mat *imageTHR1;
+		Mat *imageTHR2;
+
+		Mat *imageReduced1;
+		Mat *imageReduced2;
 
 };
 
