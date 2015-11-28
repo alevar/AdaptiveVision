@@ -43,6 +43,9 @@ class CameraDetect{
 		void setResolution(int,int,int,int);	// Allows the user to set different resolution to cameras
 		vector<int> getResolution();			// allows the user to get the current resolution settings
 
+		// void setThreshold(int,int);
+		// vector<int> getThreshold();
+
 	private:
 
 /*=========================================================
@@ -65,6 +68,10 @@ class CameraDetect{
 		vector<int> resolutionDiff;
 		vector<int> center_frame;
 		bool diffResolution;
+
+		// vector<int> fullThreshold;
+		// int minThresh;
+		// int maxThresh;
 
 /*=========================================================
 ============ 	  RGB to HSV Conversion 	 ==============
@@ -94,20 +101,26 @@ class CameraDetect{
 		Mat *imageReduced2;
 
 /*=========================================================
+============ 		Find All Contours		 ==============
+=========================================================*/
+
+		// void findContours(Mat*, Mat*);
+
+		// vector<vector<Point> > contours;
+		// vector<Vec4i> hierarchy;
+		// Mat canny_output;
+
+/*=========================================================
 ============ 	Largest Contour Detection	 ==============
 =========================================================*/
 
-		void findLargestContour();
+		// void findLargestContour(Mat*, Mat*);
 
-		Point2f largestCenter;
-		float largestRadius;
-		vector<float> largestContour;
-		int largest_contour_index;
-		double largest_area;
-
-		vector<vector<Point> > contours;
-		vector<Vec4i> hierarchy;
-		Mat canny_output;
+		// Point2f largestCenter;
+		// float largestRadius;
+		// vector<float> largestContour;
+		// int largest_contour_index;
+		// double largest_area;
 
 };
 
