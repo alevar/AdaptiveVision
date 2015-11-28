@@ -51,9 +51,5 @@ int main(){
 	vector<int> resolution2 = camera.getResolution();
 	cout << "The Resolution is:	" << resolution2[0] << "x" << resolution2[1] << " and " << resolution2[2] << "x" << resolution2[3] << endl;
 
-	camera.setThreshold(60,75);
-	vector<int> thresholdValues = camera.getThreshold();
-	cout << "Threshold is:	" << thresholdValues[0] << " & " << thresholdValues[1] << endl;
-
 	return 0;
 }

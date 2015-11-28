@@ -9,7 +9,7 @@ CameraDetect::CameraDetect(Mat* newFrame1, Mat* newFrame2, VideoCapture newSourc
 
 	CameraDetect::setHSV(35,60,50,255,50,255);
 	CameraDetect::setResolution(640,480);
-	CameraDetect::setThreshold(100,255);
+	// CameraDetect::setThreshold(100,255);
 
 	diffResolution = false;
 }
@@ -76,6 +76,16 @@ vector<int> CameraDetect::getResolution(){
 	}
 }
 
+// void CameraDetect::setThreshold(int newMinThresh, int newMaxThresh){
+// 	minThresh = newMinThresh;
+// 	maxThresh = newMaxThresh;
+// }
+
+// vector<int> CameraDetect::getThreshold(){
+// 	fullThreshold = {minThresh,maxThresh};
+// 	return fullThreshold;
+// }
+
 void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
 	imageReduced1 = image1;
 	imageReduced2 = image2;
@@ -100,42 +110,32 @@ void CameraDetect::convertRGB2HSV(Mat* image1, Mat* image2){
 	cvtColor(*image2, *imageHSV2, COLOR_BGR2HSV);
 }
 
-void CameraDetect::setThreshold(int newMinThresh, int newMaxThresh){
-	minThresh = newMinThresh;
-	maxThresh = newMaxThresh;
-}
+// void CameraDetect::findContours(Mat* image1, Mat* image2){
 
-vector<int> CameraDetect::getThreshold(){
-	fullThreshold = {minThresh,maxThresh};
-	return fullThreshold;
-}
+// 	Canny(image1, canny_output, thresh, thresh*2, 3 );
 
-void CameraDetect::findAllContours(Mat* image){
+// 	findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+// }
 
-	Canny(*image, canny_output, minThresh, minThresh*2, 3 );
+// void CameraDetect::findLargestContour(Mat* image1, Mat* image2){
 
-	findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
-}
+// 	vector<vector<Point>> contours_poly(contours.size());
+//   	vector<Point2f> center(contours.size());
+//   	vector<float> radius(contours.size());
 
-void CameraDetect::findLargestContour(Mat* image1, Mat* image2){
+// 	if(contours.size()>0){
 
-	vector<vector<Point>> contours_poly(contours.size());
-  	vector<Point2f> center(contours.size());
-  	vector<float> radius(contours.size());
-
-	if(contours.size()>0){
-
-		for( int i = 0; i < contours.size(); i++ )
-		{
-			double area = contourArea(contours[i],false);
-			if(area>largest_area){
-				largest_area = area;
-				largest_contour_index = i;
-			}
-			if(i == contours.size()-1){
-				minEnclosingCircle( Mat (contours[largest_contour_index]), largestCenter, largestRadius); // Allows better estimation of the real size of the object, independent of the rotation
-				largestContour = {largestCenter.x,largestCenter.y, largestRadius};
-			}
-		}
-	}
-}
+// 		for( int i = 0; i < contours.size(); i++ )
+// 		{
+// 			double area = contourArea(contours[i],false);
+// 			if(area>largest_area){
+// 				largest_area = area;
+// 				largest_contour_index = i;
+// 			}
+// 			if(i == contours.size()-1){
+// 				minEnclosingCircle( Mat (contours[largest_contour_index]), largestCenter, largestRadius); // Allows better estimation of the real size of the object, independent of the rotation
+// 				largestContour = {largestCenter,largestRadius};
+// 			}
+// 		}
+// 	}
+// }

@@ -29,30 +29,33 @@ using namespace std;
 class CameraDetect{
 	public:
 
-		CameraDetect(Mat*, Mat*, VideoCapture, VideoCapture); // Class object
+		CameraDetect(Mat*, Mat*, VideoCapture, VideoCapture);
 
-		void setCameraDistance(float); // Allows the user to define the distance between two cameras
+		void setCameraDistance(float);
 
-		float getCameraDistance();		// Allows the user to get the set distance values
+		float getCameraDistance();
 
-		void setHSV(int,int,int,int,int,int);	// Allows the user to set all the HSV preferences
-		void setHSV(int,int);					// Allows the user to only manipulate the Hue preferences
-		vector<int> getHSV();					// Allows the user to get the currently set HSV values
+		void setHSV(int,int,int,int,int,int);
+		void setHSV(int,int);
+		vector<int> getHSV();
 
-		void setResolution(int,int);			// Allows the user to set same resolution for both cameras
-		void setResolution(int,int,int,int);	// Allows the user to set different resolution to cameras
-		vector<int> getResolution();			// allows the user to get the current resolution settings
+		void setResolution(int,int);
+		void setResolution(int,int,int,int);
+		vector<int> getResolution();
 
-		// void setThreshold(int,int);
-		// vector<int> getThreshold();
+		void setThreshold(int,int);
+		vector<int> getThreshold();
 
 	private:
 
-/*=========================================================
-============ 	 Global Private Variables    ==============
-=========================================================*/
+		void noiseReduction(Mat*, Mat*);
+		void thresholdHSV(Mat*, Mat*);
+		void convertRGB2HSV(Mat*, Mat*);
+		void findLargestContour();
+		void findAllContours(Mat*);
+		void findLargestContour(Mat*, Mat*);
 
-		Mat *frame1;	// the primary object passed in the initialization of the class
+		Mat *frame1;
 		Mat *frame2;
 
 		VideoCapture source1;
@@ -69,59 +72,28 @@ class CameraDetect{
 		vector<int> center_frame;
 		bool diffResolution;
 
-		// vector<int> fullThreshold;
-		// int minThresh;
-		// int maxThresh;
-
-/*=========================================================
-============ 	  RGB to HSV Conversion 	 ==============
-=========================================================*/
-
-		void convertRGB2HSV(Mat*, Mat*);
-
 		Mat *imageHSV1;
 		Mat *imageHSV2;
-
-/*=========================================================
-============ 	  Thresholding the Image	 ==============
-=========================================================*/
-
-		void thresholdHSV(Mat*, Mat*);
 
 		Mat *imageTHR1;
 		Mat *imageTHR2;
 
-/*=========================================================
-============ 	 	 Noise Reduction 		 ==============
-=========================================================*/
-
-		void noiseReduction(Mat*, Mat*);
-
 		Mat *imageReduced1;
 		Mat *imageReduced2;
 
-/*=========================================================
-============ 		Find All Contours		 ==============
-=========================================================*/
+		vector<int> fullThreshold;
+		int minThresh;
+		int maxThresh;
 
-		// void findContours(Mat*, Mat*);
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+		Mat canny_output;
 
-		// vector<vector<Point> > contours;
-		// vector<Vec4i> hierarchy;
-		// Mat canny_output;
-
-/*=========================================================
-============ 	Largest Contour Detection	 ==============
-=========================================================*/
-
-		// void findLargestContour(Mat*, Mat*);
-
-		// Point2f largestCenter;
-		// float largestRadius;
-		// vector<float> largestContour;
-		// int largest_contour_index;
-		// double largest_area;
-
+		Point2f largestCenter;
+		float largestRadius;
+		vector<float> largestContour;
+		int largest_contour_index;
+		double largest_area;
 };
 
 #endif
