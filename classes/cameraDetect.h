@@ -29,57 +29,35 @@ using namespace std;
 class CameraDetect{
 	public:
 
-		CameraDetect(Mat*); // int 1 => camera source,
+		CameraDetect(Mat*, Mat*, VideoCapture, VideoCapture);
 
-		int approximateDistance();
+		void setCameraDistance(float);
 
-		void setCameraDistance(int*);
+		float getCameraDistance();
 
-		void setHSV(int*,int*,int*,int*,int*,int*);
-		void setHSV(int*,int*);
+		void setHSV(int,int,int,int,int,int);
+		void setHSV(int,int);
+		vector<int> getHSV();
 
-		void setResolution(int*,int*);
-
-		float getDistance();
-		float getLargestContour();
+		void setResolution(int,int);
+		vector<int> getResolution();
 
 	private:
 
-		void noiseReduction();
-		void findLargestContour();
-		void convertRGB2HSV();
-		void thresholdHSV();
+		Mat *frame1;
+		Mat *frame2;
 
-		float results[5];
+		VideoCapture source1;
+		VideoCapture source2;
 
-		Point2f largestCenter;
-		float largestRadius;
-		int largest_contour_index = 0;
-		double largest_area = 0;
+		float cameraDistance;
 
-		vector<vector<Point> > contours;
-		vector<Vec4i> hierarchy;
-		Mat canny_output;
+		vector<int> fullHSV;
 
-		Mat frame;
-		Mat imageHSV;
-		Mat imageTHR;
+		int lowH, highH, lowS, highS ,lowV, highV;
 
-		int thresh = 100;		// Minimum thresholding value for edge detection
-		int max_thresh = 255;	// Maximum thresholding value for edge detection
-
-		int lowH = 35;			//Low pass value for Hue
-		int highH = 60;			//High pass value for Hue
-		int lowS = 50;			//Low pass value for Saturation
-		int highS = 255;		//High pass value for Saturation
-		int lowV = 50;			//Low pass value for Value
-		int highV = 255;		//High pass value for Value
-
-		float *cameraDistance;
-		float distance_object;
-
-		int resolution[2] = {640,480};	 // The resolution of the camera
-		int center_frame[2] = {320,240}; // The (x,y) coordinates of the center of the frame with the resolution 640*480
+		vector<int> resolution;
+		vector<int> center_frame;
 
 };
 
