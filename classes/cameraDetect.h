@@ -46,14 +46,16 @@ class CameraDetect{
 		void setThreshold(int,int);
 		vector<int> getThreshold();
 
+		vector<Mat> Compute();
+
 	private:
 
 		void noiseReduction(Mat*, Mat*);
-		void thresholdHSV(Mat*, Mat*);
-		void convertRGB2HSV(Mat*, Mat*);
+		vector<Mat> thresholdHSV(Mat, Mat);
+		vector<Mat> convertRGB2HSV(Mat*, Mat*);
 		void findLargestContour();
 		void findAllContours(Mat*);
-		void findLargestContour(Mat*, Mat*);
+		void findLargestContour(vector<vector<Point> >);
 
 		Mat *frame1;
 		Mat *frame2;
@@ -72,8 +74,8 @@ class CameraDetect{
 		vector<int> center_frame;
 		bool diffResolution;
 
-		Mat *imageHSV1;
-		Mat *imageHSV2;
+		vector<Mat> resultRGB2HSV;
+		vector<Mat> resultHSV2THR;
 
 		Mat *imageTHR1;
 		Mat *imageTHR2;
@@ -89,11 +91,16 @@ class CameraDetect{
 		vector<Vec4i> hierarchy;
 		Mat canny_output;
 
-		Point2f largestCenter;
-		float largestRadius;
-		vector<float> largestContour;
-		int largest_contour_index;
-		double largest_area;
+		Point2f largestCenter1;
+		float largestRadius1;
+		vector<float> largestContour1;
+		int largest_contour_index1;
+		double largest_area1;
+		Point2f largestCenter2;
+		float largestRadius2;
+		vector<float> largestContour2;
+		int largest_contour_index2;
+		double largest_area2;
 };
 
 #endif

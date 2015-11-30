@@ -90,14 +90,23 @@ void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
 	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 }
 
-void CameraDetect::thresholdHSV(Mat* image1, Mat* image2){
-	inRange(*image1, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), *imageTHR1);
-	inRange(*image2, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), *imageTHR2);
+vector<Mat> CameraDetect::thresholdHSV(Mat image1, Mat image2){
+	Mat imageTHROne;
+	Mat imageTHRTwo;
+	inRange(image1, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), imageTHROne);
+	inRange(image2, Scalar(lowH, lowS, lowV), Scalar(highH, highS, highV), imageTHRTwo);
+	resultHSV2THR = {imageTHROne,imageTHRTwo};
+	return resultHSV2THR;
+
 }
 
-void CameraDetect::convertRGB2HSV(Mat* image1, Mat* image2){
-	cvtColor(*image1, *imageHSV1, COLOR_BGR2HSV);
-	cvtColor(*image2, *imageHSV2, COLOR_BGR2HSV);
+vector<Mat> CameraDetect::convertRGB2HSV(Mat* image1, Mat* image2){
+	Mat imageHSVOne;
+	Mat imageHSVTwo;
+	cvtColor(*image1, imageHSVOne, COLOR_BGR2HSV);
+	cvtColor(*image2, imageHSVTwo, COLOR_BGR2HSV);
+	resultRGB2HSV = {imageHSVOne,imageHSVTwo};
+	return resultRGB2HSV;
 }
 
 void CameraDetect::setThreshold(int newMinThresh, int newMaxThresh){
@@ -117,25 +126,33 @@ void CameraDetect::findAllContours(Mat* image){
 	findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
 }
 
-void CameraDetect::findLargestContour(Mat* image1, Mat* image2){
+void CameraDetect::findLargestContour(vector<vector<Point> > newContours){
 
-	vector<vector<Point>> contours_poly(contours.size());
-  	vector<Point2f> center(contours.size());
-  	vector<float> radius(contours.size());
+	vector<vector<Point>> contours_poly(newContours.size());
+  	vector<Point2f> center(newContours.size());
+  	vector<float> radius(newContours.size());
 
-	if(contours.size()>0){
+	if(newContours.size()>0){
 
-		for( int i = 0; i < contours.size(); i++ )
+		for( int i = 0; i < newContours.size(); i++ )
 		{
-			double area = contourArea(contours[i],false);
-			if(area>largest_area){
-				largest_area = area;
-				largest_contour_index = i;
+			double area = contourArea(newContours[i],false);
+			if(area>largest_area1){
+				largest_area1 = area;
+				largest_contour_index1 = i;
 			}
-			if(i == contours.size()-1){
-				minEnclosingCircle( Mat (contours[largest_contour_index]), largestCenter, largestRadius); // Allows better estimation of the real size of the object, independent of the rotation
-				largestContour = {largestCenter.x,largestCenter.y, largestRadius};
+			if(i == newContours.size()-1){
+				minEnclosingCircle( Mat (newContours[largest_contour_index1]), largestCenter1, largestRadius1); // Allows better estimation of the real size of the object, independent of the rotation
+				largestContour1 = {largestCenter1.x,largestCenter1.y, largestRadius1};
 			}
 		}
 	}
+}
+
+vector<Mat> CameraDetect::Compute(){
+	vector<Mat> resultHSV = CameraDetect::convertRGB2HSV(frame1,frame2);
+	vector<Mat> resultTHR = CameraDetect::thresholdHSV(resultHSV[0],resultHSV[1]);
+	cout<<resultTHR[1] << endl;
+
+	return resultHSV;
 }

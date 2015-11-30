@@ -30,6 +30,9 @@ int main(){
 	VideoCapture source1(0);
 	VideoCapture source2(1);
 
+	bool Success = source1.read(original_frame);
+	bool Success2 = source2.read(original_frame2);
+
 	float distance = 7.0;
 
 	CameraDetect camera(&original_frame, &original_frame2, source1, source2);
@@ -54,6 +57,20 @@ int main(){
 	camera.setThreshold(60,75);
 	vector<int> thresholdValues = camera.getThreshold();
 	cout << "Threshold is:	" << thresholdValues[0] << " & " << thresholdValues[1] << endl;
+
+	vector<Mat> results = camera.Compute();
+
+	// while(true){
+	// 	namedWindow("Original",CV_WINDOW_AUTOSIZE);		
+	// 	imshow("Original", original_frame);
+	// 	namedWindow("Original2",CV_WINDOW_AUTOSIZE);		
+	// 	imshow("Original2", original_frame2);
+
+	// 	if (waitKey(30) == 27)
+	// 	{
+	// 		break; 
+	// 	}
+	// }
 
 	return 0;
 }
