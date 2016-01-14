@@ -76,19 +76,24 @@ vector<int> CameraDetect::getResolution(){
 	}
 }
 
-void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
-	imageReduced1 = image1;
-	imageReduced2 = image2;
-	erode(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	erode(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// vector<Mat> CameraDetect::noiseReduction(Mat image1, Mat image2){
 
-	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-}
+// 	Mat newImageOne;
+// 	Mat newImageTwo;
+	
+// 	erode(image1, newImageOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// 	dilate(image1, newImageOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// 	dilate(image1, newImageOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// 	erode(image1, newImageOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
+// 	erode(image2, newImageTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// 	dilate(image2, newImageTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// 	dilate(image2, newImageTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+// 	erode(image2, newImageTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
+// 	imageReduced = {newImageOne,newImageTwo};
+// 	return imageReduced;
+// }
 
 vector<Mat> CameraDetect::thresholdHSV(Mat image1, Mat image2){
 	Mat imageTHROne;
@@ -152,7 +157,10 @@ void CameraDetect::findLargestContour(vector<vector<Point> > newContours){
 vector<Mat> CameraDetect::Compute(){
 	vector<Mat> resultHSV = CameraDetect::convertRGB2HSV(frame1,frame2);
 	vector<Mat> resultTHR = CameraDetect::thresholdHSV(resultHSV[0],resultHSV[1]);
-	cout<<resultTHR[1] << endl;
+	// vector<Mat> resultReduced = CameraDetect::noiseReduction(resultTHR[0],resultTHR[1]);
+
+	imwrite("./image.jpg",resultHSV[0]);
+	imwrite("./image1.jpg",resultTHR[0]);
 
 	return resultHSV;
 }

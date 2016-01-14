@@ -86,18 +86,18 @@ vector<int> CameraDetect::getResolution(){
 // 	return fullThreshold;
 // }
 
-void CameraDetect::noiseReduction(Mat* image1, Mat* image2){
-	imageReduced1 = image1;
-	imageReduced2 = image2;
-	erode(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	erode(*imageReduced1, *imageReduced1, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+void CameraDetect::noiseReduction(Mat image1, Mat image2){
+	Mat imageReducedOne;
+	Mat imageReducedTwo
+	erode(image1, imageReducedOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(image1, imageReducedOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(image1, imageReducedOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	erode(image1, imageReducedOne, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 
-	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	erode(*imageReduced2, *imageReduced2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	erode(image2, imageReducedTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(image2, imageReducedTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	dilate(image2, imageReducedTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	erode(image2, imageReducedTwo, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 }
 
 void CameraDetect::thresholdHSV(Mat* image1, Mat* image2){

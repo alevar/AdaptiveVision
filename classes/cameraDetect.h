@@ -50,7 +50,7 @@ class CameraDetect{
 
 	private:
 
-		void noiseReduction(Mat*, Mat*);
+		vector<Mat> noiseReduction(Mat, Mat);
 		vector<Mat> thresholdHSV(Mat, Mat);
 		vector<Mat> convertRGB2HSV(Mat*, Mat*);
 		void findLargestContour();
@@ -76,6 +76,7 @@ class CameraDetect{
 
 		vector<Mat> resultRGB2HSV;
 		vector<Mat> resultHSV2THR;
+		// vector<Mat> imageReduced;
 
 		Mat *imageTHR1;
 		Mat *imageTHR2;

@@ -59,6 +59,8 @@ int main(){
 	cout << "Threshold is:	" << thresholdValues[0] << " & " << thresholdValues[1] << endl;
 
 	vector<Mat> results = camera.Compute();
+	vector<Mat> results2 = camera.Compute();
+	vector<Mat> results3 = camera.Compute();
 
 	// while(true){
 	// 	namedWindow("Original",CV_WINDOW_AUTOSIZE);		
