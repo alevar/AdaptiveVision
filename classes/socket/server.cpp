@@ -1,3 +1,19 @@
+
+/* Composing a statement
+
+A statement is composed in the following manner:
+
+OpCode/Information;
+
+Where:
+
+OpCode - one of the codes supported by the OpCode class
+/ - delimiting that the opcode is done and the infomation to be received is there
+Information - the image to be accepted by the server
+; - the EOF signal
+
+*/
+
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -10,6 +26,8 @@
 #include <map>
 #include <vector>
 #include <string>
+
+#include "OpCode.h"
 
 using namespace std;
 
@@ -24,6 +42,14 @@ using namespace std;
 void write_log(){
 
 }
+
+// Write the information received from the client to the database
+
+void writeDB(){
+
+}
+
+// Write a function to pull respective information from the database
 
 void process_get(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
 

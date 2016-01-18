@@ -14,6 +14,16 @@ Responsibilities of the Client:
 */
 
 
+/*
+
+Perhaps provide means for writing out a procedure client/server would like followed.
+The procedure could be written out as an expression composed of the OpCodes and arguments.
+
+OpCodes need to be tokenized, pushed onto a stack.
+A parser and lexer would be responsible for analyzing the tokens on the stack.
+
+*/
+
 
 #include <stdio.h>
 #include <iostream>
@@ -78,7 +88,11 @@ int main(int argc , char *argv[])
     message = "GET";
     write(socket_desc , message , strlen(message));
 
-    OpCode first("DEFAULT");
+    // Need to split the string provided by the server
+    // DEduce the number of operand from there
+    // Compare to the language standard provided in the OpCode class
+
+    OpCode first("NEW_VALUE",3);
     cout<< first.toString() << endl;
 
     InstructionCode opcode;
@@ -86,55 +100,68 @@ int main(int argc , char *argv[])
     OpCode *inst;
     inst = &first;
     opcode = inst->OpCode::getOpCode();
-    // operand = inst->OpCode::getOperand();
+    operand = inst->OpCode::getOperand();
+
+    cout << "OPERAND:  " << operand << endl;
 
     switch(opcode){
         case ACK:
         {
-            cout << "HI" << endl;
+            cout << "CASE: ACK" << endl;
             break;
         }
         case DEFAULT:
         {
-            cout << "Bye" << endl;
+            cout << "CASE: DEFAULT" << endl;
             break;
         }
         case NEW_VALUE:
         {
-            cout << "New" << endl;
+            cout << "CASE: NEW_VALUE" << endl;
             break;
         }
         case NOTHING:
         {
+            cout << "CASE: NOTHING" << endl;
+            // Provide the new value to the color detection algorithm
             break;
         }
         case ERROR:
         {
+            cout << "CASE: ERROR" << endl;
             break;
         }
         case READY:
         {
+            cout << "CASE: READY" << endl;
+            // Transmit the information to the server as the next package
             break;
         }
         case CONTINUE:
         {
+            cout << "CASE: CONTINUE" << endl;
+            // start the new GET or PUT procedure
             break;
         }
         case CONFIRM:
         {
+            cout << "CASE: CONFIRM" << endl;
             break;
         }
         case AGAIN:
         {
+            cout << "CASE: AGAIN" << endl;
+            // resubmit the previous request
             break;
         }
         case TIME:
         {
+            cout << "CASE: TIME" << endl;
             break;
         }
         default:
         {
-            
+            cout << "DEFAULT" << endl;
         }
     }
      
