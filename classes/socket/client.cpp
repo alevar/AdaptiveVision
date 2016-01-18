@@ -16,6 +16,7 @@ Responsibilities of the Client:
 
 
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -23,8 +24,9 @@ Responsibilities of the Client:
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
-
 #include <arpa/inet.h> //inet_addr
+
+#include "OpCode.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
@@ -58,6 +60,83 @@ int main(int argc , char *argv[])
     puts("Connected\n");
 
     puts("Data Send\n");
+
+    int numbytes;
+    char buf[MAXDATASIZE];
+
+    if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
+    {
+        perror("recv()");
+        exit(1);
+    }
+    else
+        printf("Client-The recv() is OK...\n");
+     
+    buf[numbytes] = '\0';
+    printf("Client-Received: %s", buf);
+
+    message = "GET";
+    write(socket_desc , message , strlen(message));
+
+    OpCode first("DEFAULT");
+    cout<< first.toString() << endl;
+
+    InstructionCode opcode;
+    int operand;
+    OpCode *inst;
+    inst = &first;
+    opcode = inst->OpCode::getOpCode();
+    // operand = inst->OpCode::getOperand();
+
+    switch(opcode){
+        case ACK:
+        {
+            cout << "HI" << endl;
+            break;
+        }
+        case DEFAULT:
+        {
+            cout << "Bye" << endl;
+            break;
+        }
+        case NEW_VALUE:
+        {
+            cout << "New" << endl;
+            break;
+        }
+        case NOTHING:
+        {
+            break;
+        }
+        case ERROR:
+        {
+            break;
+        }
+        case READY:
+        {
+            break;
+        }
+        case CONTINUE:
+        {
+            break;
+        }
+        case CONFIRM:
+        {
+            break;
+        }
+        case AGAIN:
+        {
+            break;
+        }
+        case TIME:
+        {
+            break;
+        }
+        default:
+        {
+            
+        }
+    }
      
     return 0;
 }
