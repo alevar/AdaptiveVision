@@ -1,7 +1,15 @@
-# StereoscopicVision
+# Adaptive Stereoscopic Vision for Autonomous Robotic Systems
 
-The project focuses on the implementation of OpenMP pragma directives to allow an OpenCV application execute tasks more efficiently on a multithreaded CPU. The parallelization is set to allow the following functionality:
+### Installation Instructions:
 
-> 1. Two camera feeds
-> 2. Data Collection and Remote Export
-> 3. Data Import form Remote and further Export to the periphery
+> Please endure that you have dh-autoreconf and autoconf installed on your system
+
+> ./autogen.sh
+> mkdir build
+> cd build
+> ../configure
+> make
+> make install
+
+
+
