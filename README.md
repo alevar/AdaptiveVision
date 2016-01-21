@@ -2,7 +2,7 @@
 
 ### Installation Instructions:
 
-> Please endure that you have dh-autoreconf and autoconf installed on your system
+> Please ensure that you have dh-autoreconf and autoconf installed on your system
 
 > ./autogen.sh
 
