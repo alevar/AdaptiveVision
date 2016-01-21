@@ -2,9 +2,8 @@
 *.e
 *.odt
 *.m4
-*.in
 configure
-test*
+*.in
 autom4te.cache/
 build/
 config/

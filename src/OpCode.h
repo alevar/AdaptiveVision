@@ -19,23 +19,23 @@ enum InstructionCode {
 };
 
 class OpCode {
-public:
-    OpCode(string opcode);
-    OpCode(string opcode, int operand);
-    OpCode(string opcode, string label);
-    OpCode(const OpCode& orig);
-    virtual ~OpCode();
-    InstructionCode getOpCode() const;
-    int getOperand() const;
-    string getOpCodeName() const;
-    string getLabel() const;
-    string toString() const;
-    static int numArgs(string opcode);
-    
-private:
-    InstructionCode opcode;
-    int operand;
-    string label;
+    public:
+        OpCode(string opcode);
+        OpCode(string opcode, int operand);
+        OpCode(string opcode, string label);
+        OpCode(const OpCode& orig);
+        virtual ~OpCode();
+        InstructionCode getOpCode() const;
+        int getOperand() const;
+        string getOpCodeName() const;
+        string getLabel() const;
+        string toString() const;
+        static int numArgs(string opcode);
+        
+    private:
+        InstructionCode opcode;
+        int operand;
+        string label;
 };
 
 #endif	/* OPCODE_H */

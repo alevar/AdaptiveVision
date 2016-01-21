@@ -1,0 +1,23 @@
+#!/bin/bash
+
+rm -Rf autom4te.cache
+rm config.log
+rm config.status
+rm configure
+rm depcomp
+rm install-sh
+rm missing
+rm Makefile
+rm Makefile.in
+rm aclocal.m4
+rm *.o
+rm *~
+echo "bin_PROGRAMS = adaptiveVision" > Makefile.am
+echo "adaptiveVision_SOURCES =" *.cpp >> Makefile.am
+echo "AC_INIT([adaptiveVision], [1.0], [varaal01@luther.edu])" > configure.ac
+echo "AM_INIT_AUTOMAKE([-Wall -Werror foreign])" >> configure.ac
+echo "AC_PROG_CXX" >> configure.ac
+echo "AC_CONFIG_FILES([Makefile])" >> configure.ac
+echo "CXXFLAGS='$CXXFLAGS -g -std=c++11'" >> configure.ac
+echo "AC_OUTPUT" >> configure.ac
+autoreconf --force --install
