@@ -2,7 +2,7 @@
 #include <sstream>
 #include <unordered_map>
 
-#include "OpCode.h"
+#include "MessageOpCode.h"
 
 using namespace std;
 
@@ -53,54 +53,54 @@ const char* opcodeNames[] = {
     "TIME"
 };
 
-OpCode::OpCode(string opcode) {
+MessageOpCode::MessageOpCode(string opcode) {
 
     this->opcode = OpCodeMap[opcode];
     this->operand = -1;
     this->label = "";
 }
 
-OpCode::OpCode(string opcode, int operand) {
+MessageOpCode::MessageOpCode(string opcode, int operand) {
 
     this->opcode = OpCodeMap[opcode];
     this->operand = operand;
     this->label = "";
 }
 
-OpCode::OpCode(string opcode, string label) {
+MessageOpCode::MessageOpCode(string opcode, string label) {
 
     this->opcode = OpCodeMap[opcode];
     this->operand = -1;
     this->label = label;
 }
 
-OpCode::OpCode(const OpCode& orig) {
+MessageOpCode::MessageOpCode(const MessageOpCode& orig) {
 
     this->opcode = orig.opcode;
     this->operand = orig.operand;
     this->label = orig.label;
 }
 
-OpCode::~OpCode() {
+MessageOpCode::~MessageOpCode() {
 }
 
-InstructionCode OpCode::getOpCode() const {
+InstructionCode MessageOpCode::getOpCode() const {
     return this->opcode;
 }
 
-int OpCode::getOperand() const {
+int MessageOpCode::getOperand() const {
     return this->operand;
 }
 
-string OpCode::getLabel() const {
+string MessageOpCode::getLabel() const {
     return this->label;
 }
 
-string OpCode::getOpCodeName() const {
+string MessageOpCode::getOpCodeName() const {
     return opcodeNames[opcode];
 }
 
-string OpCode::toString() const {
+string MessageOpCode::toString() const {
     string result = "          ";
     string opName = getOpCodeName();
     result += opName;
@@ -116,6 +116,6 @@ string OpCode::toString() const {
     return result;
 }
 
-int OpCode::numArgs(string opcode) {
+int MessageOpCode::numArgs(string opcode) {
     return ArgMap[opcode];
 }

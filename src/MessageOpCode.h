@@ -1,5 +1,5 @@
-#ifndef OPCODE_H
-#define	OPCODE_H
+#ifndef MESSAGEOPCODE_H
+#define	MESSAGEOPCODE_H
 
 #include <string>
 
@@ -18,13 +18,13 @@ enum InstructionCode {
     TIME        // How long to wait before asking again? Followed by time interval
 };
 
-class OpCode {
+class MessageOpCode {
     public:
-        OpCode(string opcode);
-        OpCode(string opcode, int operand);
-        OpCode(string opcode, string label);
-        OpCode(const OpCode& orig);
-        virtual ~OpCode();
+        MessageOpCode(string opcode);
+        MessageOpCode(string opcode, int operand);
+        MessageOpCode(string opcode, string label);
+        MessageOpCode(const MessageOpCode& orig);
+        virtual ~MessageOpCode();
         InstructionCode getOpCode() const;
         int getOperand() const;
         string getOpCodeName() const;
@@ -38,5 +38,5 @@ class OpCode {
         string label;
 };
 
-#endif	/* OPCODE_H */
+#endif	/* MESSAGEOPCODE_H */
 

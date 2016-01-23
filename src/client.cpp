@@ -36,14 +36,22 @@ A parser and lexer would be responsible for analyzing the tokens on the stack.
 #include <netdb.h> 
 #include <arpa/inet.h> //inet_addr
 
-#include "OpCode.h"
+#include "MessageOpCode.h"
+#include "Message.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
 #define MAXDATASIZE 300 // max number of bytes
 
+using namespace std;
+
+
 int main(int argc , char *argv[])
 {
+    Message testMessage(3);
+    char * testChar = testMessage.buildMessage();
+    cout<< testChar <<"    That was a test\n\n";
+
     int socket_desc;
     struct sockaddr_in server;
 
@@ -92,15 +100,15 @@ int main(int argc , char *argv[])
     // DEduce the number of operand from there
     // Compare to the language standard provided in the OpCode class
 
-    OpCode first("NEW_VALUE",3);
+    MessageOpCode first("NEW_VALUE",3);
     cout<< first.toString() << endl;
 
     InstructionCode opcode;
     int operand;
-    OpCode *inst;
+    MessageOpCode *inst;
     inst = &first;
-    opcode = inst->OpCode::getOpCode();
-    operand = inst->OpCode::getOperand();
+    opcode = inst->MessageOpCode::getOpCode();
+    operand = inst->MessageOpCode::getOperand();
 
     cout << "OPERAND:  " << operand << endl;
 

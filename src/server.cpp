@@ -27,7 +27,8 @@ Information - the image to be accepted by the server
 #include <vector>
 #include <string>
 
-#include "OpCode.h"
+#include "MessageOpCode.h"
+#include "Message.h"
 
 using namespace std;
 
