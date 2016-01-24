@@ -1,29 +1,5 @@
-/*
-
-Responsibilities of the Client:
-1. PUT:
-- ask the server if its ready
-- send information to the server application
-- receive acknowledgement
-2. GET:
-- ask the server if the data is ready
-- accept the data
-- supply new data to the client application
-- send acknowledgement
-
-*/
-
-
-/*
-
-Perhaps provide means for writing out a procedure client/server would like followed.
-The procedure could be written out as an expression composed of the OpCodes and arguments.
-
-OpCodes need to be tokenized, pushed onto a stack.
-A parser and lexer would be responsible for analyzing the tokens on the stack.
-
-*/
-
+/*==================================================
+==================================================*/
 
 #include <stdio.h>
 #include <iostream>
@@ -38,6 +14,7 @@ A parser and lexer would be responsible for analyzing the tokens on the stack.
 
 #include "MessageOpCode.h"
 #include "Message.h"
+#include "PID.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
@@ -48,7 +25,7 @@ using namespace std;
 
 int main(int argc , char *argv[])
 {
-    Message testMessage("ERROR");
+    Message testMessage("NEW_VALUE");
 
     int socket_desc;
     struct sockaddr_in server;

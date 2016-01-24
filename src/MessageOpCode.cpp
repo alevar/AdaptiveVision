@@ -1,3 +1,6 @@
+/*==================================================
+==================================================*/
+
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
@@ -26,7 +29,7 @@ bool dummy = create_map(OpCodeMap);
 bool create_arg_map(unordered_map<string, int>& m) {
     m["ACK"] = 0;
     m["DEFAULT"] = 0;
-    m["NEW_VALUE"] = 1;
+    m["NEW_VALUE"] = 2;
     m["NOTHING"] = 0;
     m["ERROR"] = 1;
     m["READY"] = 0;
