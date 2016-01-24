@@ -48,9 +48,7 @@ using namespace std;
 
 int main(int argc , char *argv[])
 {
-    Message testMessage(3);
-    char * testChar = testMessage.buildMessage();
-    cout<< testChar <<"    That was a test\n\n";
+    Message testMessage("ERROR");
 
     int socket_desc;
     struct sockaddr_in server;

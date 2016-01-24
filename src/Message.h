@@ -3,17 +3,18 @@
 
 #include <string>
 
-#include "MessageOpCode.h"
+
 
 using namespace std;
 
 class Message {
 public:
-    Message(int);
+    Message(string,string);
+    Message(string);
 
     int findLength();
     
-    char * buildMessage();
+    string buildMessage();
     int decodeMessage();
     
     virtual ~Message();
@@ -23,7 +24,7 @@ public:
     int length;		// Length of the message
     char rawMessage;	// Raw Message representation
 
-    char * message;	// message as an array of bytes - contains opcode, type and length
+    string message;	// message as an array of bytes - contains opcode, type and length
 
 };
 

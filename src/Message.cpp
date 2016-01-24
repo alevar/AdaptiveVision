@@ -1,3 +1,21 @@
+
+
+/* Composing a statement
+
+A statement is composed in the following manner:
+
+OpCode/Information;
+
+Where:
+
+OpCode - one of the codes supported by the OpCode class
+/ - delimiting that the opcode is done and the infomation to be received is there
+Information - the image to be accepted by the server
+; - the EOF signal
+
+*/
+
+
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
@@ -5,23 +23,34 @@
 
 #include "Message.h"
 
+#include "MessageOpCode.h"
+
 using namespace std;
 
-Message::Message(int opcode) {
+Message::Message(string opcode) {
+
+	int operand;
+	operand = MessageOpCode::numArgs(opcode);
+
+	this->message = opcode;
+
+	for (int i = 0; i<operand;i++){
+		message = message + "/1";
+	}
+
+	message = message + ";";
+
+	// if(operand == 2){
+	// 	message[1] = to_string(operand).c_str();
+	// }
 	
-	this->opcode = opcode;
+	cout << message << "		test message"<<endl;
 
     
 }
 
-char * Message::buildMessage(){
+string Message::buildMessage(){
 
-	message = (char*) malloc(8);
-
-	message[0] = 35;
-	message[1] = 46;
-
-	message[2]='\0';
 
     return message;
 }
