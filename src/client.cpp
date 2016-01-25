@@ -1,4 +1,15 @@
 /*==================================================
+
+execution order for the client:
+- The MessageStack object is available to all threads on the client side
+- The messaging thread goes to sleep when the stack object is empty
+- Other threads may push instructions onto the stack at any time
+- When another thread pushes an object onto the stack and the messaging thread
+    is known to be asleep, the messaging thread is notifyid to wake up
+- the messaging thread executes the top instruction on the stack
+- The messaging thread checks if there are any other items on the stack after successful execution of the task
+- if there are no other instructions - messaging thread goes to sleep
+
 ==================================================*/
 
 #include <stdio.h>
