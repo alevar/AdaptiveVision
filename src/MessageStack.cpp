@@ -17,7 +17,7 @@
 using namespace std;
 
 MessageStack::MessageStack(int N){
-	bottom_ = new float[N];
+	bottom_ = new InstructionCode[N];
 	top_ = bottom_;
 	size_ = N;
 }
@@ -32,13 +32,13 @@ int MessageStack::num_items() const
     return (top_ - bottom_ );
 }
 
-void MessageStack::push(float val)
+void MessageStack::push(InstructionCode val)
 {
     *top_ = val;
     top_++;
 }
 
-float MessageStack::pop()
+InstructionCode MessageStack::pop()
 {
     top_--;
     return *top_;
@@ -62,7 +62,7 @@ void MessageStack::print() const
 {
 
       cout << "Stack currently holds " << num_items() << " items: " ;        
-      for (float *element=bottom_; element<top_; element++)
+      for (InstructionCode *element=bottom_; element<top_; element++)
       {
           cout << "  " << *element;
       }
