@@ -9,6 +9,8 @@
 using namespace std;
 
 enum InstructionCode {
+    PUT,
+    GET,
     ACK,        // Acknowledged a transaction
     DEFAULT,    // Default Values are set for the client
     NEW_VALUE,  // New Value available followed by the value itself
@@ -29,6 +31,7 @@ class MessageOpCode {
         MessageOpCode(const MessageOpCode& orig);
         virtual ~MessageOpCode();
         InstructionCode getOpCode() const;
+        InstructionCode getOpCode(string);
         int getOperand() const;
         string getOpCodeName() const;
         string getLabel() const;

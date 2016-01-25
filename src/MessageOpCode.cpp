@@ -1,4 +1,11 @@
 /*==================================================
+=================== MESSAGE OPCODE =================
+====================================================
+===== Class is meant to hold information about =====
+===== all the operation and instruction codes  =====
+===== that can be exchanged between the client =====
+======= and the server. The class also holds =======
+=== conversion and access tools for the OpCodes  ===
 ==================================================*/
 
 #include <iostream>
@@ -10,6 +17,8 @@
 using namespace std;
 
 bool create_map(unordered_map<string, InstructionCode>& m) {
+    m["PUT"] = PUT;
+    m["GET"] = GET;
     m["ACK"] = ACK;
     m["DEFAULT"] = DEFAULT;
     m["NEW_VALUE"] = NEW_VALUE;
@@ -27,6 +36,8 @@ unordered_map<string, InstructionCode> OpCodeMap;
 bool dummy = create_map(OpCodeMap);
 
 bool create_arg_map(unordered_map<string, int>& m) {
+    m["PUT"] = 2;
+    m["GET"] = 2;
     m["ACK"] = 0;
     m["DEFAULT"] = 0;
     m["NEW_VALUE"] = 2;
@@ -44,6 +55,8 @@ unordered_map<string, int> ArgMap;
 bool dummy2 = create_arg_map(ArgMap);
 
 const char* opcodeNames[] = {
+    "PUT",
+    "GET",
     "ACK",        // Acknowledged a transaction
     "DEFAULT",    // Default Values are set for the client
     "NEW_VALUE",  // New Value available followed by the value itself
@@ -89,6 +102,11 @@ MessageOpCode::~MessageOpCode() {
 
 InstructionCode MessageOpCode::getOpCode() const {
     return this->opcode;
+}
+
+InstructionCode MessageOpCode::getOpCode(string opcode){
+
+    return OpCodeMap[opcode];
 }
 
 int MessageOpCode::getOperand() const {

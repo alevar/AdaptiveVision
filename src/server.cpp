@@ -215,8 +215,6 @@ int main(int argc , char *argv[])
                             childBuffer[numbytes] = '\0';
                             printf("Action Requested: %s \n", childBuffer);
 
-                            cout<<childBuffer<<" "<<actionMap[string(childBuffer)]<<endl;
-
                             switch (actionMap[string(childBuffer)]){
 
                                 case 0: // GET

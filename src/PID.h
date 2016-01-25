@@ -1,3 +1,11 @@
+/*==================================================
+====================== PID CLASS ===================
+====================================================
+===== Class is meant to provide tools for easy =====
+======== implementation of proportionality =========
+========= derivative, integral controller. =========
+==================================================*/
+
 #ifndef PID_H
 #define PID_H
 
