@@ -10,7 +10,6 @@
 #include <stdlib.h>
 
 #include "Message.h"
-
 #include "MessageOpCode.h"
 #include "MessageType.h"
 

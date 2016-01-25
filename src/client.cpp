@@ -27,6 +27,7 @@ execution order for the client:
 #include "Message.h"
 #include "PID.h"
 #include "ActionCode.h"
+#include "MessageStack.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
@@ -74,28 +75,27 @@ int main(int argc , char *argv[])
         buf[numbytes] = '\0';
         printf("Client-Received: %s", buf);
 
-    string test = "GET";
-
-    uint32_t dataLength = htonl(test.size()); // Ensure network byte order 
-                                                // when sending the data length
-
     // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
     // send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
 
-
-
     // write(socket_desc , test , test.size());
+
+    Message newmessage("GET","hello world");
+    InstructionCode initialOpcode = newmessage.getOpCode();
+
+    MessageStack instructionStack(10);
+    instructionStack.push(initialOpcode);
+    InstructionCode workingOpcode;
 
 
     while(true){
 
-        Message newmessage("GET","hello world");
-        cout<<newmessage.getInfo()<<endl;
-        InstructionCode opcode = newmessage.getOpCode();
-
         // opcode = inst->MessageOpCode::getOpCode();
 
-        switch(opcode){
+        workingOpcode = instructionStack.pop();
+        instructionStack.push(initialOpcode);
+
+        switch(workingOpcode){
             case PUT:
             {
                 cout << "CASE: PUT" << endl;
@@ -104,6 +104,10 @@ int main(int argc , char *argv[])
             case GET:
             {
                 cout << "CASE: GET" << endl;
+                uint32_t dataLength = newmessage.getLength();
+                string dataToSend = newmessage.getInfo();
+                send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
+                send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
                 break;
             }
             case ACK:
@@ -168,6 +172,7 @@ int main(int argc , char *argv[])
             default:
             {
                 cout << "DEFAULT" << endl;
+                continue;
             }
         }
     }
