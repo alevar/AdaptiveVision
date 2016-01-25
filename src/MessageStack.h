@@ -21,9 +21,20 @@ using namespace std;
 class MessageStack {
 
     public:
-        MessageStack();
+        MessageStack(int size);
+        void push(float val);
+	    int num_items() const;
+	    float pop();
+	    int full() const;
+	    int empty() const;
+	    void print() const;
+	    ~MessageStack();
     
     private:
+
+	    float *bottom_;
+	    float *top_;
+	    int size_;
 
 };
 
