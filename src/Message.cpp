@@ -1,12 +1,12 @@
 /*==================================================
 ==================================================*/
 
-
 #include <iostream>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
 #include <sstream>
+#include <arpa/inet.h>
 #include <stdlib.h>
 
 #include "Message.h"
@@ -16,53 +16,84 @@
 
 using namespace std;
 
+Message::Message(){
+
+}
+
 Message::Message(string opcode) {
 
-	this->message = opcode;
+	this->opcode = opcode;
+
+	this->outMessage = opcode;
 
 	if(MessageOpCode::numArgs(opcode) == 1){
-		message = message + "/1";
-	}
-	string text = "120";
-	if(MessageOpCode::numArgs(opcode) == 2){
-		message = message + "/VAL"+"/" + text;
+		outMessage = outMessage + "/1";
 	}
 
-	message = message + ";";
+	outMessage = outMessage + "/;";
+    
+}
+
+Message::Message(string opcode, string message) {
+
+	this->opcode = opcode;
+
+	MessageOpCode dummy(opcode);
+    MessageOpCode *inst;
+    inst = &dummy;
+    this->instOpcode = inst->MessageOpCode::getOpCode();
+    cout<<this->instOpcode<<endl;
+
+	this->length = htonl(message.size());
+	this->outMessage = opcode;
+
+	if(MessageOpCode::numArgs(opcode) == 1){
+		outMessage = outMessage + "/1";
+	}
+
+	if(MessageOpCode::numArgs(opcode) == 2){
+		outMessage = outMessage + "/VAL/"+ to_string(message.size()) + "/" + message;
+	}
+
+	outMessage = outMessage + "/;";
+	this->tokens = split(outMessage,'/');
     
 }
 
 string Message::buildMessage(){
 
+    return outMessage;
 
-    return message;
 }
 
-int Message::decodeMessage(string inMessage){
+void Message::decodeMessage(string inMessage){
 
-	return 0;
+	this->tokens = split(inMessage,'/');
+
 }
 
-MessageOpCode Message::getOpCode(){
-
-	return MessageOpCode("ACK");
+InstructionCode Message::getOpCode(){
+	return this->instOpcode;
 }
 
 MessageType Message::getType(){
 
-	return MessageType("ACK");
+	return MessageType(tokens[1]);
 }
 
 string Message::getInfo(){
+	return this->tokens[2];
+}
 
-	return 0;
+uint32_t Message::getLength(){
+	return this->length;
 }
 
 string Message::toString(){
-
+	return this->outMessage;
 }
 
-vector<string> &split(const string &s, char delim, vector<string> &elems) {
+vector<string> &Message::split(const string &s, char delim, vector<string> &elems) {
     stringstream ss(s);
     string item;
     while (getline(ss, item, delim)) {
@@ -72,7 +103,7 @@ vector<string> &split(const string &s, char delim, vector<string> &elems) {
 }
 
 
-vector<string> split(const string &s, char delim) {
+vector<string> Message::split(const string s, char delim) {
     vector<string> elems;
     split(s, delim, elems);
     return elems;
