@@ -34,7 +34,7 @@ class Message {
         string getInfo();
 
         string toString();
-        Message toMessage(string);
+        void toMessage(string);
         
         virtual ~Message();
 

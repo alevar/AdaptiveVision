@@ -108,6 +108,15 @@ vector<string> Message::split(const string s, char delim) {
     return elems;
 }
 
+void Message::toMessage(string stringData){
+	this->tokens = split(stringData,'/');
+
+	MessageOpCode dummy(tokens[0]);
+	MessageOpCode *inst;
+    inst = &dummy;
+
+	this->instOpcode = inst->MessageOpCode::getOpCode();
+}
 
 Message::~Message() {
 }

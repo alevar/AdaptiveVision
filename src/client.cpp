@@ -87,13 +87,23 @@ int main(int argc , char *argv[])
     instructionStack.push(initialOpcode);
     InstructionCode workingOpcode;
 
+    bool waitRecv;
+    string newData;
+
 
     while(true){
 
         // opcode = inst->MessageOpCode::getOpCode();
 
         workingOpcode = instructionStack.pop();
-        instructionStack.push(initialOpcode);
+
+        // The problem is that the receive operation is late
+        // Need to have a bool condition that says if a send was submitted the opration of the application
+        // should be halted before receive happend
+
+        // needs to take into account the difference between different OpCodes - some will not require a response
+        // from the server
+        
 
         switch(workingOpcode){
             case PUT:
@@ -106,8 +116,30 @@ int main(int argc , char *argv[])
                 cout << "CASE: GET" << endl;
                 uint32_t dataLength = newmessage.getLength();
                 string dataToSend = newmessage.getInfo();
-                send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
+                // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
                 send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
+                waitRecv = true;
+
+                while(waitRecv){
+
+                    if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
+                    {
+                        perror("recv()");
+                        exit(1);
+                    }
+                    else
+                        buf[numbytes] = '\0';
+                        newData = buf;
+                        cout << "Client Received: " << newData << endl;
+                        waitRecv = false;
+
+                }
+
+                Message newTestMessage;
+                newTestMessage.toMessage(newData);
+                cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
+
+                instructionStack.push(newTestMessage.getOpCode());
                 break;
             }
             case ACK:

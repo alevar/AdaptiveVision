@@ -17,6 +17,8 @@
 #include "MessageOpCode.h"
 #include "Message.h"
 #include "PID.h"
+#include "ActionCode.h"
+#include "MessageStack.h"
 
 using namespace std;
 
@@ -73,13 +75,16 @@ void process_get(int socket, char *client_ip, map<string,vector<int> > sampleAns
 
     else{
         
-        char const *message = "The new Value is ready to be sent";
-        write(socket , message , strlen(message));
-        cout<<"The new Value is ready to be sent\n";
-        string x = to_string(sampleAnswer[string(client_ip)][1]);
-        char const *c = x.c_str();
+        // char const *message = "The new Value is ready to be sent";
+        // write(socket , message , strlen(message));
+        // cout<<"The new Value is ready to be sent\n";
+        // string x = to_string(sampleAnswer[string(client_ip)][1]);
+        // char const *c = x.c_str();
 
-        write(socket , c , strlen(c));
+        Message newmessage("GET","hello world");
+        string newTest = newmessage.toString();
+
+        send(socket,newTest.c_str(),newTest.size(),MSG_CONFIRM);
 
         cout<<"New value sent\n";
 
