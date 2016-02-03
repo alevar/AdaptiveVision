@@ -23,17 +23,33 @@ execution order for the client:
 #include <netdb.h> 
 #include <arpa/inet.h> //inet_addr
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/flann/miniflann.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/photo/photo.hpp"
+#include "opencv2/video/video.hpp"
+#include "opencv2/features2d/features2d.hpp"
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/ml/ml.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/core_c.h"
+#include "opencv2/highgui/highgui_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
+
 #include "MessageOpCode.h"
 #include "Message.h"
 #include "PID.h"
 #include "ActionCode.h"
 #include "MessageStack.h"
+#include "MessageException.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
 #define MAXDATASIZE 300 // max number of bytes
 
 using namespace std;
+using namespace cv;
 
 int main(int argc , char *argv[])
 {
@@ -41,7 +57,32 @@ int main(int argc , char *argv[])
     int socket_desc;
     struct sockaddr_in server;
 
-    char *message;
+    int numbytes;
+    char buf[MAXDATASIZE];
+
+    Message newmessage("GET","hello world");
+    InstructionCode initialOpcode;
+    InstructionCode workingOpcode;
+    MessageStack instructionStack(10);
+
+    bool waitRecv;
+    string newData;
+
+    uint32_t dataLength;
+    string dataToSend;
+
+    Message newTestMessage;
+    Message testMessage("NEW_VALUE", "hello world");
+
+    VideoCapture source(0); // open the default camera
+    if(!source.isOpened())  // check if we succeeded
+        return -1;
+
+    Mat image;
+    source >> image;
+
+    image = (image.reshape(0,1));
+    int  imgSize = image.total()*image.elemSize();
      
     //Create socket
     socket_desc = socket(AF_INET , SOCK_STREAM , 0);
@@ -63,9 +104,6 @@ int main(int argc , char *argv[])
      
     puts("Connected\n");
 
-    int numbytes;
-    char buf[MAXDATASIZE];
-
     if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
     {
         perror("recv()");
@@ -77,18 +115,11 @@ int main(int argc , char *argv[])
 
     // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
     // send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
-
     // write(socket_desc , test , test.size());
 
-    Message newmessage("GET","hello world");
-    InstructionCode initialOpcode = newmessage.getOpCode();
-
-    MessageStack instructionStack(10);
-    instructionStack.push(initialOpcode);
-    InstructionCode workingOpcode;
-
-    bool waitRecv;
-    string newData;
+    newTestMessage.toMessage(buf);
+    cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
+    instructionStack.push(newTestMessage.getOpCode());
 
 
     while(true){
@@ -114,10 +145,12 @@ int main(int argc , char *argv[])
             case GET:
             {
                 cout << "CASE: GET" << endl;
-                uint32_t dataLength = newmessage.getLength();
-                string dataToSend = newmessage.getInfo();
+                dataLength = newmessage.getLength();
+                dataToSend = newmessage.getInfo();
                 // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
-                send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
+                // send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
+                send(socket_desc, image.data, imgSize, 0);
+                
                 waitRecv = true;
 
                 while(waitRecv){
@@ -135,7 +168,6 @@ int main(int argc , char *argv[])
 
                 }
 
-                Message newTestMessage;
                 newTestMessage.toMessage(newData);
                 cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
 
@@ -156,7 +188,6 @@ int main(int argc , char *argv[])
             {
                 cout << "CASE: NEW_VALUE" << endl;
 
-                Message testMessage("NEW_VALUE", "hello world");
                 string test1 = testMessage.toString();
                 cout<<test1<<endl<<endl;
 
@@ -176,6 +207,31 @@ int main(int argc , char *argv[])
             case READY:
             {
                 cout << "CASE: READY" << endl;
+                dataLength = newmessage.getLength();
+                dataToSend = newmessage.getInfo();
+                // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
+                send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
+                waitRecv = true;
+
+                while(waitRecv){
+
+                    if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
+                    {
+                        perror("recv()");
+                        exit(1);
+                    }
+                    else
+                        buf[numbytes] = '\0';
+                        newData = buf;
+                        cout << "Client Received: " << newData << endl;
+                        waitRecv = false;
+
+                }
+
+                newTestMessage.toMessage(newData);
+                cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
+
+                instructionStack.push(newTestMessage.getOpCode());
                 // Transmit the information to the server as the next package
                 break;
             }

@@ -14,13 +14,29 @@
 #include <vector>
 #include <string>
 
+#include "opencv2/core/core.hpp"
+#include "opencv2/flann/miniflann.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/photo/photo.hpp"
+#include "opencv2/video/video.hpp"
+#include "opencv2/features2d/features2d.hpp"
+#include "opencv2/objdetect/objdetect.hpp"
+#include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/ml/ml.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/core_c.h"
+#include "opencv2/highgui/highgui_c.h"
+#include "opencv2/imgproc/imgproc_c.h"
+
 #include "MessageOpCode.h"
 #include "Message.h"
 #include "PID.h"
 #include "ActionCode.h"
 #include "MessageStack.h"
+#include "MessageException.h"
 
 using namespace std;
+using namespace cv;
 
 #define PORT    1234        // Port used by the server service
 #define BACKLOG 1           // Number of connections to queue
@@ -42,7 +58,7 @@ void writeDB(){
 
 // Write a function to pull respective information from the database
 
-void process_get(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
+void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
 
     if(sampleAnswer.count(string(client_ip)) == 0){
 
@@ -92,7 +108,7 @@ void process_get(int socket, char *client_ip, map<string,vector<int> > sampleAns
 
 }
 
-void process_put(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
+void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
     // if() // check if the client_ip is in the map
 
     char const *message = "Ready to receive information";
@@ -188,7 +204,11 @@ int main(int argc , char *argv[])
                 case 0: // Child
                     {
                         bool connectionStatus = true;
-                        char const *message;
+                        Message message("READY","hi sexy");
+                        string dataToSend = message.toString();
+                        cout << "HI SEXY:::::::::"<<dataToSend<< endl;
+                        // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
+                        send(childSocket,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
 
                         while (connectionStatus){
 
@@ -200,10 +220,7 @@ int main(int argc , char *argv[])
                             int client_port = ntohs(client.sin_port);
                             puts("Client IP is: ");
                             puts(client_ip);
-                             
-                            //Reply to the client
-                            message = "Hello Client , What type of request would you like me to process\n";
-                            write(childSocket , message , strlen(message));
+
                             cout<<"ready to receive action\n";
 
                             int numbytes;
@@ -229,7 +246,7 @@ int main(int argc , char *argv[])
 
                                         cout<<sampleAnswer[string(client_ip)][1]<<endl;
 
-                                        process_get(childSocket, client_ip, sampleAnswer);
+                                        processGet(childSocket, client_ip, sampleAnswer);
                                         // Would you like me to do anything else for you?
                                         // if yes ==> do another iteration keeping connectionStatus = true
                                         // if no ==> set connection status = false
@@ -239,7 +256,7 @@ int main(int argc , char *argv[])
                                 case 1: // PUT
                                     {
                                         cout<<"second process\n";
-                                        process_put(childSocket, client_ip, sampleAnswer);
+                                        processPut(childSocket, client_ip, sampleAnswer);
                                         // Would you like me to do anything else for you?
                                         // if yes ==> do another iteration keeping connectionStatus = true
                                         // if no ==> set connection status = false
