@@ -46,6 +46,36 @@ using namespace cv;
 #define DEFAULT_SAT 3       // Default Saturation
 #define DEFAULT_VAL 3       // Default Value
 
+
+
+/*=====================================================
+=========== EXAMPLE OF RECEIVENG OPENCV MAT ===========
+=====================================================*/
+
+
+// Mat  img = Mat::zeros( height,width, CV_8UC3);
+// int  imgSize = img.total()*img.elemSize();
+// uchar sockData[imgSize];
+
+//  //Receive data here
+
+// for (int i = 0; i < imgSize; i += bytes) {
+//     if ((bytes = recv(connectSock, sockData +i, imgSize  - i, 0)) == -1) {
+//         quit("recv failed", 1);
+//     }
+// }
+
+//  // Assign pixel value to img
+
+// int ptr=0;
+// for (int i = 0;  i < img.rows; i++) {
+//     for (int j = 0; j < img.cols; j++) {                                     
+//         img.at<cv::Vec3b>(i,j) = cv::Vec3b(sockData[ptr+ 0],sockData[ptr+1],sockData[ptr+2]);
+//         ptr=ptr+3;
+//     }
+// }
+
+
 void write_log(){
 
 }

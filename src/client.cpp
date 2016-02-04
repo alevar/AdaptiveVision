@@ -139,11 +139,78 @@ int main(int argc , char *argv[])
         switch(workingOpcode){
             case PUT:
             {
+                /*=====================================================
+                ============== SUBMITTING A PUT REQUEST ===============
+                =======================================================
+                ===     Submit: PUT/type/len;
+                =======================================================
+                =========== RECEIVING A RESPONSE FROM PUT =============
+                =======================================================
+                === 1. ==> wait for ACK/len/;
+                === 2. ==> push ACK to instructionStack
+                =======================================================
+                ================ INSIDE THE ACK CASE ==================
+                =======================================================
+                === 1. ==> verify the original length to the one received by the server
+                =======================================================
+                ============ EXAMPLE OF SENDING OPENCV MAT ============
+                =======================================================
+                Mat frame;
+                frame = (frame.reshape(0,1)); // to make it continuous
+
+                int  imgSize = frame.total()*frame.elemSize();
+
+                // Send data here
+                bytes = send(clientSock, frame.data, imgSize, 0))
+                =====================================================*/
+
                 cout << "CASE: PUT" << endl;
                 break;
             }
             case GET:
             {
+
+                /*=====================================================
+                ============== SUBMITTING A GET REQUEST ===============
+                =======================================================
+                ===     Submit: GET/type/;
+                =======================================================
+                =========== RECEIVING A RESPONSE FROM GET =============
+                =======================================================
+                === 1. ==> wait for LEN/len/;
+                === 2. ==> push LEN to instructionStack
+                =======================================================
+                ================ INSIDE THE LEN CASE ==================
+                =======================================================
+                === 1. ==> prepare to receive a new message of the specified length
+                === 2. ==> receive NEW_VALUE/new value/;
+                === 3. ==> push NEW_VALUE to instructionStack
+                =======================================================
+                =========== EXAMPLE OF RECEIVENG OPENCV MAT ===========
+                =======================================================
+                // Mat  img = Mat::zeros( height,width, CV_8UC3);
+                // int  imgSize = img.total()*img.elemSize();
+                // uchar sockData[imgSize];
+
+                //  //Receive data here
+
+                // for (int i = 0; i < imgSize; i += bytes) {
+                //     if ((bytes = recv(connectSock, sockData +i, imgSize  - i, 0)) == -1) {
+                //         quit("recv failed", 1);
+                //     }
+                // }
+
+                //  // Assign pixel value to img
+
+                // int ptr=0;
+                // for (int i = 0;  i < img.rows; i++) {
+                //     for (int j = 0; j < img.cols; j++) {                                     
+                //         img.at<cv::Vec3b>(i,j) = cv::Vec3b(sockData[ptr+ 0],sockData[ptr+1],sockData[ptr+2]);
+                //         ptr=ptr+3;
+                //     }
+                // }
+                =====================================================*/
+
                 cout << "CASE: GET" << endl;
                 dataLength = newmessage.getLength();
                 dataToSend = newmessage.getInfo();
@@ -250,6 +317,12 @@ int main(int argc , char *argv[])
             {
                 cout << "CASE: AGAIN" << endl;
                 // resubmit the previous request
+                break;
+            }
+            case LEN:
+            {
+                cout << "CASE: LENGTH" << endl;
+                // receive the length of the comming package
                 break;
             }
             case TIME:
