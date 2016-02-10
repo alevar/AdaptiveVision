@@ -12,6 +12,13 @@ execution order for the client:
 
 ==================================================*/
 
+/*====================================================================
+=========================== FULL PROCEDURE ===========================
+======================================================================
+=== 1. ==> Wait for the READY/; signal from the server
+=== 2. ==> 
+====================================================================*/
+
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
@@ -22,6 +29,7 @@ execution order for the client:
 #include <netinet/in.h>
 #include <netdb.h> 
 #include <arpa/inet.h> //inet_addr
+#include <unordered_map>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -46,10 +54,18 @@ execution order for the client:
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
-#define MAXDATASIZE 300 // max number of bytes
+#define MAXDATASIZE 3000000 // max number of bytes
 
 using namespace std;
 using namespace cv;
+
+void processGet(){
+
+}
+
+void processPut(){
+
+}
 
 int main(int argc , char *argv[])
 {
@@ -57,12 +73,16 @@ int main(int argc , char *argv[])
     int socket_desc;
     struct sockaddr_in server;
 
+    bool connectionStatus = true;
+
     int numbytes;
     char buf[MAXDATASIZE];
 
     Message newmessage("GET","hello world");
+    Message getMessage("GET");
     InstructionCode initialOpcode;
     InstructionCode workingOpcode;
+    Message workingMessage;
     MessageStack instructionStack(10);
 
     bool waitRecv;
@@ -70,9 +90,14 @@ int main(int argc , char *argv[])
 
     uint32_t dataLength;
     string dataToSend;
+    string getData;
+    int finalLenValue;
+    string finalGetValue;
 
     Message newTestMessage;
     Message testMessage("NEW_VALUE", "hello world");
+
+    Message newReady("READY");
 
     VideoCapture source(0); // open the default camera
     if(!source.isOpened())  // check if we succeeded
@@ -104,6 +129,12 @@ int main(int argc , char *argv[])
      
     puts("Connected\n");
 
+    // The RECV statement below will not let the application advance unless a ready status was received
+
+    // Need to write a way to make sure a READY always gets received to begin the protocol
+    // Otherwise if first RECV != READY it should wait for READY
+    // Or perhaps it can ask the server if it is READY
+
     if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
     {
         perror("recv()");
@@ -111,7 +142,7 @@ int main(int argc , char *argv[])
     }
     else
         buf[numbytes] = '\0';
-        printf("Client-Received: %s", buf);
+        cout << "Client Received: " << buf << endl;
 
     // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
     // send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
@@ -119,14 +150,16 @@ int main(int argc , char *argv[])
 
     newTestMessage.toMessage(buf);
     cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
-    instructionStack.push(newTestMessage.getOpCode());
+    instructionStack.push(newTestMessage);
 
 
-    while(true){
+    while(connectionStatus){
 
         // opcode = inst->MessageOpCode::getOpCode();
 
-        workingOpcode = instructionStack.pop();
+        workingMessage = instructionStack.pop();
+
+        workingOpcode = workingMessage.getOpCode();
 
         // The problem is that the receive operation is late
         // Need to have a bool condition that says if a send was submitted the opration of the application
@@ -173,7 +206,7 @@ int main(int argc , char *argv[])
                 /*=====================================================
                 ============== SUBMITTING A GET REQUEST ===============
                 =======================================================
-                ===     Submit: GET/type/;
+                === 1. ==> submit: GET/;
                 =======================================================
                 =========== RECEIVING A RESPONSE FROM GET =============
                 =======================================================
@@ -183,8 +216,9 @@ int main(int argc , char *argv[])
                 ================ INSIDE THE LEN CASE ==================
                 =======================================================
                 === 1. ==> prepare to receive a new message of the specified length
-                === 2. ==> receive NEW_VALUE/new value/;
-                === 3. ==> push NEW_VALUE to instructionStack
+                === 2. ==> send READY/; signal to the server
+                === 3. ==> receive NEW_VALUE/new value/;
+                === 4. ==> push NEW_VALUE to instructionStack
                 =======================================================
                 =========== EXAMPLE OF RECEIVENG OPENCV MAT ===========
                 =======================================================
@@ -212,11 +246,13 @@ int main(int argc , char *argv[])
                 =====================================================*/
 
                 cout << "CASE: GET" << endl;
-                dataLength = newmessage.getLength();
-                dataToSend = newmessage.getInfo();
+
+                getData = getMessage.toString();
+                send(socket_desc,getData.c_str(),getData.size(),MSG_CONFIRM);
+
                 // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
                 // send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
-                send(socket_desc, image.data, imgSize, 0);
+                // send(socket_desc, image.data, imgSize, 0);
                 
                 waitRecv = true;
 
@@ -236,9 +272,10 @@ int main(int argc , char *argv[])
                 }
 
                 newTestMessage.toMessage(newData);
-                cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
+                cout << "new OPCODE is: " << newTestMessage.getOpCode() << " in the MESSAGE: " << newData << endl;
 
-                instructionStack.push(newTestMessage.getOpCode());
+                instructionStack.push(newTestMessage);
+                // connectionStatus = false;
                 break;
             }
             case ACK:
@@ -255,9 +292,15 @@ int main(int argc , char *argv[])
             {
                 cout << "CASE: NEW_VALUE" << endl;
 
-                string test1 = testMessage.toString();
-                cout<<test1<<endl<<endl;
+                cout << workingMessage.toString() << endl;
 
+                cout << "HI " << workingMessage.getInfo() << endl;
+
+                // finalGetValue = stoi(workingMessage.getInfo(),nullptr);
+
+                // cout << "FINAL GET VALUE: " << finalGetValue << endl;
+
+                connectionStatus = false;
                 break;
             }
             case NOTHING:
@@ -274,31 +317,36 @@ int main(int argc , char *argv[])
             case READY:
             {
                 cout << "CASE: READY" << endl;
-                dataLength = newmessage.getLength();
-                dataToSend = newmessage.getInfo();
+
+                InstructionCode testCode;
+                Message testOpCode("GET","lul");
+                testCode = testOpCode.getOpCode();                
+                instructionStack.push(testOpCode);
+
+                // dataLength = newmessage.getLength();
+                // dataToSend = newmessage.getInfo();
                 // send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
-                send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
-                waitRecv = true;
+                // send(socket_desc,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
+                // waitRecv = true;
 
-                while(waitRecv){
+                // while(waitRecv){
 
-                    if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
-                    {
-                        perror("recv()");
-                        exit(1);
-                    }
-                    else
-                        buf[numbytes] = '\0';
-                        newData = buf;
-                        cout << "Client Received: " << newData << endl;
-                        waitRecv = false;
+                //     if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
+                //     {
+                //         perror("recv()");
+                //         exit(1);
+                //     }
+                //     else
+                //         buf[numbytes] = '\0';
+                //         newData = buf;
+                //         cout << "Client Received: " << newData << endl;
+                //         waitRecv = false;
 
-                }
+                // }
 
-                newTestMessage.toMessage(newData);
-                cout << "new OPCODE is:     " << newTestMessage.getOpCode() << "    in the MESSAGE: " << newData << endl;
+                // newTestMessage.toMessage(newData);
+                // cout << "new OPCODE is: " << newTestMessage.getOpCode() << " in the MESSAGE: " << newData << endl;
 
-                instructionStack.push(newTestMessage.getOpCode());
                 // Transmit the information to the server as the next package
                 break;
             }
@@ -321,8 +369,46 @@ int main(int argc , char *argv[])
             }
             case LEN:
             {
-                cout << "CASE: LENGTH" << endl;
+                cout << "CASE: LEN" << endl;
+
+                finalLenValue = stoi(workingMessage.getInfo(),nullptr);
+
+                send(socket_desc,newReady.toString().c_str(),newReady.toString().size(),MSG_CONFIRM);
+                cout << "Ready To receive new value: " << dataLength << endl;
+
+                waitRecv = true;
+
+                while(waitRecv){
+
+                    if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
+                    {
+                        perror("recv()");
+                        exit(1);
+                    }
+
+                    else{
+
+                        buf[numbytes] = '\0';
+                        newData = buf;
+                        cout << "Client Received: " << newData << endl;
+
+                        finalGetValue = finalGetValue + newData;
+
+                        if(finalGetValue.size() >= finalLenValue){
+
+                            waitRecv = false;
+
+                        }
+                    }
+                }
+
+                newTestMessage.toMessage(newData);
+                cout << "new OPCODE is: " << newTestMessage.getOpCode() << " in the MESSAGE: " << newData << endl;
+
+                instructionStack.push(newTestMessage);
+
                 // receive the length of the comming package
+                
                 break;
             }
             case TIME:
