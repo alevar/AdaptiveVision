@@ -34,6 +34,7 @@
 #include "PID.h"
 #include "ActionCode.h"
 #include "MessageStack.h"
+#include "MessageQueue.h"
 #include "MessageException.h"
 
 using namespace std;
@@ -145,9 +146,8 @@ void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
         int testInt = sample.size();
 
         Message newmessage("LEN",to_string(testInt));
-        cout << "LEN: " << newmessage.toString() << endl;
+        cout << "LEN: " << testInt << endl;
 
-        // Message newmessage("GET","hello world");
         string newTest = newmessage.toString();
 
         send(socket,newTest.c_str(),newTest.size(),MSG_CONFIRM);
@@ -179,7 +179,7 @@ void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
             case READY:
             {
                 cout << "READY" << endl;
-                Message newValueMessage("NEW_VALUE",sample);
+                Message newValueMessage("NEW_VALUE","300");
                 string newValueTest = newValueMessage.toString();
                 send(socket,newValueTest.c_str(),newValueTest.size(),MSG_CONFIRM);
 
@@ -233,6 +233,17 @@ void process_default(){
 
 int main(int argc , char *argv[])
 {
+
+    // VideoCapture source(0); // open the default camera
+    // if(!source.isOpened())  // check if we succeeded
+    //     return -1;
+
+    // Mat image;
+    // source >> image;
+
+    // image = (image.reshape(0,1));
+    // int  imgSize = image.total()*image.elemSize();
+
     char parrentBuffer[BUFFERLENGTH];
     int parentSocket, childSocket, addrlen;
     struct sockaddr_in server, client;
