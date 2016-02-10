@@ -22,9 +22,9 @@ class MessageStack {
 
     public:
         MessageStack(int size);
-        void push(InstructionCode val);
+        void push(Message message);
 	    int num_items() const;
-	    InstructionCode pop();
+	    Message pop();
 	    int full() const;
 	    int empty() const;
 	    void print() const;
@@ -32,8 +32,8 @@ class MessageStack {
     
     private:
 
-	    InstructionCode *bottom_;
-	    InstructionCode *top_;
+	    Message *bottom_;
+	    Message *top_;
 	    int size_;
 
 };

@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <unordered_map>
 #include <vector>
 #include <sstream>
 #include <arpa/inet.h>
@@ -17,7 +16,7 @@
 using namespace std;
 
 MessageStack::MessageStack(int N){
-	bottom_ = new InstructionCode[N];
+	bottom_ = new Message[N];
 	top_ = bottom_;
 	size_ = N;
 }
@@ -32,13 +31,13 @@ int MessageStack::num_items() const
     return (top_ - bottom_ );
 }
 
-void MessageStack::push(InstructionCode val)
+void MessageStack::push(Message message)
 {
-    *top_ = val;
+    *top_ = message;
     top_++;
 }
 
-InstructionCode MessageStack::pop()
+Message MessageStack::pop()
 {
     top_--;
     return *top_;
@@ -62,10 +61,10 @@ void MessageStack::print() const
 {
 
       cout << "Stack currently holds " << num_items() << " items: " ;        
-      for (InstructionCode *element=bottom_; element<top_; element++)
-      {
-          cout << "  " << *element;
-      }
+      // for (InstructionCode *element=bottom_; element<top_; element++)
+      // {
+      //     cout << "  " << *element;
+      // }
       cout << "\n";
     
 }
