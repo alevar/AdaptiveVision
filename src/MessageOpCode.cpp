@@ -28,6 +28,7 @@ bool create_map(unordered_map<string, InstructionCode>& m) {
     m["CONTINUE"] = CONTINUE;
     m["CONFIRM"] = CONFIRM;
     m["AGAIN"] = AGAIN;
+    m["LEN"] = LEN;
     m["TIME"] = TIME;
     return true;
 }
@@ -47,6 +48,7 @@ bool create_arg_map(unordered_map<string, int>& m) {
     m["CONTINUE"] = 0;
     m["CONFIRM"] = 1;
     m["AGAIN"] = 1;
+    m["LEN"] = 1;
     m["TIME"] = 1;
     return true;
 }
@@ -66,6 +68,7 @@ const char* opcodeNames[] = {
     "CONTINUE",   // Continue with another action?
     "CONFIRM",    // Confirm that the task was handled correctly. Followed by the code of the task
     "AGAIN",      // Try performing the last action again. Followed by the code of the action/task
+    "LEN",
     "TIME"
 };
 

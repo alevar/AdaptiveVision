@@ -20,6 +20,7 @@ enum InstructionCode {
     CONTINUE,   // Continue with another action?
     CONFIRM,    // Confirm that the task was handled correctly. Followed by the code of the task
     AGAIN,      // Try performing the last action again. Followed by the code of the action/task
+    LEN,        // Message containing the length of the incoming packet
     TIME        // How long to wait before asking again? Followed by time interval
 };
 
