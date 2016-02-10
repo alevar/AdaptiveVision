@@ -13,6 +13,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -76,6 +77,18 @@ using namespace cv;
 // }
 
 
+/*=====================================================
+============ EXAMPLE OF SENDING OPENCV MAT ============
+=======================================================
+Mat frame;
+frame = (frame.reshape(0,1)); // to make it continuous
+
+int  imgSize = frame.total()*frame.elemSize();
+
+// Send data here
+bytes = send(clientSock, frame.data, imgSize, 0))
+=====================================================*/
+
 void write_log(){
 
 }
@@ -127,12 +140,57 @@ void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
         // string x = to_string(sampleAnswer[string(client_ip)][1]);
         // char const *c = x.c_str();
 
-        Message newmessage("GET","hello world");
+        string testStr = "hello world";
+        string sample = "asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddttttttttttttttttttdddddddddddddddddddddddddddddddddddddttttttttttttttttttdddddddddddddddddddddddddddddddddddddttttttttttttttttttttttttttttttttttttttttttyyyyyyyyyyyyyyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkdddddddddddddssssssssssssssssssssssssssssssssssssssszzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhlllllllllllllllllllllllllllllllllllllllllllllr";
+        int testInt = sample.size();
+
+        Message newmessage("LEN",to_string(testInt));
+        cout << "LEN: " << newmessage.toString() << endl;
+
+        // Message newmessage("GET","hello world");
         string newTest = newmessage.toString();
 
         send(socket,newTest.c_str(),newTest.size(),MSG_CONFIRM);
 
         cout<<"New value sent\n";
+
+        char toAnalyze[BUFFERLENGTH];
+        int numbytes;
+
+        if((numbytes = recv(socket, toAnalyze, BUFFERLENGTH-1, 0)) == -1){
+            
+            perror("recv()");
+            exit(1);
+
+        }
+        else{
+
+            printf("Proceeding to retrieve the information from client\n");
+        
+        }
+         
+        toAnalyze[numbytes] = '\0';
+        printf("The following has been received: %s \n", toAnalyze);
+
+        Message switchMessage;
+        switchMessage.toMessage(toAnalyze);
+
+        switch(switchMessage.getOpCode()){
+            case READY:
+            {
+                cout << "READY" << endl;
+                Message newValueMessage("NEW_VALUE",sample);
+                string newValueTest = newValueMessage.toString();
+                send(socket,newValueTest.c_str(),newValueTest.size(),MSG_CONFIRM);
+
+                break;
+            }
+            default:
+            {
+                cout << "DEFAULT" << endl;
+                break;
+            }
+        }
 
     }
 
