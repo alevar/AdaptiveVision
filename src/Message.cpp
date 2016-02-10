@@ -84,7 +84,6 @@ Message::Message(string opcode) {
     MessageOpCode *inst;
     inst = &dummy;
     this->instOpcode = inst->MessageOpCode::getOpCode();
-    cout<<this->instOpcode<<endl;
 
 	this->outMessage = opcode;
 
@@ -104,7 +103,6 @@ Message::Message(string opcode, string message) {
     MessageOpCode *inst;
     inst = &dummy;
     this->instOpcode = inst->MessageOpCode::getOpCode();
-    cout<<this->instOpcode<<endl;
 
 	this->length = htonl(message.size());
 	this->outMessage = opcode;
@@ -184,16 +182,12 @@ void Message::toMessage(string stringData){
 
 	this->outMessage = tokens[0];
 
-	cout << "CLASS: OPCODE " << tokens[0] << endl;
-
 	if(MessageOpCode::numArgs(tokens[0]) == 1){
 		outMessage = outMessage + "/1";
-		cout << "CLASS: 1 ARGUMENT" << endl;
 	}
 
 	if(MessageOpCode::numArgs(tokens[0]) == 2){
 		outMessage = outMessage + "/VAL/"+ to_string(tokens.back().size()) + "/" + tokens.back();
-		cout << "CLASS: 2 ARGUMENTS" << endl;
 	}
 }
 
