@@ -19,38 +19,38 @@ using namespace std;
 
 class Message {
 
-    public:
+	public:
 
-        Message(string,string);
-        Message(string);
-        Message();
-        
-        string buildMessage();
-        void decodeMessage(string);
+		Message(string,string);
+		Message(string);
+		Message();
+		
+		string buildMessage();
+		void decodeMessage(string);
 
-        InstructionCode getOpCode();
-        MessageType getType();
-        uint32_t getLength();
-        string getInfo();
+		InstructionCode getOpCode();
+		MessageType getType();
+		uint32_t getLength();
+		string getInfo();
 
-        string toString();
-        void toMessage(string);
-        
-        virtual ~Message();
+		string toString();
+		void toMessage(string);
+		
+		virtual ~Message();
 
-        string opcode;		        // Opcode for the message
-        InstructionCode instOpcode;
-        int type;		             // Datatype of the message
-        uint32_t length;		      // Length of the message
+		string opcode;		        // Opcode for the message
+		InstructionCode instOpcode;
+		int type;		             // Datatype of the message
+		uint32_t length;		      // Length of the message
 
-        vector<string> tokens;
+		vector<string> tokens;
 
-        string outMessage;	             // message as an array of bytes - contains opcode, type and length
-    
-    private:
+		string outMessage;	             // message as an array of bytes - contains opcode, type and length
+	
+	private:
 
-        vector<string> &split(const string&, char, vector<string>&);
-        vector<string> split(const string, char);
+		vector<string> &split(const string&, char, vector<string>&);
+		vector<string> split(const string, char);
 
 };
 
