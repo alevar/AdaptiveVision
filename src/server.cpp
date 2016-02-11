@@ -47,7 +47,7 @@ using namespace cv;
 
 #define PORT    1234        // Port used by the server service
 #define BACKLOG 1           // Number of connections to queue
-#define BUFFERLENGTH 300    // 300 bytes
+#define BUFFERLENGTH 3000000    // 300 bytes
 
 #define DEFAULT_HUE 3       // Default Hue
 #define DEFAULT_SAT 3       // Default Saturation
@@ -225,30 +225,22 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	int width = 480;
 
 	Mat  img = Mat::zeros( height,width, CV_8UC3);
+	
 	int  imgSize = img.total()*img.elemSize();
 	uchar sockData[imgSize];
 
-	 //Receive data here
+	int bytes = 0;
 
-	for (int i = 0; i < imgSize; i += numbytes) {
-	    if ((numbytes = recv(socket, sockData +i, imgSize  - i, 0)) == -1) {
-	        perror("recv()");
-			exit(1);
-	    }
+	for (int i = 0; i < imgSize; i += bytes) {
+	    if ((bytes = recv(socket, sockData +i, imgSize  - i, 0)) == -1)
+	        exit(1);
 	}
 
-	 // Assign pixel value to img
-
-	int ptr=0;
-	for (int i = 0;  i < img.rows; i++) {
-	    for (int j = 0; j < img.cols; j++) {                                     
-	        img.at<cv::Vec3b>(i,j) = cv::Vec3b(sockData[ptr+ 0],sockData[ptr+1],sockData[ptr+2]);
-	        ptr=ptr+3;
-	    }
-	}
+	// change the last loop to below statement
+	Mat img2(Size(height, width), CV_8UC3, sockData);
 
 	namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window", img );                   // Show our image inside it.
+    imshow( "Display window", img2 );                   // Show our image inside it.
 
     waitKey(0);
 	 

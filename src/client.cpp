@@ -133,7 +133,7 @@ int main(int argc , char *argv[])
 	Mat image;
 	source >> image;
 
-	
+
 	cout << "Width : " << image.size().width << endl;
 	cout << "Height: " << image.size().height << endl;
 
@@ -267,11 +267,13 @@ int main(int argc , char *argv[])
 						exit(1);
 					}
 					else
+					{
 						buf[numbytes] = '\0';
 						incomingData = buf;
 						waitRecv = false;
 
 						cout << "READY: " << incomingData << endl;
+					}
 
 				}
 
@@ -298,12 +300,14 @@ int main(int argc , char *argv[])
 						exit(1);
 					}
 					else
+					{
 						buf[numbytes] = '\0';
 						incomingData = buf;
 						waitRecv = false;
 
 						cout << incomingData << endl;
 						interimMessage.toMessage(incomingData);
+					}
 
 				}
 
