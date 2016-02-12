@@ -5,6 +5,11 @@
 // NEED A METHOD TO COMMUNICATE CAMERA RESOLUTION AT INITIATION
 // so that the server knows what size images to expect
 
+/*==================================================
+==================================================*/
+
+// Look into compressing image data before client transmits it to the server
+
 
 #include <stdio.h>
 #include <iostream>
@@ -37,10 +42,10 @@
 #include "MessageOpCode.h"
 #include "Message.h"
 #include "PID.h"
-#include "ActionCode.h"
 #include "MessageStack.h"
 #include "MessageQueue.h"
 #include "MessageException.h"
+#include "Histogram.h"
 
 using namespace std;
 using namespace cv;
