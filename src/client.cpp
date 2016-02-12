@@ -191,7 +191,7 @@ int main(int argc , char *argv[])
 	// write(socket_desc , test , test.size());
 
 	interimMessage.toMessage(buf);
-	cout << "new OPCODE is:     " << interimMessage.getOpCode() << "    in the MESSAGE: " << incomingData << endl;
+	cout << "new OPCODE is: " << interimMessage.getOpCode() << " in the MESSAGE: " << incomingData << endl;
 	instructionStack.push(interimMessage);
 
 /*=======================================================
@@ -408,7 +408,12 @@ int main(int argc , char *argv[])
 			{
 				cout << "CASE: ACK" << endl;
 
-				connectionStatus = false;
+				InstructionCode testCode;
+				Message testOpCode("PUT","lul");
+				testCode = testOpCode.getOpCode();                
+				instructionStack.push(testOpCode);
+
+				// connectionStatus = false;
 				break;
 			}
 			case DEFAULT:

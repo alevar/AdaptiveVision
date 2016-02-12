@@ -239,10 +239,10 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	// change the last loop to below statement
 	Mat img2(Size(height, width), CV_8UC3, sockData);
 
-	namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
-    imshow( "Display window", img2 );                   // Show our image inside it.
+	// namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
+ //    imshow( "Display window", img2 );                   // Show our image inside it.
 
-    waitKey(0);
+ //    waitKey(0);
 	 
 	toAnalyze[numbytes] = '\0';
 	printf("The following has been received: %s \n", toAnalyze);
