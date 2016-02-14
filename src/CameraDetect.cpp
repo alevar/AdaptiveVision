@@ -1,4 +1,4 @@
-#include "cameraDetect.h"
+#include "CameraDetect.h"
 
 CameraDetect::CameraDetect(Mat* newFrame1, Mat* newFrame2, VideoCapture newSource1, VideoCapture newSource2){
 	frame1 = newFrame1;
