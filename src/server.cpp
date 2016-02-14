@@ -47,6 +47,7 @@
 #include "MessageException.h"
 #include "Histogram.h"
 #include "CameraDetect.h"
+#include "ObjectIdentification.h"
 
 using namespace std;
 using namespace cv;

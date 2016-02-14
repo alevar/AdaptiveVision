@@ -53,6 +53,7 @@ execution order for the client:
 #include "MessageException.h"
 #include "Histogram.h"
 #include "CameraDetect.h"
+#include "ObjectIdentification.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
