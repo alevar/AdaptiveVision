@@ -23,36 +23,36 @@ MessageStack::MessageStack(int N){
 
 MessageStack::~MessageStack()
 {
-   delete [] bottom_;
+	 delete [] bottom_;
 }
 
 int MessageStack::num_items() const
 {
-    return (top_ - bottom_ );
+		return (top_ - bottom_ );
 }
 
 void MessageStack::push(Message message)
 {
-    *top_ = message;
-    top_++;
+		*top_ = message;
+		top_++;
 }
 
 Message MessageStack::pop()
 {
-    top_--;
-    return *top_;
+		top_--;
+		return *top_;
 }
 
 
 int MessageStack::full() const
 {
-    return (num_items() >= size_);
+		return (num_items() >= size_);
 }
 
 
 int MessageStack::empty() const
 {   
-    return (num_items() <= 0);
+		return (num_items() <= 0);
 }
 
 
@@ -60,12 +60,12 @@ int MessageStack::empty() const
 void MessageStack::print() const
 {
 
-      cout << "Stack currently holds " << num_items() << " items: " ;        
-      // for (InstructionCode *element=bottom_; element<top_; element++)
-      // {
-      //     cout << "  " << *element;
-      // }
-      cout << "\n";
-    
+			cout << "Stack currently holds " << num_items() << " items: " ;        
+			// for (InstructionCode *element=bottom_; element<top_; element++)
+			// {
+			//     cout << "  " << *element;
+			// }
+			cout << "\n";
+		
 }
-    
+		
