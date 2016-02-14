@@ -153,6 +153,16 @@ void Histogram::showHist(){
 
 }
 
+vector<int> Histogram::getMin(){
+
+    return this->minValues;
+}
+
+vector<int> Histogram::getMax(){
+
+    return this->maxValues;
+}
+
 Histogram::~Histogram() {
 }
 

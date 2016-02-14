@@ -46,6 +46,12 @@ class Histogram {
 		void calcHisHSV();
 		void toHistogram(Mat);
 		void showHist();
+
+		vector<int> getMin();	// Outputs the minimum values found in the three computed histograms
+		vector<int> getMax();	// Outputs the maximum values found in the three computed histograms
+
+		vector<int> minValues;
+		vector<int> maxValues;
 		
 		virtual ~Histogram();
 
