@@ -43,12 +43,22 @@ class Histogram {
 		Histogram(Mat);
 		
 		void calcHis();
+		void calcHisHSV();
 		void toHistogram(Mat);
 		void showHist();
 		
 		virtual ~Histogram();
 
 		Mat plot;
+
+		// RGB
+
+		int Red;
+		int Green;
+		int Blue;
+		Vec3b intensityRGB;
+
+		bool hisRGB;
 
 		int HistR[MAX_BIT+1] = {0};
 	    int HistG[MAX_BIT+1] = {0};
@@ -57,8 +67,29 @@ class Histogram {
 	    Mat HistPlotR = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
 	    Mat HistPlotG = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
 	    Mat HistPlotB = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
+
+	    // HSV
+
+	    int Hue;
+		int Val;
+		int Sat;
+		Vec3b intensityHSV;
+
+	    bool hisHSV;
+
+	    int HistH[MAX_BIT+1] = {0};
+	    int HistS[MAX_BIT+1] = {0};
+	    int HistV[MAX_BIT+1] = {0};
+
+	    Mat HistPlotH = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
+	    Mat HistPlotS = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
+	    Mat HistPlotV = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
 	
 	private:
+		Mat imageHSV;
+		Mat imageRGB;
+
+		void convertRGB2HSV(Mat);
 
 };
 
