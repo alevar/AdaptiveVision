@@ -247,12 +247,7 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	Histogram histTest(img2);
 	// histTest.calcHis();
-	// histTest.showHist();
-
-	// namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
- //    imshow( "Display window", img2 );                   // Show our image inside it.
-
- //    waitKey(0);
+	histTest.showHist();
 	 
 	toAnalyze[numbytes] = '\0';
 	printf("The following has been received: %s \n", toAnalyze);
