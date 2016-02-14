@@ -6,6 +6,10 @@
 ===================== with it. =====================
 ==================================================*/
 
+// http://docs.opencv.org/2.4/doc/tutorials/imgproc/histograms/histogram_calculation/histogram_calculation.html
+// http://aishack.in/tutorials/drawing-histograms-opencv/
+// http://codereview.stackexchange.com/questions/94434/histogram-of-a-rgb-image-using-opencv
+
 #ifndef HISTOGRAM_H
 #define	HISTOGRAM_H
 
@@ -26,6 +30,8 @@
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
 
+#define MAX_BIT		256
+
 using namespace std;
 using namespace cv;
 
@@ -33,16 +39,24 @@ class Histogram {
 
 	public:
 
-		Histogram(Mat);
 		Histogram();
+		Histogram(Mat);
 		
-		string calcHis();
-
+		void calcHis();
 		void toHistogram(Mat);
+		void showHist();
 		
 		virtual ~Histogram();
 
-		string outHistogram;	             // Histogram as an array of bytes - contains opcode, type and length
+		Mat plot;
+
+		int HistR[MAX_BIT+1] = {0};
+	    int HistG[MAX_BIT+1] = {0};
+	    int HistB[MAX_BIT+1] = {0};
+
+	    Mat HistPlotR = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
+	    Mat HistPlotG = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
+	    Mat HistPlotB = Mat (500, 256, CV_8UC3, Scalar(0, 0, 0));
 	
 	private:
 
