@@ -46,6 +46,7 @@
 #include "MessageQueue.h"
 #include "MessageException.h"
 #include "Histogram.h"
+#include "CameraDetect.h"
 
 using namespace std;
 using namespace cv;
@@ -244,6 +245,10 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	// change the last loop to below statement
 	Mat img2(Size(height, width), CV_8UC3, sockData);
 
+	Histogram histTest(img2);
+	// histTest.calcHis();
+	// histTest.showHist();
+
 	// namedWindow( "Display window", WINDOW_AUTOSIZE );// Create a window for display.
  //    imshow( "Display window", img2 );                   // Show our image inside it.
 
@@ -284,6 +289,8 @@ int main(int argc , char *argv[])
 	// image = (image.reshape(0,1));
 	// int  imgSize = image.total()*image.elemSize();
 
+	int serverPort = atoi(argv[1]);
+
 	char parrentBuffer[BUFFERLENGTH];
 	int parentSocket, childSocket, addrlen;
 	struct sockaddr_in server, client;
@@ -307,7 +314,7 @@ int main(int argc , char *argv[])
 
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY; // Autofill with my ip (lcalhost)
-	server.sin_port = htons( PORT );
+	server.sin_port = htons( serverPort );
 
 	memset(&(server.sin_zero), 0, 8); // Set zero values to the rest of the server structure
 	 

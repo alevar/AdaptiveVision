@@ -52,8 +52,9 @@ execution order for the client:
 #include "MessageQueue.h"
 #include "MessageException.h"
 #include "Histogram.h"
+#include "CameraDetect.h"
 
-#define DESTINATION_ADDRESS "172.27.42.242"
+#define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
 #define MAXDATASIZE 3000000 // max number of bytes
 
@@ -90,6 +91,11 @@ int main(int argc , char *argv[])
 /*=======================================================
 ================== GLOBAL VARIABLES =====================
 =======================================================*/
+
+	const char * destinationAddress = argv[1];
+	int destinationPort = atoi(argv[2]);
+
+	cout << "Add: " << destinationAddress << " Port: " << destinationPort << endl;
 
 	int socket_desc;
 	struct sockaddr_in server;
@@ -153,9 +159,9 @@ int main(int argc , char *argv[])
 		cout << "COULD NOT CREATE SOCKET" << endl;
 	}
 		 
-	server.sin_addr.s_addr = inet_addr(DESTINATION_ADDRESS);
+	server.sin_addr.s_addr = inet_addr(destinationAddress);
 	server.sin_family = AF_INET;
-	server.sin_port = htons( PORT );
+	server.sin_port = htons( destinationPort );
 
 	if (connect(socket_desc , (struct sockaddr *)&server , sizeof(server)) < 0)
 	{
