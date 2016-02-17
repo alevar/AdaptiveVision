@@ -48,6 +48,7 @@
 #include "Histogram.h"
 #include "CameraDetect.h"
 #include "ObjectIdentification.h"
+#include "MessageCompress.h"
 
 using namespace std;
 using namespace cv;
