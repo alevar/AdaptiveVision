@@ -63,22 +63,19 @@ execution order for the client:
 using namespace std;
 using namespace cv;
 
-void processGet(){
-
-}
-
-void processPut(){
-
-}
-
-void processEnd(){
-
-	// Meant to set connectionStatus = false; and empty all the holders for the used values
-
-}
+void readme();
+void processGet();
+void processPut();
+void processEnd();
 
 int main(int argc , char *argv[])
 {
+
+	if( argc != 3 )
+  	{
+  		readme();
+  		return -1;
+  	}
 
 /*=======================================================
 ======================= QUEUE TEST ======================
@@ -140,7 +137,6 @@ int main(int argc , char *argv[])
 
 	Mat image;
 	source >> image;
-
 
 	cout << "Width : " << image.size().width << endl;
 	cout << "Height: " << image.size().height << endl;
@@ -603,4 +599,23 @@ int main(int argc , char *argv[])
 	}
 	 
 	return 0;
+}
+
+void readme()
+{
+	std::cout << "Need additional arguments: IP PORT" << std::endl;
+}
+
+void processGet(){
+
+}
+
+void processPut(){
+
+}
+
+void processEnd(){
+
+	// Meant to set connectionStatus = false; and empty all the holders for the used values
+
 }

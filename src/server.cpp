@@ -61,220 +61,20 @@ using namespace cv;
 #define DEFAULT_SAT 3       // Default Saturation
 #define DEFAULT_VAL 3       // Default Value
 
-
-
-/*=====================================================
-=========== EXAMPLE OF RECEIVENG OPENCV MAT ===========
-=====================================================*/
-
-
-// Mat  img = Mat::zeros( height,width, CV_8UC3);
-// int  imgSize = img.total()*img.elemSize();
-// uchar sockData[imgSize];
-
-//  //Receive data here
-
-// for (int i = 0; i < imgSize; i += bytes) {
-//     if ((bytes = recv(connectSock, sockData +i, imgSize  - i, 0)) == -1) {
-//         quit("recv failed", 1);
-//     }
-// }
-
-//  // Assign pixel value to img
-
-// int ptr=0;
-// for (int i = 0;  i < img.rows; i++) {
-//     for (int j = 0; j < img.cols; j++) {                                     
-//         img.at<cv::Vec3b>(i,j) = cv::Vec3b(sockData[ptr+ 0],sockData[ptr+1],sockData[ptr+2]);
-//         ptr=ptr+3;
-//     }
-// }
-
-
-/*=====================================================
-============ EXAMPLE OF SENDING OPENCV MAT ============
-=======================================================
-Mat frame;
-frame = (frame.reshape(0,1)); // to make it continuous
-
-int  imgSize = frame.total()*frame.elemSize();
-
-// Send data here
-bytes = send(clientSock, frame.data, imgSize, 0))
-=====================================================*/
-
-void write_log(){
-
-}
-
-// Write the information received from the client to the database
-
-void writeDB(){
-
-}
-
-// Write a function to pull respective information from the database
-
-void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
-
-	if(sampleAnswer.count(string(client_ip)) == 0){
-
-		string clientAddress = string(client_ip);
-		vector<int> defaultHSV = {DEFAULT_HUE,DEFAULT_SAT};
-
-		sampleAnswer.insert ( pair<string,vector<int> >(clientAddress,defaultHSV ));
-
-		char const *message = "The client has no previous history of connection";
-		write(socket , message , strlen(message));
-		cout<<"The client had no previous history of connection. Client was added to the map\n";
-
-	}
-
-	else if(sampleAnswer[string(client_ip)].size() < 2){
-
-		char const *message = "Only Default Settings available at the moment";
-		write(socket , message , strlen(message));
-		cout<<"Only Default Settings available at the moment\n";
-
-	}
-
-	else if(sampleAnswer[string(client_ip)][0] == sampleAnswer[string(client_ip)][1]){
-		
-		char const *message = "The Value has already been sent before";
-		write(socket , message , strlen(message));
-		cout<<"The Value has already been sent before\n";
-
-	}
-
-	else{
-		
-		// char const *message = "The new Value is ready to be sent";
-		// write(socket , message , strlen(message));
-		// cout<<"The new Value is ready to be sent\n";
-		// string x = to_string(sampleAnswer[string(client_ip)][1]);
-		// char const *c = x.c_str();
-
-		string testStr = "hello world";
-		string sample = "asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddttttttttttttttttttdddddddddddddddddddddddddddddddddddddttttttttttttttttttdddddddddddddddddddddddddddddddddddddttttttttttttttttttttttttttttttttttttttttttyyyyyyyyyyyyyyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkdddddddddddddssssssssssssssssssssssssssssssssssssssszzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhlllllllllllllllllllllllllllllllllllllllllllllr";
-		int testInt = sample.size();
-
-		Message newmessage("LEN",to_string(testInt));
-		cout << "LEN: " << testInt << endl;
-
-		string newTest = newmessage.toString();
-
-		send(socket,newTest.c_str(),newTest.size(),MSG_CONFIRM);
-
-		cout<<"New value sent\n";
-
-		char toAnalyze[BUFFERLENGTH];
-		int numbytes;
-
-		if((numbytes = recv(socket, toAnalyze, BUFFERLENGTH-1, 0)) == -1){
-			
-			perror("recv()");
-			exit(1);
-
-		}
-		else{
-
-			printf("Proceeding to retrieve the information from client\n");
-		
-		}
-		 
-		toAnalyze[numbytes] = '\0';
-		printf("The following has been received: %s \n", toAnalyze);
-
-		Message switchMessage;
-		switchMessage.toMessage(toAnalyze);
-
-		switch(switchMessage.getOpCode()){
-			case READY:
-			{
-				cout << "READY" << endl;
-				Message newValueMessage("NEW_VALUE","300");
-				string newValueTest = newValueMessage.toString();
-				send(socket,newValueTest.c_str(),newValueTest.size(),MSG_CONFIRM);
-
-				break;
-			}
-			default:
-			{
-				cout << "DEFAULT" << endl;
-				break;
-			}
-		}
-
-	}
-
-}
-
-void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
-	// if() // check if the client_ip is in the map
-
-	// char const *message = "Ready to receive information";
-	// write(socket , message , strlen(message));
-	// cout<<"Ready to receive information\n";
-
-	char toAnalyze[BUFFERLENGTH];
-	int numbytes;
-
-	// if((numbytes = recv(socket, toAnalyze, BUFFERLENGTH-1, 0)) == -1)
-	// {
-	// 	perror("recv()");
-	// 	exit(1);
-	// }
-	// else
-	// 	printf("Proceeding to retrieve the information from client\n");
-
-	cout << "GETTING THE IMAGE" << endl;
-
-	int height = 640;
-	int width = 480;
-
-	Mat  img = Mat::zeros( height,width, CV_8UC3);
-	
-	int  imgSize = img.total()*img.elemSize();
-	uchar sockData[imgSize];
-
-	int bytes = 0;
-
-	for (int i = 0; i < imgSize; i += bytes) {
-	    if ((bytes = recv(socket, sockData +i, imgSize  - i, 0)) == -1)
-	        exit(1);
-	}
-
-	// change the last loop to below statement
-	Mat img2(Size(height, width), CV_8UC3, sockData);
-
-	Histogram histTest(img2);
-	// histTest.calcHis();
-	histTest.showHist();
-	 
-	toAnalyze[numbytes] = '\0';
-	printf("The following has been received: %s \n", toAnalyze);
-
-	Message testm("ACK","hi");
-	string tests = testm.toString();
-
-	send(socket , tests.c_str() , tests.size(), MSG_CONFIRM);
-
-	// accept all the data from the clients
-	// assign the data from clients into arrays based on the clients IP address
-	// Communicate the stored information to the application
-	// respond with an acknowledgement that data has been stored
-	// LOG
-}
-
-void process_default(){
-	// attempt to send status of the data, whther it is currently available or not
-	// Do not repeat the attempt
-	// terminate
-	// LOG
-}
+void readme();
+void write_log();
+void writeDB();
+void processGet(int, char *, map<string,vector<int> >);
+void processPut(int, char *, map<string,vector<int> >);
+void processDefault();
 
 int main(int argc , char *argv[])
 {
+	if( argc != 2 )
+  	{
+  		readme();
+  		return -1;
+  	}
 
 	// VideoCapture source(0); // open the default camera
 	// if(!source.isOpened())  // check if we succeeded
@@ -417,7 +217,7 @@ int main(int argc , char *argv[])
 
 								default:
 									{
-										process_default();
+										processDefault();
 										// Would you like me to do anything else for you?
 										// if yes ==> do another iteration keeping connectionStatus = true
 										// if no ==> set connection status = false
@@ -438,4 +238,219 @@ int main(int argc , char *argv[])
 	 
 	return 0;
 
+}
+
+void readme()
+{
+	std::cout << "Need additional argument: PORT" << std::endl;
+}
+
+void write_log(){
+
+}
+
+// Write the information received from the client to the database
+
+void writeDB(){
+
+}
+
+/*=====================================================
+=========== EXAMPLE OF RECEIVENG OPENCV MAT ===========
+=====================================================*/
+
+
+// Mat  img = Mat::zeros( height,width, CV_8UC3);
+// int  imgSize = img.total()*img.elemSize();
+// uchar sockData[imgSize];
+
+//  //Receive data here
+
+// for (int i = 0; i < imgSize; i += bytes) {
+//     if ((bytes = recv(connectSock, sockData +i, imgSize  - i, 0)) == -1) {
+//         quit("recv failed", 1);
+//     }
+// }
+
+//  // Assign pixel value to img
+
+// int ptr=0;
+// for (int i = 0;  i < img.rows; i++) {
+//     for (int j = 0; j < img.cols; j++) {                                     
+//         img.at<cv::Vec3b>(i,j) = cv::Vec3b(sockData[ptr+ 0],sockData[ptr+1],sockData[ptr+2]);
+//         ptr=ptr+3;
+//     }
+// }
+
+
+/*=====================================================
+============ EXAMPLE OF SENDING OPENCV MAT ============
+=======================================================
+Mat frame;
+frame = (frame.reshape(0,1)); // to make it continuous
+
+int  imgSize = frame.total()*frame.elemSize();
+
+// Send data here
+bytes = send(clientSock, frame.data, imgSize, 0))
+=====================================================*/
+
+// Write a function to pull respective information from the database
+
+void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
+
+	if(sampleAnswer.count(string(client_ip)) == 0){
+
+		string clientAddress = string(client_ip);
+		vector<int> defaultHSV = {DEFAULT_HUE,DEFAULT_SAT};
+
+		sampleAnswer.insert ( pair<string,vector<int> >(clientAddress,defaultHSV ));
+
+		char const *message = "The client has no previous history of connection";
+		write(socket , message , strlen(message));
+		cout<<"The client had no previous history of connection. Client was added to the map\n";
+
+	}
+
+	else if(sampleAnswer[string(client_ip)].size() < 2){
+
+		char const *message = "Only Default Settings available at the moment";
+		write(socket , message , strlen(message));
+		cout<<"Only Default Settings available at the moment\n";
+
+	}
+
+	else if(sampleAnswer[string(client_ip)][0] == sampleAnswer[string(client_ip)][1]){
+		
+		char const *message = "The Value has already been sent before";
+		write(socket , message , strlen(message));
+		cout<<"The Value has already been sent before\n";
+
+	}
+
+	else{
+		
+		// char const *message = "The new Value is ready to be sent";
+		// write(socket , message , strlen(message));
+		// cout<<"The new Value is ready to be sent\n";
+		// string x = to_string(sampleAnswer[string(client_ip)][1]);
+		// char const *c = x.c_str();
+
+		string testStr = "hello world";
+		string sample = "asddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddttttttttttttttttttdddddddddddddddddddddddddddddddddddddttttttttttttttttttdddddddddddddddddddddddddddddddddddddttttttttttttttttttttttttttttttttttttttttttyyyyyyyyyyyyyyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkdddddddddddddssssssssssssssssssssssssssssssssssssssszzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhlllllllllllllllllllllllllllllllllllllllllllllr";
+		int testInt = sample.size();
+
+		Message newmessage("LEN",to_string(testInt));
+		cout << "LEN: " << testInt << endl;
+
+		string newTest = newmessage.toString();
+
+		send(socket,newTest.c_str(),newTest.size(),MSG_CONFIRM);
+
+		cout<<"New value sent\n";
+
+		char toAnalyze[BUFFERLENGTH];
+		int numbytes;
+
+		if((numbytes = recv(socket, toAnalyze, BUFFERLENGTH-1, 0)) == -1){
+			
+			perror("recv()");
+			exit(1);
+
+		}
+		else{
+
+			printf("Proceeding to retrieve the information from client\n");
+		
+		}
+		 
+		toAnalyze[numbytes] = '\0';
+		printf("The following has been received: %s \n", toAnalyze);
+
+		Message switchMessage;
+		switchMessage.toMessage(toAnalyze);
+
+		switch(switchMessage.getOpCode()){
+			case READY:
+			{
+				cout << "READY" << endl;
+				Message newValueMessage("NEW_VALUE","300");
+				string newValueTest = newValueMessage.toString();
+				send(socket,newValueTest.c_str(),newValueTest.size(),MSG_CONFIRM);
+
+				break;
+			}
+			default:
+			{
+				cout << "DEFAULT" << endl;
+				break;
+			}
+		}
+
+	}
+
+}
+
+void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
+	// if() // check if the client_ip is in the map
+
+	// char const *message = "Ready to receive information";
+	// write(socket , message , strlen(message));
+	// cout<<"Ready to receive information\n";
+
+	char toAnalyze[BUFFERLENGTH];
+	int numbytes;
+
+	// if((numbytes = recv(socket, toAnalyze, BUFFERLENGTH-1, 0)) == -1)
+	// {
+	// 	perror("recv()");
+	// 	exit(1);
+	// }
+	// else
+	// 	printf("Proceeding to retrieve the information from client\n");
+
+	cout << "GETTING THE IMAGE" << endl;
+
+	int height = 640;
+	int width = 480;
+
+	Mat  img = Mat::zeros( height,width, CV_8UC3);
+	
+	int  imgSize = img.total()*img.elemSize();
+	uchar sockData[imgSize];
+
+	int bytes = 0;
+
+	for (int i = 0; i < imgSize; i += bytes) {
+	    if ((bytes = recv(socket, sockData +i, imgSize  - i, 0)) == -1)
+	        exit(1);
+	}
+
+	// change the last loop to below statement
+	Mat img2(Size(height, width), CV_8UC3, sockData);
+
+	Histogram histTest(img2);
+	histTest.calcHis();
+	histTest.showHist();
+	 
+	toAnalyze[numbytes] = '\0';
+	printf("The following has been received: %s \n", toAnalyze);
+
+	Message testm("ACK","hi");
+	string tests = testm.toString();
+
+	send(socket , tests.c_str() , tests.size(), MSG_CONFIRM);
+
+	// accept all the data from the clients
+	// assign the data from clients into arrays based on the clients IP address
+	// Communicate the stored information to the application
+	// respond with an acknowledgement that data has been stored
+	// LOG
+}
+
+void processDefault(){
+	// attempt to send status of the data, whther it is currently available or not
+	// Do not repeat the attempt
+	// terminate
+	// LOG
 }
