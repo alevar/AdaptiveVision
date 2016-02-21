@@ -8,6 +8,7 @@
 // http://aishack.in/tutorials/canny-edge-detector/
 // http://www.jayrambhia.com/blog/sift-keypoint-matching-using-python-opencv/
 // http://docs.opencv.org/2.4/doc/tutorials/features2d/feature_flann_matcher/feature_flann_matcher.html
+// http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_feature2d/py_feature_homography/py_feature_homography.html
 
 // Procedure
 /*=============================================================
