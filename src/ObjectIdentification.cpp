@@ -1,4 +1,9 @@
 /*==================================================
+=========== Object Identification CLASS ============
+====================================================
+=== Class intended for matching incoming images ====
+=== against the created templates. And return   ====
+=== new HSV range values to be used by the client ==
 ==================================================*/
 
 #include <iostream>

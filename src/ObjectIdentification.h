@@ -1,7 +1,9 @@
 /*==================================================
 =========== Object Identification CLASS ============
 ====================================================
-=== Object Identification using machine learning tools
+=== Class intended for matching incoming images ====
+=== against the created templates. And return   ====
+=== new HSV range values to be used by the client ==
 ==================================================*/
 
 // http://aishack.in/tutorials/sift-scale-invariant-feature-transform-scale-space/
