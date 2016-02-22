@@ -55,6 +55,7 @@ execution order for the client:
 #include "CameraDetect.h"
 #include "ObjectIdentification.h"
 #include "MessageCompress.h"
+#include "Template.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
@@ -133,7 +134,9 @@ int main(int argc , char *argv[])
 
 	VideoCapture source(0); // open the default camera
 	if(!source.isOpened())  // check if we succeeded
+	{
 		return -1;
+	}
 
 	Mat image;
 	source >> image;

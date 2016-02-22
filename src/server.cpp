@@ -49,6 +49,7 @@
 #include "CameraDetect.h"
 #include "ObjectIdentification.h"
 #include "MessageCompress.h"
+#include "Template.h"
 
 using namespace std;
 using namespace cv;
