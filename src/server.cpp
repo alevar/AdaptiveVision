@@ -77,6 +77,8 @@ int main(int argc , char *argv[])
   		return -1;
   	}
 
+  	namedWindow("Template",1);
+
 	// VideoCapture source(0); // open the default camera
 	// if(!source.isOpened())  // check if we succeeded
 	//     return -1;
@@ -430,9 +432,14 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	// change the last loop to below statement
 	Mat img2(Size(height, width), CV_8UC3, sockData);
 
+	Template testTPL(img2);
+	Mat imageTPL = testTPL.getTemplate();
+	imshow("Template", imageTPL);
+	waitKey(0);
+
 	Histogram histTest(img2);
 	histTest.calcHis();
-	histTest.showHist();
+	// histTest.showHist();
 	 
 	toAnalyze[numbytes] = '\0';
 	printf("The following has been received: %s \n", toAnalyze);

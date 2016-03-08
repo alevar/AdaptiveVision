@@ -141,6 +141,8 @@ int main(int argc , char *argv[])
 	Mat image;
 	source >> image;
 
+	// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
+
 	cout << "Width : " << image.size().width << endl;
 	cout << "Height: " << image.size().height << endl;
 
@@ -209,6 +211,16 @@ int main(int argc , char *argv[])
 =======================================================*/
 
 	while(connectionStatus){
+
+		source >> image;
+
+		// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
+
+		cout << "Width : " << image.size().width << endl;
+		cout << "Height: " << image.size().height << endl;
+
+		image = (image.reshape(0,1));
+		int  imgSize = image.total()*image.elemSize();
 
 		// opcode = inst->MessageOpCode::getOpCode();
 
