@@ -34,9 +34,76 @@ using namespace std;
 using namespace cv;
 
 Template::Template(){
+	this->outputQuad[0] = Point2f( 0,0 );
+    this->outputQuad[1] = Point2f( 200,0);
+    this->outputQuad[2] = Point2f( 200,200);
+    this->outputQuad[3] = Point2f( 0,200  );
+    this->lambda = Mat::zeros( 200, 200, this->imageTPL_GRAY.type() );
 }
 
 Template::Template(Mat image) {
+	this->outputQuad[0] = Point2f( 0,0 );
+    this->outputQuad[1] = Point2f( 200,0);
+    this->outputQuad[2] = Point2f( 200,200);
+    this->outputQuad[3] = Point2f( 0,200  );
+    this->lambda = Mat::zeros( 200, 200, this->imageTPL_GRAY.type() );
+
+    this->inputTPL = image;
+    cv::cvtColor(inputTPL, imageTPL_GRAY, COLOR_BGR2GRAY);
+
+    this->maxMserTPL = Template::maxMser(&imageTPL_GRAY);
+    this->rect = cv::minAreaRect(maxMserTPL);
+    rect.points(points);
+
+    this->M = Template::getPerspectiveMatrix(this->points,this->rect.size);
+    this->imageTPL = Template::normalizeImage(&imageTPL_GRAY,&this->M,this->rect.size.width);
+}
+
+Mat Template::getPerspectiveMatrix(Point2f points[], Size2f size){
+    Point2f dst[] = { 
+        Point2f(0, 0), 
+        Point2f(size.width, 0), 
+        Point2f(size.width, size.width), 
+        Point2f(0, size.width) 
+    };
+    bool first = PYTHAGOR(points[0], points[1]) < PYTHAGOR(points[1], points[2]);
+    Point2f src[] = {
+        first ? points[0] : points[1],
+        first ? points[1] : points[2],
+        first ? points[2] : points[3],
+        first ? points[3] : points[0]
+    };
+    
+    return getPerspectiveTransform(src, dst);
+}
+
+Mat Template::normalizeImage(Mat *image, Mat *M ,float size){
+    Mat dst(Size(size, size), image->type());
+    cv::warpPerspective(*image, dst, *M, dst.size(), INTER_LINEAR, BORDER_DEFAULT, Scalar(1, 1, 1));
+
+    return dst;
+}
+
+vector<Point> Template::maxMser(Mat *gray)
+{
+
+    Template::detectRegions(*gray, this->msers);
+
+    if (this->msers.size() == 0) return vector<Point>();
+    
+    vector<Point> mser = max_element(this->msers.begin(), this->msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
+        return m1.size() < m2.size();
+    })[0];
+    
+    return mser;
+}
+
+void Template::detectRegions(Mat &gray, vector<vector<Point> > & vector){
+    this->mserDetector(gray, vector);
+}
+
+Mat Template::getTemplate(){
+    return this->imageTPL;
 }
 
 Template::~Template() {
