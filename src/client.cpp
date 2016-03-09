@@ -56,6 +56,7 @@ execution order for the client:
 #include "ObjectIdentification.h"
 #include "MessageCompress.h"
 #include "Template.h"
+#include "Match.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234

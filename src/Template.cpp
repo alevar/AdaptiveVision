@@ -1,3 +1,8 @@
+// BENEFITS OF USING MSER
+// Could be used to detect multiple predefined templates at the same time(simultaneously)
+// Autonomous machines being able to respond to a different number of stimuli
+
+
 /*==================================================
 ==================== TEMPLATE CLASS ================
 ====================================================
