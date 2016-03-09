@@ -24,6 +24,8 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <getopt.h>
+#include <sys/stat.h>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -50,6 +52,7 @@
 #include "ObjectIdentification.h"
 #include "MessageCompress.h"
 #include "Template.h"
+#include "Match.h"
 
 using namespace std;
 using namespace cv;
@@ -69,15 +72,77 @@ void processGet(int, char *, map<string,vector<int> >);
 void processPut(int, char *, map<string,vector<int> >);
 void processDefault();
 
+inline bool checkPath (const std::string& name) {
+	struct stat buffer;   
+	return (stat (name.c_str(), &buffer) == 0); 
+}
+
 int main(int argc , char *argv[])
 {
-	if( argc != 2 )
-  	{
-  		readme();
-  		return -1;
-  	}
+
+	int c;
+    int digit_optind = 0;
+
+    int serverPort;
+    string templatePathCheck;
+    char* templatePath;
+    Mat inputTPL;
+
+   	while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        static struct option long_options[] = {
+            {"port",     required_argument, 0,  0 },
+            {0,         0,                 0,  0 }
+        };
+
+       	c = getopt_long(argc, argv, "t:d", long_options, &option_index);
+        if (c == -1){
+        	serverPort = PORT;
+            break;
+        }
+
+       	switch (c) {
+	        case 0:
+	            serverPort = atoi(optarg);
+	            break;
+
+	       	case 't':
+	            templatePathCheck = string(optarg);
+
+	            if (!checkPath(templatePathCheck)){
+	            	cout << "File Not Found\n" << endl;
+	            	exit(EXIT_SUCCESS);
+	            }
+	            templatePath = optarg;
+	            cout << "The path was found: " << templatePath << endl;
+	            break;
+
+	       	case '?':
+	            break;
+
+	       	default:
+	            printf("?? getopt returned character code 0%o ??\n", c);
+        }
+    }
+
+   if (optind < argc) {
+        printf("non-option ARGV-elements: ");
+        while (optind < argc)
+            printf("%s ", argv[optind++]);
+        printf("\n");
+    }
 
   	namedWindow("Template",1);
+
+  	// const char* testTP = templatePath;
+
+  	inputTPL = imread(templatePath);
+
+  	Template testTPL(inputTPL);
+	Mat imageTPL = testTPL.getTemplate();
+	imshow("Template", imageTPL);
+	waitKey(0);
 
 	// VideoCapture source(0); // open the default camera
 	// if(!source.isOpened())  // check if we succeeded
@@ -88,8 +153,6 @@ int main(int argc , char *argv[])
 
 	// image = (image.reshape(0,1));
 	// int  imgSize = image.total()*image.elemSize();
-
-	int serverPort = atoi(argv[1]);
 
 	char parrentBuffer[BUFFERLENGTH];
 	int parentSocket, childSocket, addrlen;
@@ -431,11 +494,6 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	// change the last loop to below statement
 	Mat img2(Size(height, width), CV_8UC3, sockData);
-
-	Template testTPL(img2);
-	Mat imageTPL = testTPL.getTemplate();
-	imshow("Template", imageTPL);
-	waitKey(0);
 
 	Histogram histTest(img2);
 	histTest.calcHis();
