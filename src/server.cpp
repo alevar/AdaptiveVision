@@ -126,7 +126,7 @@ int main(int argc , char *argv[])
         }
     }
 
-   if (optind < argc) {
+   	if (optind < argc) {
         printf("non-option ARGV-elements: ");
         while (optind < argc)
             printf("%s ", argv[optind++]);
@@ -141,8 +141,8 @@ int main(int argc , char *argv[])
 
   	Template testTPL(inputTPL);
 	Mat imageTPL = testTPL.getTemplate();
-	imshow("Template", imageTPL);
-	waitKey(0);
+	// imshow("Template", imageTPL);
+	// waitKey(0);
 
 	// VideoCapture source(0); // open the default camera
 	// if(!source.isOpened())  // check if we succeeded
@@ -498,6 +498,11 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	Histogram histTest(img2);
 	histTest.calcHis();
 	// histTest.showHist();
+
+	Template testTPL(img2);
+	Mat imageTPL = testTPL.getTemplate();
+	// imshow("Template", imageTPL);
+	// waitKey(0);
 	 
 	toAnalyze[numbytes] = '\0';
 	printf("The following has been received: %s \n", toAnalyze);
