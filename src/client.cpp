@@ -28,8 +28,10 @@ execution order for the client:
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
-#include <arpa/inet.h> //inet_addr
+#include <arpa/inet.h>
 #include <unordered_map>
+#include <getopt.h>
+#include <sys/stat.h>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -73,11 +75,59 @@ void processEnd();
 int main(int argc , char *argv[])
 {
 
-	if( argc != 3 )
-  	{
-  		readme();
-  		return -1;
-  	}
+	int c;
+    int digit_optind = 0;
+
+    int serverPort;
+
+    int destinationPort;
+    char * destinationAddress;
+
+
+   	while (1) {
+        int this_option_optind = optind ? optind : 1;
+        int option_index = 0;
+        static struct option long_options[] = {
+            {"port",     required_argument, 0,  0 },
+            {"addr",     required_argument, 0,  0 },
+            {0,         0,                 0,  0 }
+        };
+
+       	c = getopt_long(argc, argv, "t:d:0", long_options, &option_index);
+        if (c == -1){
+        	destinationPort = PORT;
+            break;
+        }
+
+       	switch (c) {
+	        case 0:
+	            if (optarg){
+	            	if (long_options[option_index].name == "port"){
+		            	destinationPort = atoi(optarg);
+		            	printf("PORT SET TO: %s\n", optarg );
+		            }
+		            if (long_options[option_index].name == "addr"){
+		            	cout << "==========HI+++++++++++" << endl;
+		            	destinationAddress = optarg;
+		            	printf("ADDR SET TO: %s\n", destinationAddress);
+		            }
+		        }
+	            break;
+
+	       	case '?':
+	            break;
+
+	       	default:
+	            printf("?? getopt returned character code 0%o ??\n", c);
+        }
+    }
+
+   	if (optind < argc) {
+        printf("non-option ARGV-elements: ");
+        while (optind < argc)
+            printf("%s ", argv[optind++]);
+        printf("\n");
+    }
 
 /*=======================================================
 ======================= QUEUE TEST ======================
@@ -92,9 +142,6 @@ int main(int argc , char *argv[])
 /*=======================================================
 ================== GLOBAL VARIABLES =====================
 =======================================================*/
-
-	const char * destinationAddress = argv[1];
-	int destinationPort = atoi(argv[2]);
 
 	cout << "Add: " << destinationAddress << " Port: " << destinationPort << endl;
 
