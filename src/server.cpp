@@ -52,7 +52,8 @@
 #include "ObjectIdentification.h"
 #include "MessageCompress.h"
 #include "Template.h"
-#include "Match.h"
+#include "MatchMSER.h"
+#include "MatchHSV.h"
 
 using namespace std;
 using namespace cv;

@@ -58,7 +58,8 @@ execution order for the client:
 #include "ObjectIdentification.h"
 #include "MessageCompress.h"
 #include "Template.h"
-#include "Match.h"
+#include "MatchMSER.h"
+#include "MatchHSV.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
@@ -74,6 +75,21 @@ void processEnd();
 
 int main(int argc , char *argv[])
 {
+
+	MatchMSER match();
+	struct Params {
+		int delta 				= 5;
+		int minArea 			= 100;
+		int maxArea 			= 14400;
+		double maxVariation 	= 0.25;
+		double minDiversity 	= 0.2;
+		int maxEvolution 		= 200;
+		double areaThreshold 	= 1.01;
+		double minMargin 		= 0.003;
+		int edgeBlurSize 		= 0;
+	};
+
+	match.setParams(&Params.delta,&Params.minArea,&Params.maxArea,&Params.maxVariation,&Params.minDiversity,&Params.maxEvolution,&Params.areaThreshold,&Params.minMargin,&Params.edgeBlurSize);
 
 	int c;
     int digit_optind = 0;
