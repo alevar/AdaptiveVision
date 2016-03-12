@@ -81,6 +81,28 @@ inline bool checkPath (const std::string& name) {
 int main(int argc , char *argv[])
 {
 
+	MatchMSER match;
+
+	struct Params {
+		int delta 				= 5;
+		int minArea 			= 100;
+		int maxArea 			= 14400;
+		double maxVariation 	= 0.25;
+		double minDiversity 	= 0.2;
+		int maxEvolution 		= 200;
+		double areaThreshold 	= 1.01;
+		double minMargin 		= 0.003;
+		int edgeBlurSize 		= 0;
+	};
+
+	Params params;
+
+	cout << params.delta << endl;
+
+	// match.setParams(&params.delta,&params.minArea,&params.maxArea,&params.maxVariation,&params.minDiversity,
+							// &params.maxEvolution,&params.areaThreshold,&params.minMargin,&params.edgeBlurSize);
+
+
 	int c;
     int digit_optind = 0;
 

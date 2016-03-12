@@ -75,22 +75,6 @@ void processEnd();
 
 int main(int argc , char *argv[])
 {
-
-	MatchMSER match();
-	struct Params {
-		int delta 				= 5;
-		int minArea 			= 100;
-		int maxArea 			= 14400;
-		double maxVariation 	= 0.25;
-		double minDiversity 	= 0.2;
-		int maxEvolution 		= 200;
-		double areaThreshold 	= 1.01;
-		double minMargin 		= 0.003;
-		int edgeBlurSize 		= 0;
-	};
-
-	match.setParams(&Params.delta,&Params.minArea,&Params.maxArea,&Params.maxVariation,&Params.minDiversity,&Params.maxEvolution,&Params.areaThreshold,&Params.minMargin,&Params.edgeBlurSize);
-
 	int c;
     int digit_optind = 0;
 
@@ -98,7 +82,6 @@ int main(int argc , char *argv[])
 
     int destinationPort;
     char * destinationAddress;
-
 
    	while (1) {
         int this_option_optind = optind ? optind : 1;
@@ -204,6 +187,8 @@ int main(int argc , char *argv[])
 
 	Mat image;
 	source >> image;
+
+	MatchHSV match(&image);
 
 	// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
 
