@@ -34,40 +34,40 @@ using namespace std;
 using namespace cv;
 
 MatchMSER::MatchMSER(){
-	this->mserDetector(this->Params.delta, this->Params.minArea, this->Params.maxArea,this->Params.maxVariation,this->Params.minDiversity,
-			this->Params.maxEvolution,this->Params.areaThreshold, this->Params.minMargin, this->Params.edgeBlurSize);
+	// this->mserDetector(Params.delta, Params.minArea, Params.maxArea,Params.maxVariation,Params.minDiversity,
+			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
 }
 
 MatchMSER::MatchMSER(Template *imgTPL){
 	this->imgTPL = imgTPL;
-	this->mserDetector(this->Params.delta, this->Params.minArea, this->Params.maxArea,this->Params.maxVariation,this->Params.minDiversity,
-			this->Params.maxEvolution,this->Params.areaThreshold, this->Params.minMargin, this->Params.edgeBlurSize);
+	// this->mserDetector(Params.delta, Params.minArea, Params.maxArea,Params.maxVariation,Params.minDiversity,
+			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
 }
 
 void MatchMSER::setTemplate(Template *imgTPL){
 	this->imgTPL = imgTPL;
 }
 
-void MatchMSER::setParams(int *delta,int *minArea,int *maxArea,double *maxVariation,double *minDiversity,
-							int *maxEvolution,double *areaThreshold,double *minMargin,int *edgeBlurSize){
+// void MatchMSER::setParams(int *delta,int *minArea,int *maxArea,double *maxVariation,double *minDiversity,
+// 							int *maxEvolution,double *areaThreshold,double *minMargin,int *edgeBlurSize){
 
-	this->Params.delta 			= 	*delta;
-	this->Params.minArea 		= 	*minArea;
-	this->Params.maxArea 		= 	*maxArea;
-	this->Params.maxVariation 	= 	*maxVariation;
-	this->Params.minDiversity 	= 	*minDiversity;
-	this->Params.maxEvolution 	= 	*maxEvolution;
-	this->Params.areaThreshold 	= 	*areaThreshold;
-	this->Params.minMargin 		= 	*minMargin;
-	this->Params.edgeBlurSize 	= 	*edgeBlurSize;
+// 	Params.delta 			= 	*delta;
+// 	Params.minArea 		= 	*minArea;
+// 	Params.maxArea 		= 	*maxArea;
+// 	Params.maxVariation 	= 	*maxVariation;
+// 	Params.minDiversity 	= 	*minDiversity;
+// 	Params.maxEvolution 	= 	*maxEvolution;
+// 	Params.areaThreshold 	= 	*areaThreshold;
+// 	Params.minMargin 		= 	*minMargin;
+// 	Params.edgeBlurSize 	= 	*edgeBlurSize;
 
-	this->mserDetector(*delta,*minArea,*maxArea,*maxVariation,*minDiversity,*maxEvolution,*areaThreshold,*minMargin,*edgeBlurSize);
-}
+// 	this->mserDetector(*delta,*minArea,*maxArea,*maxVariation,*minDiversity,*maxEvolution,*areaThreshold,*minMargin,*edgeBlurSize);
+// }
 
 // FUNCTIONS FOR CALCULATING MSERS AND FINDING MATCHES
 
 void MatchMSER::detectRegions(Mat &gray, vector<vector<Point> > & vectorX){
-    mserDetector(gray, vectorX);
+    MatchMSER::mserDetector(gray, vectorX);
 }
 
 Mat MatchMSER::mserToMat(vector<Point> *mser)
@@ -82,7 +82,7 @@ Mat MatchMSER::mserToMat(vector<Point> *mser)
     for_each(mser->begin(), mser->end(), [&] (Point &p) 
     {
         Point newPoint = Point(p.x - minX, p.y - minY);
-        line(color, newPoint, newPoint, WHITE);
+        line(color, newPoint, newPoint, this->colors.WHITE);
     });    
     Mat gray;
     cvtColor(color, gray, CV_BGRA2GRAY);
@@ -275,7 +275,7 @@ Mat MatchMSER::processImage(Mat &image, Features featuresTPL){
     {
                 
         Rect bound = boundingRect(*bestMser);
-        rectangle(image, bound, GREEN, 3);
+        rectangle(image, bound, this->colors.GREEN, 3);
     }
 
     // if (msers.size() == 0) { 
