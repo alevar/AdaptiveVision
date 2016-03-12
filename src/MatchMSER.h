@@ -70,13 +70,18 @@ class MatchMSER {
 
 		MatchMSER();
 		MatchMSER(Template*);
+		MatchMSER(Template*, Mat*);
 		void setTemplate(Template*);
+		void setImage(Mat*);
+		void set(Template*,Mat*);
+		Mat findMatch();
+
 		// void setParams(int*,int*,int*,double*,double*,int*,double*,double*,int*);
 		virtual ~MatchMSER();	    
 	
 	private:
 		Template *imgTPL;
-		MserFeatureDetector mserDetector;
+		Mat *imgMAT;
 
 		void detectRegions(Mat &, vector<vector<Point> > &);
 		Mat mserToMat(vector<Point>*);
@@ -94,6 +99,10 @@ class MatchMSER {
 		Features features;
 		Colors colors;
 		Params params;
+
+		MserFeatureDetector mserDetector = MserFeatureDetector(params.delta, params.minArea, params.maxArea,
+												params.maxVariation, params.minDiversity, params.maxEvolution,
+												params.areaThreshold, params.minMargin, params.edgeBlurSize);
 
 };
 

@@ -44,22 +44,42 @@ MatchMSER::MatchMSER(Template *imgTPL){
 			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
 }
 
+MatchMSER::MatchMSER(Template *imgTPL, Mat *imgMAT){
+	this->imgTPL = imgTPL;
+	this->imgMAT = imgMAT;
+	// this->mserDetector(Params.delta, Params.minArea, Params.maxArea,Params.maxVariation,Params.minDiversity,
+			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
+}
+
 void MatchMSER::setTemplate(Template *imgTPL){
 	this->imgTPL = imgTPL;
+}
+
+void MatchMSER::setImage(Mat *imgMAT){
+	this->imgMAT = imgMAT;
+}
+void MatchMSER::set(Template *imgTPL, Mat *imgMAT){
+	this->imgTPL = imgTPL;
+	this->imgMAT = imgMAT;
+}
+
+Mat findMatch(){
+	Mat matched;
+	return matched;
 }
 
 // void MatchMSER::setParams(int *delta,int *minArea,int *maxArea,double *maxVariation,double *minDiversity,
 // 							int *maxEvolution,double *areaThreshold,double *minMargin,int *edgeBlurSize){
 
-// 	Params.delta 			= 	*delta;
-// 	Params.minArea 		= 	*minArea;
-// 	Params.maxArea 		= 	*maxArea;
-// 	Params.maxVariation 	= 	*maxVariation;
-// 	Params.minDiversity 	= 	*minDiversity;
-// 	Params.maxEvolution 	= 	*maxEvolution;
-// 	Params.areaThreshold 	= 	*areaThreshold;
-// 	Params.minMargin 		= 	*minMargin;
-// 	Params.edgeBlurSize 	= 	*edgeBlurSize;
+// 	this->params.delta 			= 	*delta;
+// 	this->params.minArea 		= 	*minArea;
+// 	this->params.maxArea 		= 	*maxArea;
+// 	this->params.maxVariation 	= 	*maxVariation;
+// 	this->params.minDiversity 	= 	*minDiversity;
+// 	this->params.maxEvolution 	= 	*maxEvolution;
+// 	this->params.areaThreshold 	= 	*areaThreshold;
+// 	this->params.minMargin 		= 	*minMargin;
+// 	this->params.edgeBlurSize 	= 	*edgeBlurSize;
 
 // 	this->mserDetector(*delta,*minArea,*maxArea,*maxVariation,*minDiversity,*maxEvolution,*areaThreshold,*minMargin,*edgeBlurSize);
 // }
