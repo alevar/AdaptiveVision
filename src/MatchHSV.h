@@ -29,14 +29,64 @@
 using namespace std;
 using namespace cv;
 
+struct hsvStruct {
+	int lowH = 35;			//Low pass value for Hue
+	int highH = 60;			//High pass value for Hue
+	int lowS = 50;			//Low pass value for Saturation
+	int highS = 255;		//High pass value for Saturation
+	int lowV = 50;			//Low pass value for Value
+	int highV = 255;		//High pass value for Value
+};
+
+struct Thresh {
+	int minThresh = 100;
+	int maxThresh = 255;
+};
+
+struct ParamsHSV {
+	int center_frame[2] = {320,240};  // The (x,y) coordinates of the center of the frame with the resolution 640*480
+	int radius_frame = 90;        	 // The minimum desired radius of the object being tracked
+	int area_frame = 25447;         // The desired area of the object that is being tracked
+	int radius_frame_max = 160;    // The maximum desired radius of the object being tracked
+	int area_frame_max = 80425;   // The maximum desired area of the object being tracked
+	int size[2] = {640,480};	 // The resolution of the camera
+};
+
 class MatchHSV {
 
 	public:
 
 		MatchHSV();
+		MatchHSV(Mat*);
+		void setHSV(int*,int*,int*,int*,int*,int*);
+		void setHSV(int*,int*);
+		void setThreshold(int,int);
+		void compute();
+		void show();
 		virtual ~MatchHSV();	    
 	
 	private:
+		Mat *inputIMG;
+
+		hsvStruct hsv;
+		Thresh thresh;
+		ParamsHSV params;
+
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+		Mat canny_output;
+
+		Point2f largestCenter;
+		float largestRadius;
+		vector<float> largestContour;
+		int largest_contour_index;
+		double largest_area;
+
+		void noiseReduction();
+		void thresholdHSV();
+		void convertRGB2HSV();
+		void findAllContours();
+		void findLargestContour();
 
 };
 
