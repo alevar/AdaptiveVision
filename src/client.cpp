@@ -21,6 +21,7 @@ execution order for the client:
 
 #include <stdio.h>
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
@@ -32,6 +33,7 @@ execution order for the client:
 #include <unordered_map>
 #include <getopt.h>
 #include <sys/stat.h>
+#include <typeinfo>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -61,6 +63,7 @@ execution order for the client:
 #include "Template.h"
 #include "MatchMSER.h"
 #include "MatchHSV.h"
+#include "Sample.h"
 
 #define DESTINATION_ADDRESS "127.0.0.1"
 #define PORT    1234
@@ -83,6 +86,14 @@ int main(int argc , char *argv[])
 
     int destinationPort;
     char * destinationAddress;
+
+    string compInput = "HELLO WORLD WORLD safd af";
+    Compressor compTest(&compInput);
+    string compTest2 = compTest.compress();
+    cout << "COMPRESSED TEST: " << compTest2 << endl;
+    Decompressor decompTest(&compTest2);
+    string decompTest2 = decompTest.unCompress();
+    cout << "DECOMPRESSED TEST: " << decompTest2 << endl;
 
    	while (1) {
         int this_option_optind = optind ? optind : 1;
@@ -190,6 +201,7 @@ int main(int argc , char *argv[])
 	source >> image;
 
 	MatchHSV match(&image);
+	match.show();
 
 	// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
 
@@ -360,6 +372,17 @@ int main(int argc , char *argv[])
 				cout << "IMAGE SIZE: " << imgSize << endl;
 
 				send(socket_desc,image.data,imgSize,MSG_CONFIRM);
+
+				// unsigned char* test = image.data;
+				// const char * c = (const char*)test;
+				// string test2 = c;
+
+			 //    Compressor compTest3(&test2);
+			 //    string compTest4 = compTest3.compress();
+			 //    Decompressor decompTest3(&compTest4);
+			 //    string decompTest4 = decompTest3.unCompress();
+
+				// cout << "++++++++++++++++++++++++++++++++: " << typeid(test2).name() << endl;
 
 				while(waitRecv){
 
