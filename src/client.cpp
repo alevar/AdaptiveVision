@@ -184,6 +184,10 @@ int main(int argc , char *argv[])
 	int lengthToReceive;
 	int finalNEW_VALUE;
 
+	int widthToSend;
+	int heightToSend;
+	string resolution;
+
 /*=======================================================
 =======================================================*/
 
@@ -198,18 +202,27 @@ int main(int argc , char *argv[])
 	}
 
 	Mat image;
+	Mat imageToSend;
 	source >> image;
 
 	MatchHSV match(&image);
-	match.show();
+	// match.show();
+
+	Mat imageSampleClone;
+	Mat imageSample;
+
+	match.compute();
+	match.extractSample();
+	imageSample = match.getSampleMAT();
+	imageSampleClone = imageSample.clone();
 
 	// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
 
-	cout << "Width : " << image.size().width << endl;
-	cout << "Height: " << image.size().height << endl;
+	cout << "Width : " << imageSampleClone.size().width << endl;
+	cout << "Height: " << imageSampleClone.size().height << endl;
 
-	image = (image.reshape(0,1));
-	int  imgSize = image.total()*image.elemSize();
+	imageToSend = (imageSampleClone.reshape(0,1));
+	int  imgSize = imageSampleClone.total()*imageSampleClone.elemSize();
 
 /*=======================================================
 =======================================================*/
@@ -276,13 +289,21 @@ int main(int argc , char *argv[])
 
 		source >> image;
 
+		match.compute();
+		match.extractSample();
+		imageSample = match.getSampleMAT();
+		imageSampleClone = imageSample.clone();
+
 		// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
 
-		cout << "Width : " << image.size().width << endl;
-		cout << "Height: " << image.size().height << endl;
+		cout << "Width : " << imageSampleClone.size().width << endl;
+		cout << "Height: " << imageSampleClone.size().height << endl;
 
-		image = (image.reshape(0,1));
-		int  imgSize = image.total()*image.elemSize();
+		widthToSend = int(imageSampleClone.size().width);
+		heightToSend = int(imageSampleClone.size().height);
+
+		imageToSend = (imageSampleClone.reshape(0,1));
+		int  imgSize = imageSampleClone.total()*imageSampleClone.elemSize();
 
 		// opcode = inst->MessageOpCode::getOpCode();
 
@@ -328,7 +349,9 @@ int main(int argc , char *argv[])
 
 				cout << "CASE: PUT" << endl;
 
-				Message messagePUT("PUT","hello");
+				resolution = to_string(widthToSend)+"&"+to_string(heightToSend);
+
+				Message messagePUT("PUT",resolution);
 				Message messagePUT2("PUT","hello2");
 
 				putData = messagePUT.toString();
@@ -371,7 +394,7 @@ int main(int argc , char *argv[])
 
 				cout << "IMAGE SIZE: " << imgSize << endl;
 
-				send(socket_desc,image.data,imgSize,MSG_CONFIRM);
+				send(socket_desc,imageToSend.data,imgSize,MSG_CONFIRM);
 
 				// unsigned char* test = image.data;
 				// const char * c = (const char*)test;
