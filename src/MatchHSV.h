@@ -26,6 +26,8 @@
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
 
+#include "Sample.h"
+
 using namespace std;
 using namespace cv;
 
@@ -58,16 +60,26 @@ class MatchHSV {
 
 		MatchHSV();
 		MatchHSV(Mat*);
+		MatchHSV(Mat*, Sample*);
 		void setHSV(int*,int*,int*,int*,int*,int*);
 		void setHSV(int*,int*);
 		void setThreshold(int,int);
 		void compute();
-		Point2f getCoordinates();
+		Point2f getCoordinates();				
+		void extractSample();
+		Mat getSampleMAT();
+		string getSampleSTR();
 		void show();
 		virtual ~MatchHSV();	    
 	
 	private:
 		Mat *inputIMG;
+		Mat inputORIG;
+		Mat inputCOPY;
+		Mat image_roi;
+		Sample *sample;
+
+		Rect roi;
 
 		hsvStruct hsv;
 		Thresh thresh;
@@ -84,6 +96,8 @@ class MatchHSV {
 		double largest_area;
 
 		int tenPercent;
+
+		bool firstThreshold = false;
 
 		void noiseReduction();
 		void thresholdHSV();
