@@ -30,12 +30,12 @@ using namespace std;
 using namespace cv;
 
 struct hsvStruct {
-	int lowH = 35;			//Low pass value for Hue
-	int highH = 60;			//High pass value for Hue
-	int lowS = 50;			//Low pass value for Saturation
-	int highS = 255;		//High pass value for Saturation
-	int lowV = 50;			//Low pass value for Value
-	int highV = 255;		//High pass value for Value
+	int lowH = 0;			//Low pass value for Hue
+	int highH = 85;			//High pass value for Hue
+	int lowS = 54;			//Low pass value for Saturation
+	int highS = 126;		//High pass value for Saturation
+	int lowV = 93;			//Low pass value for Value
+	int highV = 218;		//High pass value for Value
 };
 
 struct Thresh {
@@ -62,6 +62,7 @@ class MatchHSV {
 		void setHSV(int*,int*);
 		void setThreshold(int,int);
 		void compute();
+		Point2f getCoordinates();
 		void show();
 		virtual ~MatchHSV();	    
 	
@@ -81,6 +82,8 @@ class MatchHSV {
 		vector<float> largestContour;
 		int largest_contour_index;
 		double largest_area;
+
+		int tenPercent;
 
 		void noiseReduction();
 		void thresholdHSV();

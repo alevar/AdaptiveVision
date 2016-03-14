@@ -38,7 +38,12 @@ MatchHSV::MatchHSV(){
 
 MatchHSV::MatchHSV(Mat *image){
 	this->inputIMG = image;
+	this->convertRGB2HSV();
+	this->thresholdHSV();
 	this->noiseReduction();
+	this->findAllContours();
+	this->findLargestContour();
+
 }
 
 void MatchHSV::setHSV(int *lowHue,int *highHue,int *lowSat,int *highSat,int *lowVal,int *highVal){
@@ -55,6 +60,41 @@ void MatchHSV::setHSV(int *lowHue,int *highHue){
 	this->hsv.highH = *highHue;
 }
 
+void MatchHSV::convertRGB2HSV(){
+
+	cvtColor(*inputIMG, *inputIMG, COLOR_BGR2HSV);
+	cvtColor(*inputIMG, *inputIMG, COLOR_BGR2HSV);
+}
+
+void MatchHSV::thresholdHSV(){
+
+	namedWindow("HELLO MATCH HSV", 1);
+	createTrackbar("Low HUE", "HELLO MATCH HSV", &this->hsv.lowH, 255);
+	createTrackbar("High HUE", "HELLO MATCH HSV", &this->hsv.highH, 255);
+	createTrackbar("Low SAT", "HELLO MATCH HSV", &this->hsv.lowS, 255);
+	createTrackbar("High SAT", "HELLO MATCH HSV", &this->hsv.highS, 255);
+	createTrackbar("Low VAL", "HELLO MATCH HSV", &this->hsv.lowV, 255);
+	createTrackbar("High VAL", "HELLO MATCH HSV", &this->hsv.highV, 255);
+
+	Mat testIMG = *inputIMG;
+	Mat test2IMG;
+
+	while(true){
+
+		inRange(testIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), test2IMG);
+
+		imshow("HELLO MATCH HSV", test2IMG);
+		if(waitKey(50) ==27){
+			inRange(*inputIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), *inputIMG);
+			destroyWindow("HELLO MATCH HSV");
+			break;
+		}
+	}
+
+	cout << "VALUES ARE: " << hsv.lowH << endl;
+
+}
+
 void MatchHSV::noiseReduction(){
 	
 	erode(*inputIMG, *inputIMG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
@@ -62,26 +102,6 @@ void MatchHSV::noiseReduction(){
 	dilate(*inputIMG, *inputIMG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 	erode(*inputIMG, *inputIMG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 
-	imshow("HELLO MATCH HSV", *inputIMG);
-	waitKey(0);
-
-}
-
-void MatchHSV::thresholdHSV(){
-
-	inRange(*inputIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), *inputIMG);
-
-}
-
-void MatchHSV::convertRGB2HSV(){
-
-	cvtColor(*inputIMG, *inputIMG, COLOR_BGR2HSV);
-	cvtColor(*inputIMG, *inputIMG, COLOR_BGR2HSV);
-}
-
-void MatchHSV::setThreshold(int newMinThresh, int newMaxThresh){
-	this->thresh.minThresh = newMinThresh;
-	this->thresh.maxThresh = newMaxThresh;
 }
 
 void MatchHSV::findAllContours(){
@@ -114,6 +134,11 @@ void MatchHSV::findLargestContour(){
 	}
 }
 
+void MatchHSV::setThreshold(int newMinThresh, int newMaxThresh){
+	this->thresh.minThresh = newMinThresh;
+	this->thresh.maxThresh = newMaxThresh;
+}
+
 void MatchHSV::compute(){
 	MatchHSV::convertRGB2HSV();
 	MatchHSV::thresholdHSV();
@@ -122,8 +147,16 @@ void MatchHSV::compute(){
 	MatchHSV::findLargestContour();
 }
 
+Point2f MatchHSV::getCoordinates(){
+	return largestCenter;
+}
+
 void MatchHSV::show(){
-	
+
+	imshow("HELLO LARGEST CONTOUR",*inputIMG);
+	if(waitKey(50) ==27){
+		destroyWindow("HELLO LARGEST CONTOUR");
+	}
 }
 
 MatchHSV::~MatchHSV() {
