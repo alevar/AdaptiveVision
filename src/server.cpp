@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <getopt.h>
 #include <sys/stat.h>
+#include <sstream>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -79,6 +80,9 @@ inline bool checkPath (const std::string& name) {
 	return (stat (name.c_str(), &buffer) == 0); 
 }
 
+int width;
+int height;
+
 int main(int argc , char *argv[])
 {
 
@@ -111,6 +115,9 @@ int main(int argc , char *argv[])
     string templatePathCheck;
     char* templatePath;
     Mat inputTPL;
+
+    string token;
+	vector<int> resolution;
 
    	while (1) {
         int this_option_optind = optind ? optind : 1;
@@ -290,7 +297,26 @@ int main(int argc , char *argv[])
 
 								case PUT: // PUT
 									{
-										cout<<"CASE: PUT" << endl;
+										cout<<"CASE: PUT & LABEL: " << initMessage.getInfo() << endl;
+
+										istringstream ss(initMessage.getInfo());
+
+										int i;
+
+										resolution.clear();
+										
+										while(ss >> i){
+											resolution.push_back(i);
+
+									        if (ss.peek() == '&')
+									            ss.ignore();
+											cout << "===================== TOKEN: " << i << endl;
+										}
+
+										width = resolution[0];
+										height = resolution[1];
+
+										cout << "WIDTH: " << width << " HEIGHT: " << height << endl;
 
 										Message messageREADY("READY", "hi");
 
@@ -500,9 +526,6 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	// 	printf("Proceeding to retrieve the information from client\n");
 
 	cout << "GETTING THE IMAGE" << endl;
-
-	int height = 640;
-	int width = 480;
 
 	Mat  img = Mat::zeros( height,width, CV_8UC3);
 	
