@@ -70,30 +70,7 @@ void Sample::convertRGB2HSV(){
 
 void Sample::thresholdHSV(){
 
-	namedWindow("HELLO MATCH HSV", 1);
-	createTrackbar("Low HUE", "HELLO MATCH HSV", &this->hsv.lowH, 255);
-	createTrackbar("High HUE", "HELLO MATCH HSV", &this->hsv.highH, 255);
-	createTrackbar("Low SAT", "HELLO MATCH HSV", &this->hsv.lowS, 255);
-	createTrackbar("High SAT", "HELLO MATCH HSV", &this->hsv.highS, 255);
-	createTrackbar("Low VAL", "HELLO MATCH HSV", &this->hsv.lowV, 255);
-	createTrackbar("High VAL", "HELLO MATCH HSV", &this->hsv.highV, 255);
-
-	Mat testIMG = *inputIMG;
-	Mat test2IMG;
-
-	while(true){
-
-		inRange(testIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), test2IMG);
-
-		imshow("HELLO MATCH HSV", test2IMG);
-		if(waitKey(50) ==27){
-			inRange(*inputIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), *inputIMG);
-			destroyWindow("HELLO MATCH HSV");
-			break;
-		}
-	}
-
-	cout << "VALUES ARE: " << hsv.lowH << endl;
+	inRange(*inputIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), *inputIMG);
 
 }
 
