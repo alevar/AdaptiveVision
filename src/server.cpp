@@ -83,10 +83,11 @@ inline bool checkPath (const std::string& name) {
 int width;
 int height;
 
+MatchMSER match;
+// Mat *img2;
+
 int main(int argc , char *argv[])
 {
-
-	MatchMSER match;
 
 	struct Params {
 		int delta 				= 5;
@@ -172,6 +173,8 @@ int main(int argc , char *argv[])
 
   	Template testTPL(inputTPL);
 	Mat imageTPL = testTPL.getTemplate();
+	match.setTemplate(&imageTPL);
+	// match.setImage(img2);
 	// imshow("Template", imageTPL);
 	// waitKey(0);
 
@@ -540,16 +543,26 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	}
 
 	// change the last loop to below statement
-	Mat img2(Size(height, width), CV_8UC3, sockData);
 
-	Histogram histTest(img2);
+	Mat *img2 = new Mat(Size(height, width), CV_8UC3, sockData);
+
+	imshow("RECEIVED BY THE SERVER", *img2);
+	waitKey(0);
+
+	Mat imageMatch = match.findMatch(*img2);
+
+	Histogram histTest(imageMatch);
 	histTest.calcHis();
-	// histTest.showHist();
+	histTest.showHist();
 
-	Template testTPL(img2);
-	Mat imageTPL = testTPL.getTemplate();
-	// imshow("Template", imageTPL);
-	// waitKey(0);
+	// Template testTPL(*img2);
+
+	// Mat imageTPL = testTPL.getTemplate();
+	imshow("MSER MATCH", imageMatch);
+	waitKey(0);
+
+	delete img2;
+
 	 
 	toAnalyze[numbytes] = '\0';
 	printf("The following has been received: %s \n", toAnalyze);

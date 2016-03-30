@@ -339,7 +339,7 @@ int main(int argc , char *argv[])
 				============ EXAMPLE OF SENDING OPENCV MAT ============
 				=======================================================
 				Mat frame;
-				frame = (frame.reshape(0,1)); // to make it continuous
+				frame = (frame.reshape(0,1)); //HELLO MATCH to make it continuous
 
 				int  imgSize = frame.total()*frame.elemSize();
 
