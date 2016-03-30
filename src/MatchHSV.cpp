@@ -101,7 +101,7 @@ void MatchHSV::thresholdHSV(){
 			inRange(testIMG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), test2IMG);
 
 			imshow("HELLO MATCH HSV", test2IMG);
-			if(waitKey(50) ==27){
+			if(waitKey(30) >= 0){
 				inRange(inputORIG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), inputORIG);
 				// destroyWindow("HELLO MATCH HSV");
 				break;
