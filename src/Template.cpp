@@ -56,12 +56,27 @@ Template::Template(Mat image) {
     this->inputTPL = image;
     cv::cvtColor(inputTPL, imageTPL_GRAY, COLOR_BGR2GRAY);
 
-    this->maxMserTPL = Template::maxMser(&imageTPL_GRAY);
-    this->rect = cv::minAreaRect(maxMserTPL);
-    rect.points(points);
+    namedWindow("TEMPLATE CALIBRATION", 1);
+    createTrackbar("Max Area", "TEMPLATE CALIBRATION", &this->maxArea, 100);
+    createTrackbar("Diversity", "TEMPLATE CALIBRATION", &this->diversity, 1000);
 
-    this->M = Template::getPerspectiveMatrix(this->points,this->rect.size);
-    this->imageTPL = Template::normalizeImage(&imageTPL_GRAY,&this->M,this->rect.size.width);
+    while(true){
+
+        this->maxMserTPL = Template::maxMser(&imageTPL_GRAY);
+        this->rect = cv::minAreaRect(maxMserTPL);
+        rect.points(points);
+
+        this->M = Template::getPerspectiveMatrix(this->points,this->rect.size);
+        this->imageTPL = Template::normalizeImage(&imageTPL_GRAY,&this->M,this->rect.size.width);
+
+        imshow("TEMPLATE CALIBRATION",imageTPL);
+
+        if(waitKey(30) >= 0){
+            
+            // destroyWindow("HELLO MATCH HSV");
+            break;
+        }
+    }
 }
 
 Mat Template::getPerspectiveMatrix(Point2f points[], Size2f size){
@@ -92,15 +107,25 @@ Mat Template::normalizeImage(Mat *image, Mat *M ,float size){
 vector<Point> Template::maxMser(Mat *gray)
 {
 
-    Template::detectRegions(*gray, this->msers);
+    double newMaxArea = maxArea/(double)1000;
+    double newDiversity = diversity/(double)1000;
 
-    if (this->msers.size() == 0) return vector<Point>();
+    MSER mser(21, (int)(newMaxArea*gray->cols*gray->rows), (int)(newDiversity*gray->cols*gray->rows), 1, 0.7);
+
+    // Template::detectRegions(*gray, this->msers);
+    mser(*gray, msers);
+
+    cout << "HELLO=============="<<endl;
+
+    if (this->msers.size() == 0){
+        return vector<Point>();
+    }
     
-    vector<Point> mser = max_element(this->msers.begin(), this->msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
+    vector<Point> mserF = max_element(this->msers.begin(), this->msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
         return m1.size() < m2.size();
     })[0];
     
-    return mser;
+    return mserF;
 }
 
 void Template::detectRegions(Mat &gray, vector<vector<Point> > & vector){

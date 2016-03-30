@@ -64,13 +64,16 @@ class Template {
 
 		int delta = 5;
 		int minArea = 100;
-		int maxArea = 14400;
+		// int maxArea = 14400;
 		double maxVariation = 0.25;
 		double minDiversity = 0.2;
 		int maxEvolution = 200;
 		double areaThreshold = 1.01;
 		double minMargin = 0.003;
 		int edgeBlurSize = 0;
+
+		int maxArea = 10;
+		int diversity = 500;
 
 		const Scalar RED = Scalar(0, 0, 255);
 		const Scalar GREEN = Scalar(0, 255, 0);
