@@ -38,33 +38,35 @@ MatchMSER::MatchMSER(){
 			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
 }
 
-MatchMSER::MatchMSER(Template *imgTPL){
+MatchMSER::MatchMSER(Mat *imgTPL){
 	this->imgTPL = imgTPL;
 	// this->mserDetector(Params.delta, Params.minArea, Params.maxArea,Params.maxVariation,Params.minDiversity,
 			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
 }
 
-MatchMSER::MatchMSER(Template *imgTPL, Mat *imgMAT){
+MatchMSER::MatchMSER(Mat *imgTPL, Mat *imgMAT){
 	this->imgTPL = imgTPL;
 	this->imgMAT = imgMAT;
 	// this->mserDetector(Params.delta, Params.minArea, Params.maxArea,Params.maxVariation,Params.minDiversity,
 			// Params.maxEvolution,Params.areaThreshold, Params.minMargin, Params.edgeBlurSize);
 }
 
-void MatchMSER::setTemplate(Template *imgTPL){
+void MatchMSER::setTemplate(Mat *imgTPL){
 	this->imgTPL = imgTPL;
 }
 
 void MatchMSER::setImage(Mat *imgMAT){
 	this->imgMAT = imgMAT;
 }
-void MatchMSER::set(Template *imgTPL, Mat *imgMAT){
+void MatchMSER::set(Mat *imgTPL, Mat *imgMAT){
 	this->imgTPL = imgTPL;
 	this->imgMAT = imgMAT;
 }
 
-Mat findMatch(){
-	Mat matched;
+Mat MatchMSER::findMatch(Mat imageMAT){
+    this->normalizedMser = MatchMSER::maxMser(this->imgTPL);
+    this->featuresTPL = MatchMSER::extractFeature(&normalizedMser);
+	Mat matched = MatchMSER::processImage(imageMAT);
 	return matched;
 }
 
@@ -250,11 +252,9 @@ double MatchMSER::distace(Features *featuresTPL, Features *featuresMSER)
      log(fabs(featuresTPL->contourAreaRate - featuresMSER->contourAreaRate)));
 }
 
-Mat MatchMSER::processImage(Mat &image, Features featuresTPL){
+Mat MatchMSER::processImage(Mat imageMAT){
     Mat gray;
-    cout << "START PROCESSIMAGE" << endl;
-    cvtColor(image, gray, CV_BGRA2GRAY);
-    cout << "STOP PROCESSIMAGE" << endl;
+    cvtColor(imageMAT, gray, CV_BGRA2GRAY);
     vector<vector<Point> > msers;
     detectRegions(gray,msers);
     vector<Point> *bestMser = NULL;
@@ -279,10 +279,8 @@ Mat MatchMSER::processImage(Mat &image, Features featuresTPL){
 
             if(wellMatched)
             {
-
-                cout << "WELL MATCHED" << endl;
+                
                 double tmp = distance(&featuresTPL, &featuresMSER);
-                cout << "TMP ================================= " << tmp << endl;
                 if ( bestPoint > tmp ) {
                     bestPoint = tmp;
                     bestMser = &mser;
@@ -295,14 +293,14 @@ Mat MatchMSER::processImage(Mat &image, Features featuresTPL){
     {
                 
         Rect bound = boundingRect(*bestMser);
-        rectangle(image, bound, this->colors.GREEN, 3);
+        rectangle(imageMAT, bound, this->colors.GREEN, 3);
     }
 
     // if (msers.size() == 0) { 
     //     return image; 
     // };
 
-    return image;
+    return imageMAT;
 }
 
 vector<Point> MatchMSER::maxMser(Mat *gray)

@@ -69,18 +69,18 @@ class MatchMSER {
 	public:
 
 		MatchMSER();
-		MatchMSER(Template*);
-		MatchMSER(Template*, Mat*);
-		void setTemplate(Template*);
+		MatchMSER(Mat*);
+		MatchMSER(Mat*, Mat*);
+		void setTemplate(Mat*);
 		void setImage(Mat*);
-		void set(Template*,Mat*);
-		Mat findMatch();
+		void set(Mat*,Mat*);
+		Mat findMatch(Mat);
 
 		// void setParams(int*,int*,int*,double*,double*,int*,double*,double*,int*);
 		virtual ~MatchMSER();	    
 	
 	private:
-		Template *imgTPL;
+		Mat *imgTPL;
 		Mat *imgMAT;
 
 		void detectRegions(Mat &, vector<vector<Point> > &);
@@ -91,7 +91,7 @@ class MatchMSER {
 		Features extractFeature(vector<Point>*);
 		bool matchTemplate(Features, Features);
 		double distace(Features*, Features*);
-		Mat processImage(Mat &, Features);
+		Mat processImage(Mat);
 		vector<Point> maxMser(Mat*);
 		Mat getPerspectiveMatrix(Point2f[], Size2f);
 		Mat normalizeImage(Mat*, Mat*,float);
@@ -99,6 +99,9 @@ class MatchMSER {
 		Features features;
 		Colors colors;
 		Params params;
+
+		vector<Point> normalizedMser;
+		Features featuresTPL;
 
 		MserFeatureDetector mserDetector = MserFeatureDetector(params.delta, params.minArea, params.maxArea,
 												params.maxVariation, params.minDiversity, params.maxEvolution,
