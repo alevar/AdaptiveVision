@@ -77,6 +77,16 @@ Template::Template(Mat image) {
             break;
         }
     }
+    cvDestroyWindow("TEMPLATE CALIBRATION");
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    // cvReleaseImage(&imageTPL);
 }
 
 Mat Template::getPerspectiveMatrix(Point2f points[], Size2f size){
@@ -114,8 +124,6 @@ vector<Point> Template::maxMser(Mat *gray)
 
     // Template::detectRegions(*gray, this->msers);
     mser(*gray, msers);
-
-    cout << "HELLO=============="<<endl;
 
     if (this->msers.size() == 0){
         return vector<Point>();

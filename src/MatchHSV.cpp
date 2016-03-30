@@ -103,10 +103,19 @@ void MatchHSV::thresholdHSV(){
 			imshow("HELLO MATCH HSV", test2IMG);
 			if(waitKey(30) >= 0){
 				inRange(inputORIG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), inputORIG);
-				// destroyWindow("HELLO MATCH HSV");
+				
 				break;
 			}
 		}
+		cvDestroyWindow("HELLO MATCH HSV");
+		waitKey(1);
+	    waitKey(1);
+	    waitKey(1);
+	    waitKey(1);
+	    waitKey(1);
+	    waitKey(1);
+	    waitKey(1);
+	    waitKey(1);
 
 		cout << "VALUES ARE: " << hsv.lowH << endl;
 

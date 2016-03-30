@@ -165,8 +165,6 @@ int main(int argc , char *argv[])
         printf("\n");
     }
 
-  	namedWindow("Template",1);
-
   	// const char* testTP = templatePath;
 
   	inputTPL = imread(templatePath);
