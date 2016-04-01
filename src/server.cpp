@@ -94,8 +94,8 @@ int main(int argc , char *argv[])
 	//TESTING CANVAS
 	//=====================================================
 
-	Mat im1 = imread("/home/sparrow/Pictures/Webcam/logoT.jpg");
-	imshow("hello test", im1);
+	// Mat im1 = imread("/home/sparrow/Pictures/Webcam/logoT.jpg");
+	// imshow("hello test", im1);
 
 	waitKey(0);
 
