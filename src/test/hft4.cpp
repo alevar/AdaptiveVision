@@ -310,10 +310,7 @@ Mat gray;
 vector<vector<Point> > msers;
 double bestPoint = 10.0;
 Rect bound;
-
 Mat processImage(Mat &image, Features featuresTPL){
-
-    vector<vector<Point> > msers;
 
     cvtColor(image, gray, CV_BGRA2GRAY);
 
@@ -358,17 +355,18 @@ Mat processImage(Mat &image, Features featuresTPL){
                 cout << "WELL MATCHED" << endl;
                 double tmp = distance(&featuresTPL, &featuresMSER);
                 cout << "TMP ================================= " << tmp << endl;
-                if ( bestPoint > tmp ) {
+                // if ( bestPoint > tmp ) {
                     bestPoint = tmp;
                     bestMser = &mser;
-                }
+                    cout << "BEST FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+                // }
             }
         }
     });
 
     if (bestMser)
     {
-                
+        cout << "BEST BUILD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
         bound = boundingRect(*bestMser);
         rectangle(image, bound, colors.GREEN, 3);
     }
