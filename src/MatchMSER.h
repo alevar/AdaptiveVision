@@ -52,17 +52,17 @@ struct Colors {
     const Scalar LIGHT_GRAY = Scalar(100, 100, 100);
 };
 
-struct Params {
-	int delta 				= 5;
-	int minArea 			= 100;
-	int maxArea 			= 14400;
-	double maxVariation 	= 0.25;
-	double minDiversity 	= 0.2;
-	int maxEvolution 		= 200;
-	double areaThreshold 	= 1.01;
-	double minMargin 		= 0.003;
-	int edgeBlurSize 		= 0;
-};
+// struct Params {
+// 	int delta 				= 5;
+// 	int minArea 			= 100;
+// 	int maxArea 			= 14400;
+// 	double maxVariation 	= 0.25;
+// 	double minDiversity 	= 0.2;
+// 	int maxEvolution 		= 200;
+// 	double areaThreshold 	= 1.01;
+// 	double minMargin 		= 0.003;
+// 	int edgeBlurSize 		= 0;
+// };
 
 class MatchMSER {
 
@@ -74,6 +74,7 @@ class MatchMSER {
 		void setTemplate(Mat*);
 		void setImage(Mat*);
 		void set(Mat*,Mat*);
+		void setParams(int, int);
 		Mat findMatch(Mat);
 
 		// void setParams(int*,int*,int*,double*,double*,int*,double*,double*,int*);
@@ -89,6 +90,7 @@ class MatchMSER {
 		int skeletLength(Mat*);
 		double contourAreas(Mat*);
 		Features extractFeature(vector<Point>*);
+		Features extractFeatureTPL(vector<Point>*);
 		bool matchTemplate(Features, Features);
 		double distace(Features*, Features*);
 		Mat processImage(Mat);
@@ -98,14 +100,17 @@ class MatchMSER {
 
 		Features features;
 		Colors colors;
-		Params params;
+		// Params params;
 
 		vector<Point> normalizedMser;
 		Features featuresTPL;
 
-		MserFeatureDetector mserDetector = MserFeatureDetector(params.delta, params.minArea, params.maxArea,
-												params.maxVariation, params.minDiversity, params.maxEvolution,
-												params.areaThreshold, params.minMargin, params.edgeBlurSize);
+		int maxArea = 10;
+		int diversity = 500;
+
+		// MserFeatureDetector mserDetector = MserFeatureDetector(params.delta, params.minArea, params.maxArea,
+		// 										params.maxVariation, params.minDiversity, params.maxEvolution,
+		// 										params.areaThreshold, params.minMargin, params.edgeBlurSize);
 
 };
 

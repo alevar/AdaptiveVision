@@ -58,15 +58,24 @@ void MatchMSER::setTemplate(Mat *imgTPL){
 void MatchMSER::setImage(Mat *imgMAT){
 	this->imgMAT = imgMAT;
 }
+
 void MatchMSER::set(Mat *imgTPL, Mat *imgMAT){
 	this->imgTPL = imgTPL;
 	this->imgMAT = imgMAT;
 }
 
+void MatchMSER::setParams(int maxArea, int diversity){
+    this->maxArea = maxArea;
+    this->diversity = diversity;
+}
+
 Mat MatchMSER::findMatch(Mat imageMAT){
+
     this->normalizedMser = MatchMSER::maxMser(this->imgTPL);
-    this->featuresTPL = MatchMSER::extractFeature(&normalizedMser);
-	Mat matched = MatchMSER::processImage(imageMAT);
+
+    this->featuresTPL = MatchMSER::extractFeatureTPL(&normalizedMser);
+	
+    Mat matched = MatchMSER::processImage(imageMAT);
 	return matched;
 }
 
@@ -89,7 +98,7 @@ Mat MatchMSER::findMatch(Mat imageMAT){
 // FUNCTIONS FOR CALCULATING MSERS AND FINDING MATCHES
 
 void MatchMSER::detectRegions(Mat &gray, vector<vector<Point> > & vectorX){
-    MatchMSER::mserDetector(gray, vectorX);
+    // MatchMSER::mserDetector(gray, vectorX);
 }
 
 Mat MatchMSER::mserToMat(vector<Point> *mser)
@@ -175,6 +184,11 @@ Features MatchMSER::extractFeature(vector<Point> *mser){
 
     Mat mserImg = mserToMat(mser);
 
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
     if (mserImg.cols <= 2 || mserImg.rows <= 2){
         cout << "null" << endl; 
     }
@@ -200,6 +214,62 @@ Features MatchMSER::extractFeature(vector<Point> *mser){
     cout << "skeletLengthRate: " << skeletLengthRate << endl;
 
     double contourArea = contourAreas(&mserImg);
+    // if (contourArea == 0.0){
+    //     return result;
+    // }
+    double contourAreaRate = (double)mser->size() / contourArea;
+    // if (contourAreaRate > 1.0){
+    //     return result;
+    // }
+    cout << "contourAreaRate: " << contourAreaRate << endl;
+
+    // vector<double> result = {(double)numberOfHoles,convexHullAreaRate,minRectAreaRate,skeletLengthRate,contourAreaRate};
+
+    result.numberOfHoles = (int)numberOfHoles;
+    result.convexHullAreaRate = convexHullAreaRate;
+    result.minRectAreaRate = minRectAreaRate;
+    result.skeletLengthRate = skeletLengthRate;
+    result.contourAreaRate = contourAreaRate;
+    result.full = true;
+
+    return result;
+}
+
+Features MatchMSER::extractFeatureTPL(vector<Point> *mser){
+
+    Features result;
+
+    Mat mserImg = mserToMat(mser);
+
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
+    Mat drawingT = Mat::zeros( mserImg.cols+20,mserImg.rows+20, CV_8UC3 );
+
+    cvtColor(drawingT, drawingT, CV_BGR2GRAY);
+
+    cv::Rect roiT( cv::Point( 10, 10 ), mserImg.size() );
+    mserImg.copyTo( drawingT( roiT ) );
+
+    // imshow("DRAAAAAAAWING", drawingT);
+    // waitKey(0);
+
+    if (drawingT.cols <= 2 || drawingT.rows <= 2){
+        cout << "null" << endl; 
+    }
+
+    RotatedRect minRect = minAreaRect(*mser);
+    int numberOfHoles = findHoles(&drawingT);
+    vector<Point> convexHull;
+    cv::convexHull(*mser, convexHull);
+    double convexHullAreaRate = (double)mser->size() / contourArea( convexHull );
+    double minRectAreaRate = (double)mser->size() / (double) minRect.size.area();
+    int leng = skeletLength(&drawingT);
+    double skeletLengthRate = (double)leng / (double) mser->size();
+    double contourArea = contourAreas(&drawingT);
+
     if (contourArea == 0.0){
         return result;
     }
@@ -207,11 +277,14 @@ Features MatchMSER::extractFeature(vector<Point> *mser){
     if (contourAreaRate > 1.0){
         return result;
     }
+
+    cout << "skeletLengthRate: " << skeletLengthRate << endl;
+    cout << "minRectAreaRate: " << minRectAreaRate << endl;
+    cout << "convexHullAreaRate: " << convexHullAreaRate << endl;
+    cout << "numberOfHoles: " << numberOfHoles << endl;
     cout << "contourAreaRate: " << contourAreaRate << endl;
 
-    // vector<double> result = {(double)numberOfHoles,convexHullAreaRate,minRectAreaRate,skeletLengthRate,contourAreaRate};
-
-    result.numberOfHoles = (double)numberOfHoles;
+    result.numberOfHoles = (int)numberOfHoles;
     result.convexHullAreaRate = convexHullAreaRate;
     result.minRectAreaRate = minRectAreaRate;
     result.skeletLengthRate = skeletLengthRate;
@@ -235,9 +308,9 @@ bool MatchMSER::matchTemplate(Features featuresTPL, Features featuresMSER)
     if ((featuresTPL.skeletLengthRate - featuresMSER.skeletLengthRate) > 0.02) {
         return false;
     }
-    if ((featuresTPL.contourAreaRate - featuresMSER.contourAreaRate) > 0.1) {
-        return false;
-    }
+    // if ((featuresTPL.contourAreaRate - featuresMSER.contourAreaRate) > 0.1) {
+    //     return false;
+    // }
     
     return true;
 }
@@ -254,12 +327,23 @@ double MatchMSER::distace(Features *featuresTPL, Features *featuresMSER)
 
 Mat MatchMSER::processImage(Mat imageMAT){
     Mat gray;
-    cvtColor(imageMAT, gray, CV_BGRA2GRAY);
     vector<vector<Point> > msers;
-    detectRegions(gray,msers);
-    vector<Point> *bestMser = NULL;
     double bestPoint = 10.0;
+    Rect bound;
+    vector<Point> *bestMser = NULL;
 
+    cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+    cvtColor(imageMAT, gray, CV_BGRA2GRAY);
+    cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+
+    double newMaxArea = maxArea/(double)1000;
+    double newDiversity = diversity/(double)1000;
+
+    MSER mser(21, (int)(newMaxArea*gray.cols*gray.rows), (int)(newDiversity*gray.cols*gray.rows), 1, 0.7);
+    
+    // detectRegions(gray,msers);
+    mser(gray, msers);
+    
     for_each(msers.begin(), msers.end(), [&] (vector<Point> &mser) 
     {
         Features featuresMSER = extractFeature(&mser);
@@ -281,10 +365,10 @@ Mat MatchMSER::processImage(Mat imageMAT){
             {
                 
                 double tmp = distance(&featuresTPL, &featuresMSER);
-                if ( bestPoint > tmp ) {
+                // if ( bestPoint > tmp ) {
                     bestPoint = tmp;
                     bestMser = &mser;
-                }
+                // }
             }
         }
     });
@@ -292,7 +376,7 @@ Mat MatchMSER::processImage(Mat imageMAT){
     if (bestMser)
     {
                 
-        Rect bound = boundingRect(*bestMser);
+        bound = boundingRect(*bestMser);
         rectangle(imageMAT, bound, this->colors.GREEN, 3);
     }
 
@@ -305,17 +389,24 @@ Mat MatchMSER::processImage(Mat imageMAT){
 
 vector<Point> MatchMSER::maxMser(Mat *gray)
 {
+
+    double newMaxArea = maxArea/(double)1000;
+    double newDiversity = diversity/(double)1000;
+
+    MSER mser(21, (int)(newMaxArea*gray->cols*gray->rows), (int)(newDiversity*gray->cols*gray->rows), 1, 0.7);
+
     vector<vector<Point> > msers;
 
-    detectRegions (*gray, msers);
+    // detectRegions (*gray, msers);
+    mser(*gray, msers);
 
     if (msers.size() == 0) return vector<Point>();
     
-    vector<Point> mser = max_element(msers.begin(), msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
+    vector<Point> mserF = max_element(msers.begin(), msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
         return m1.size() < m2.size();
     })[0];
     
-    return mser;
+    return mserF;
 }
 
 Mat MatchMSER::getPerspectiveMatrix(Point2f points[], Size2f size)
