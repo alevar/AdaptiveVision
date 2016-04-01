@@ -37,6 +37,11 @@ class Message {
 		void toMessage(string);
 		
 		virtual ~Message();
+	
+	private:
+
+		vector<string> &split(const string&, char, vector<string>&);
+		vector<string> split(const string, char);
 
 		string opcode;		        // Opcode for the message
 		InstructionCode instOpcode;
@@ -46,11 +51,6 @@ class Message {
 		vector<string> tokens;
 
 		string outMessage;	             // message as an array of bytes - contains opcode, type and length
-	
-	private:
-
-		vector<string> &split(const string&, char, vector<string>&);
-		vector<string> split(const string, char);
 
 };
 

@@ -2,7 +2,6 @@
 // Could be used to detect multiple predefined templates at the same time(simultaneously)
 // Autonomous machines being able to respond to a different number of stimuli
 
-
 /*==================================================
 ==================== TEMPLATE CLASS ================
 ====================================================
@@ -56,7 +55,7 @@ Template::Template(Mat image) {
     this->inputTPL = image;
     cv::cvtColor(inputTPL, imageTPL_GRAY, COLOR_BGR2GRAY);
 
-    namedWindow("TEMPLATE CALIBRATION", 1);
+    namedWindow("TEMPLATE CALIBRATION", WINDOW_NORMAL);
     createTrackbar("Max Area", "TEMPLATE CALIBRATION", &this->maxArea, 100);
     createTrackbar("Diversity", "TEMPLATE CALIBRATION", &this->diversity, 1000);
 

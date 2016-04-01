@@ -89,6 +89,16 @@ MatchMSER match;
 int main(int argc , char *argv[])
 {
 
+
+	//=====================================================
+	//TESTING CANVAS
+	//=====================================================
+
+	Mat im1 = imread("/home/sparrow/Pictures/Webcam/logoT.jpg");
+	imshow("hello test", im1);
+
+	waitKey(0);
+
 	struct Params {
 		int delta 				= 5;
 		int minArea 			= 100;
