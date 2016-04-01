@@ -36,35 +36,35 @@ using namespace cv;
 Canvas::Canvas(){
 }
 
-Canvas::Canvas(int nArgs, ...){
+Canvas::Canvas(vector<Mat> matV){
 
-    if(nArgs <= 0) {
+    if(matV.size() <= 0) {
         printf("Number of arguments too small....\n");
         return;
     }
-    else if(nArgs > 12) {
+    else if(matV.size() > 12) {
         printf("Number of arguments too large....\n");
         return;
     }
     // Determine the size of the image, 0    // and the number of rows/cols 
     // from number of arguments 
-    else if (nArgs == 1) {
+    else if (matV.size() == 1) {
         width = height = 1;
         size = 300;
     }
-    else if (nArgs == 2) {
+    else if (matV.size() == 2) {
         width = 2; height = 1;
         size = 300;
     }
-    else if (nArgs == 3 || nArgs == 4) {
+    else if (matV.size() == 3 || matV.size() == 4) {
         width = 2; height = 2;
         size = 300;
     }
-    else if (nArgs == 5 || nArgs == 6) {
+    else if (matV.size() == 5 || matV.size() == 6) {
         width = 3; height = 2;
         size = 200;
     }
-    else if (nArgs == 7 || nArgs == 8) {
+    else if (matV.size() == 7 || matV.size() == 8) {
         width = 4; height = 2;
         size = 200;
     }
@@ -73,23 +73,43 @@ Canvas::Canvas(int nArgs, ...){
         size = 150;
     }
 
-    canvas = cvCreateImage( cvSize(100 + size*width, 60 + size*height), 8, 3 );
+    // canvas = cvCreateImage( cvSize(100 + size*width, 60 + size*height), 8, 3 );
+    cout <<matV[0].type() << "_" << matV[0].channels()<<endl;
+    Mat canvas((100 + size*width),(60 + size*height),CV_8UC3, CV_RGB(1,1,1));
 
-    va_list args;
-    va_start(args, nArgs);
+    Mat image_roi;
 
-    for (i = 0, m = 20, n = 20; i < nArgs; i++, m += (20 + size)) {
+    for (i = 0, m = 20, n = 20; i < matV.size(); i++, m += (20 + size)) {
 
-        img = va_arg(args, IplImage*);
+        cout << "1 BEEEEEEEEEEGGIIIN" << endl;
 
-        if(img == 0) {
-            printf("Invalid arguments");
-            cvReleaseImage(&canvas);
-            return;
+        img = matV[i];
+
+        cout << "Channels: " << img.channels() << "_" << canvas.channels() << endl;
+        cout << "Type: " << img.type() << "_" << canvas.type() << endl;
+
+        if(img.channels() != 3){
+            cvtColor( img, img, CV_GRAY2BGR );
+        }
+        if(img.type() != 16){
+            img.convertTo(img,CV_8UC3);
         }
 
-        x = img->width;
-        y = img->height;
+        cout << "Channels: " << img.channels() << "_" << canvas.channels() << endl;
+        cout << "Type: " << img.type() << "_" << canvas.type() << endl;
+        cout << "2 BEEEEEEEEEEGGIIIN" << endl;
+
+        imshow("IMAGE", img);
+        waitKey(0);
+
+        // if(img == 0) {
+        //     printf("Invalid arguments");
+        //     // cvReleaseImage(&DispImage);
+        //     return;
+        // }
+
+        x = img.cols;
+        y = img.rows;
 
         max = (x > y)? x: y;
 
@@ -99,45 +119,59 @@ Canvas::Canvas(int nArgs, ...){
             m = 20;
             n+= 20 + size;
         }
+        cout << " 3 BEEEEEEEEEEGGIIIN" << endl;
 
-        cvSetImageROI(canvas, cvRect(m, n, (int)( x/scale ), (int)( y/scale )));
+        // cvSetImageROI(DispImage, cvRect(m, n, (int)( x/scale ), (int)( y/scale )));
+        Rect roi(m, n, (int)( x/scale ), (int)( y/scale ));
+        cout << "4 BEEEEEEEEEEGGIIIN" << endl;
+        image_roi = canvas(*roi);
+        cout << "5 BEEEEEEEEEEGGIIIN" << endl;        
 
-        cvResize(img, canvas);
+        resize(img, image_roi, image_roi.size());
+        
 
-        cvResetImageROI(canvas);
+        imshow("HIIII", canvas);
+        waitKey(0);
+        cout << "1 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
     }
+
+    cout << "2 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+
+    this->resultCanvas = canvas.clone();
+
+    cout << "3 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
 
 }
 
-void Canvas::build(int nArgs, ...){
+void Canvas::build(std::vector<Mat> matV){
 
-    if(nArgs <= 0) {
+    if(matV.size() <= 0) {
         printf("Number of arguments too small....\n");
         return;
     }
-    else if(nArgs > 12) {
+    else if(matV.size() > 12) {
         printf("Number of arguments too large....\n");
         return;
     }
     // Determine the size of the image, 0    // and the number of rows/cols 
     // from number of arguments 
-    else if (nArgs == 1) {
+    else if (matV.size() == 1) {
         width = height = 1;
         size = 300;
     }
-    else if (nArgs == 2) {
+    else if (matV.size() == 2) {
         width = 2; height = 1;
         size = 300;
     }
-    else if (nArgs == 3 || nArgs == 4) {
+    else if (matV.size() == 3 || matV.size() == 4) {
         width = 2; height = 2;
         size = 300;
     }
-    else if (nArgs == 5 || nArgs == 6) {
+    else if (matV.size() == 5 || matV.size() == 6) {
         width = 3; height = 2;
         size = 200;
     }
-    else if (nArgs == 7 || nArgs == 8) {
+    else if (matV.size() == 7 || matV.size() == 8) {
         width = 4; height = 2;
         size = 200;
     }
@@ -146,23 +180,23 @@ void Canvas::build(int nArgs, ...){
         size = 150;
     }
 
-    canvas = cvCreateImage( cvSize(100 + size*width, 60 + size*height), 8, 3 );
+    // canvas = cvCreateImage( cvSize(100 + size*width, 60 + size*height), 8, 3 );
+    Mat canvas((100 + size*width),(60 + size*height),CV_8U,cvScalar(0));
 
-    va_list args;
-    va_start(args, nArgs);
+    for (i = 0, m = 20, n = 20; i < matV.size(); i++, m += (20 + size)) {
 
-    for (i = 0, m = 20, n = 20; i < nArgs; i++, m += (20 + size)) {
+        img = matV[i];
 
-        img = va_arg(args, IplImage*);
+        cvtColor( img, img, CV_BGR2GRAY );
 
-        if(img == 0) {
-            printf("Invalid arguments");
-            cvReleaseImage(&canvas);
-            return;
-        }
+        // if(img == 0) {
+        //     printf("Invalid arguments");
+        //     // cvReleaseImage(&DispImage);
+        //     return;
+        // }
 
-        x = img->width;
-        y = img->height;
+        x = img.cols;
+        y = img.rows;
 
         max = (x > y)? x: y;
 
@@ -173,12 +207,14 @@ void Canvas::build(int nArgs, ...){
             n+= 20 + size;
         }
 
-        cvSetImageROI(canvas, cvRect(m, n, (int)( x/scale ), (int)( y/scale )));
+        // cvSetImageROI(DispImage, cvRect(m, n, (int)( x/scale ), (int)( y/scale )));
+        Rect roi(m, n, (int)( x/scale ), (int)( y/scale ));
+        Mat image_roi = canvas(roi);
 
-        cvResize(img, canvas);
-
-        cvResetImageROI(canvas);
+        resize(img, image_roi, image_roi.size());
     }
+
+    this->resultCanvas = canvas.clone();
 
 }
 
@@ -187,7 +223,7 @@ void Canvas::show(){
 }
 
 Mat Canvas::getMat(){
-    return cvarrToMat(this->canvas);
+    return this->resultCanvas;
 }
 
 Canvas::~Canvas() {

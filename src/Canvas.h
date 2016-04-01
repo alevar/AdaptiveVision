@@ -34,15 +34,15 @@ class Canvas {
 	public:
 		
 		Canvas();
-		Canvas(int, ...);
-		void build(int, ...);
+		Canvas(vector<Mat>);
+		void build(vector<Mat>);
 		void show();
 		Mat getMat();
 		virtual ~Canvas();
 	
 	private:
 
-		IplImage *img;
+		Mat img;
 
 	    int size;
 	    int i;
@@ -54,7 +54,7 @@ class Canvas {
 	    float scale;
 	    int max;
 
-	    IplImage *canvas;
+	    Mat resultCanvas;
 
 };
 
