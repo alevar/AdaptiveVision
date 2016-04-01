@@ -26,10 +26,23 @@
 #include "opencv2/highgui/highgui_c.h"
 #include "opencv2/imgproc/imgproc_c.h"
 
+#include "MatchMSER.h"
+#include "Canvas.h"
+
 using namespace std;
 using namespace cv;
 
 #define PYTHAGOR(p1,p2) (sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y)))
+
+struct ColorsTPL {
+    const Scalar RED = Scalar(0, 0, 255);
+    const Scalar GREEN = Scalar(0, 255, 0);
+    const Scalar BLUE = Scalar(255, 0, 0);
+    const Scalar BLACK = Scalar(0, 0, 0);
+    const Scalar WHITE = Scalar(255, 255, 255);
+    const Scalar YELLOW = Scalar(0, 255, 255);
+    const Scalar LIGHT_GRAY = Scalar(100, 100, 100);
+};
 
 class Template {
 
@@ -53,6 +66,7 @@ class Template {
 
 		Mat getPerspectiveMatrix(Point2f[], Size2f);
 		Mat normalizeImage(Mat*, Mat* ,float);
+		Mat mserToMat(vector<Point>*);
 		vector<Point> maxMser(Mat*);
 		void detectRegions(Mat &, vector<vector<Point> > &);
 
@@ -62,15 +76,15 @@ class Template {
 	    RotatedRect rect;
 	    vector<Point> maxMserTPL;
 
-		int delta = 5;
-		int minArea = 100;
+		// int delta = 5;
+		// int minArea = 100;
 		// int maxArea = 14400;
-		double maxVariation = 0.25;
-		double minDiversity = 0.2;
-		int maxEvolution = 200;
-		double areaThreshold = 1.01;
-		double minMargin = 0.003;
-		int edgeBlurSize = 0;
+		// double maxVariation = 0.25;
+		// double minDiversity = 0.2;
+		// int maxEvolution = 200;
+		// double areaThreshold = 1.01;
+		// double minMargin = 0.003;
+		// int edgeBlurSize = 0;
 
 		int maxArea = 10;
 		int diversity = 500;
@@ -83,9 +97,25 @@ class Template {
 		const Scalar YELLOW = Scalar(0, 255, 255);
 		const Scalar LIGHT_GRAY = Scalar(100, 100, 100);
 
-		MserFeatureDetector mserDetector = MserFeatureDetector(delta, minArea, maxArea,maxVariation, minDiversity, maxEvolution,areaThreshold, minMargin, edgeBlurSize);
+		// MserFeatureDetector mserDetector = MserFeatureDetector(delta, minArea, maxArea,maxVariation, minDiversity, maxEvolution,areaThreshold, minMargin, edgeBlurSize);
 
     	vector<vector<Point> > msers;
+    	vector<Point> normalizedMser;
+
+    	Mat drawing1;
+    	Mat drawing2;
+    	Rect roi;
+
+    	int minX;
+	    int minY;
+	    int maxX;
+	    int maxY;
+
+	    Mat color;
+	    Point newPoint;
+	    Mat gray;
+
+	    ColorsTPL colors;
 
 };
 

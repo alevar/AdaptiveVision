@@ -33,6 +33,8 @@
 #include "opencv2/imgproc/imgproc_c.h"
 
 #include "Template.h"
+#include "MatchMSER.h"
+#include "Canvas.h"
 
 using namespace std;
 using namespace cv;
@@ -46,6 +48,9 @@ Template::Template(){
 }
 
 Template::Template(Mat image) {
+
+    MatchMSER match;
+
 	this->outputQuad[0] = Point2f( 0,0 );
     this->outputQuad[1] = Point2f( 200,0);
     this->outputQuad[2] = Point2f( 200,200);
@@ -56,10 +61,13 @@ Template::Template(Mat image) {
     cv::cvtColor(inputTPL, imageTPL_GRAY, COLOR_BGR2GRAY);
 
     namedWindow("TEMPLATE CALIBRATION", WINDOW_NORMAL);
+    namedWindow("TESTING MSER WITHIN TEMPLATE",WINDOW_NORMAL);
     createTrackbar("Max Area", "TEMPLATE CALIBRATION", &this->maxArea, 100);
     createTrackbar("Diversity", "TEMPLATE CALIBRATION", &this->diversity, 1000);
 
     while(true){
+
+
 
         this->maxMserTPL = Template::maxMser(&imageTPL_GRAY);
         this->rect = cv::minAreaRect(maxMserTPL);
@@ -68,11 +76,50 @@ Template::Template(Mat image) {
         this->M = Template::getPerspectiveMatrix(this->points,this->rect.size);
         this->imageTPL = Template::normalizeImage(&imageTPL_GRAY,&this->M,this->rect.size.width);
 
-        imshow("TEMPLATE CALIBRATION",imageTPL);
+        drawing1 = Mat::zeros( imageTPL.cols+20,imageTPL.rows+20, CV_8UC3 );
+        bitwise_not(drawing1,drawing1);
+        cvtColor(drawing1, drawing1, CV_BGR2GRAY);
+
+        Rect *roi = new Rect( cv::Point( 10, 10 ), imageTPL.size() );
+        imageTPL.copyTo( drawing1( *roi ) );  
+
+        normalizedMser = maxMser(&drawing1);
+
+        drawing2 = mserToMat(&normalizedMser);
+
+        erode(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        dilate(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        dilate(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        erode(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
+
+        // MATCHING TO THE ORIGINAL
+        match.setTemplate(&drawing1);
+        match.setParams(this->maxArea, this->diversity);
+        Mat testImage = image.clone();
+        Mat imageMatch = match.findMatch(testImage);
+
+        // cvtColor(imageMatch,imageMatch,CV_BGR2GRAY);
+        // cvtColor(drawing2,drawing2,CV_BGR2GRAY);
+
+        vector<Mat> testCanvas = {imageMatch,drawing2};
+
+        cout << "HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+
+        Canvas canvas(testCanvas);
+        cout << "4 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+        Mat final = canvas.getMat();
+
+        cout << "5 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+
+        // imshow("TESTING MSER WITHIN TEMPLATE", imageMatch);
+
+        imshow("TEMPLATE CALIBRATION",final);
 
         if(waitKey(30) >= 0){
             
             // destroyWindow("HELLO MATCH HSV");
+            delete roi;
             break;
         }
     }
@@ -85,7 +132,28 @@ Template::Template(Mat image) {
     waitKey(1);
     waitKey(1);
     waitKey(1);
+
     // cvReleaseImage(&imageTPL);
+}
+
+Mat Template::mserToMat(vector<Point> *mser)
+{
+    minX = min_element(mser->begin(), mser->end(), [] (Point &p1, Point &p2) { return p1.x < p2.x; })[0].x;
+    minY = min_element(mser->begin(), mser->end(), [] (Point &p1, Point &p2) { return p1.y < p2.y; })[0].y;
+    maxX = max_element(mser->begin(), mser->end(), [] (Point &p1, Point &p2) { return p1.x < p2.x; })[0].x;
+    maxY = max_element(mser->begin(), mser->end(), [] (Point &p1, Point &p2) { return p1.y < p2.y; })[0].y;
+
+    Mat *color = new Mat(maxY - minY, maxX - minX, CV_8UC3);
+    
+    for_each(mser->begin(), mser->end(), [&] (Point &p) 
+    {
+        newPoint = Point(p.x - minX, p.y - minY);
+        line(*color, newPoint, newPoint, colors.WHITE);
+    });    
+    cvtColor(*color, gray, CV_BGRA2GRAY);
+    
+    delete color;
+    return gray;
 }
 
 Mat Template::getPerspectiveMatrix(Point2f points[], Size2f size){
@@ -136,7 +204,7 @@ vector<Point> Template::maxMser(Mat *gray)
 }
 
 void Template::detectRegions(Mat &gray, vector<vector<Point> > & vector){
-    this->mserDetector(gray, vector);
+    
 }
 
 Mat Template::getTemplate(){
