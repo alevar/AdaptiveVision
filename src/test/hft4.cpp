@@ -20,11 +20,6 @@ int maxThresh = 255;
 
 RNG rng(12345);
 
-Mat gray;
-vector<vector<Point> > msers;
-double bestPoint = 10.0;
-Rect bound;
-
 struct Features {
   int numberOfHoles;
   double convexHullAreaRate;
@@ -134,6 +129,63 @@ Features extractFeature(vector<Point> *mser){
     dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
     erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 
+    if (mserImg.cols <= 2 || mserImg.rows <= 2){
+        cout << "null" << endl; 
+    }
+
+    RotatedRect minRect = minAreaRect(*mser);
+
+    int numberOfHoles = findHoles(&mserImg);
+    cout << "numberOfHoles2: " << numberOfHoles << endl;
+
+    vector<Point> convexHull;
+
+    cv::convexHull(*mser, convexHull);
+    double convexHullAreaRate = (double)mser->size() / contourArea( convexHull );
+    cout << "convexHullAreaRate: " << convexHullAreaRate << endl;
+
+    double minRectAreaRate = (double)mser->size() / (double) minRect.size.area();
+
+    cout << "minRectAreaRate: " << minRectAreaRate << endl;
+
+    int leng = skeletLength(&mserImg);
+    double skeletLengthRate = (double)leng / (double) mser->size();
+
+    cout << "skeletLengthRate: " << skeletLengthRate << endl;
+
+    double contourArea = contourAreas(&mserImg);
+    // if (contourArea == 0.0){
+    //     return result;
+    // }
+    double contourAreaRate = (double)mser->size() / contourArea;
+    // if (contourAreaRate > 1.0){
+    //     return result;
+    // }
+    cout << "contourAreaRate: " << contourAreaRate << endl;
+
+    // vector<double> result = {(double)numberOfHoles,convexHullAreaRate,minRectAreaRate,skeletLengthRate,contourAreaRate};
+
+    result.numberOfHoles = (int)numberOfHoles;
+    result.convexHullAreaRate = convexHullAreaRate;
+    result.minRectAreaRate = minRectAreaRate;
+    result.skeletLengthRate = skeletLengthRate;
+    result.contourAreaRate = contourAreaRate;
+    result.full = true;
+
+    return result;
+}
+
+Features extractFeatureT(vector<Point> *mser){
+
+    Features result;
+
+    Mat mserImg = mserToMat(mser);
+
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
     Mat drawingT = Mat::zeros( mserImg.cols+20,mserImg.rows+20, CV_8UC3 );
     // bitwise_not(drawingT,drawingT);
     cvtColor(drawingT, drawingT, CV_BGR2GRAY);
@@ -172,7 +224,7 @@ Features extractFeature(vector<Point> *mser){
     cout << "numberOfHoles: " << numberOfHoles << endl;
     cout << "contourAreaRate: " << contourAreaRate << endl;
 
-    result.numberOfHoles = (double)numberOfHoles;
+    result.numberOfHoles = (int)numberOfHoles;
     result.convexHullAreaRate = convexHullAreaRate;
     result.minRectAreaRate = minRectAreaRate;
     result.skeletLengthRate = skeletLengthRate;
@@ -184,6 +236,8 @@ Features extractFeature(vector<Point> *mser){
 
 bool matchTemplate(Features featuresTPL, Features featuresMSER)
 {
+
+    cout << "TPL=== " << featuresTPL.numberOfHoles << " SCN=== " << featuresMSER.numberOfHoles << endl;
     if (featuresTPL.numberOfHoles != featuresMSER.numberOfHoles) { 
         return false; 
     }    
@@ -196,9 +250,9 @@ bool matchTemplate(Features featuresTPL, Features featuresMSER)
     if ((featuresTPL.skeletLengthRate - featuresMSER.skeletLengthRate) > 0.02) {
         return false;
     }
-    if ((featuresTPL.contourAreaRate - featuresMSER.contourAreaRate) > 0.1) {
-        return false;
-    }
+    // if ((featuresTPL.contourAreaRate - featuresMSER.contourAreaRate) > 0.1) {
+    //     return false;
+    // }
     
     return true;
 }
@@ -252,6 +306,76 @@ Mat normalizeImage(Mat *image, Mat *M ,float size)
     return dst;
 }
 
+Mat gray;
+vector<vector<Point> > msers;
+double bestPoint = 10.0;
+Rect bound;
+
+Mat processImage(Mat &image, Features featuresTPL){
+
+    vector<vector<Point> > msers;
+
+    cvtColor(image, gray, CV_BGRA2GRAY);
+
+    double newMaxArea = maxArea/(double)1000;
+    double newDiversity = diversity/(double)1000;
+
+    MSER mser(21, (int)(newMaxArea*gray.cols*gray.rows), (int)(newDiversity*gray.cols*gray.rows), 1, 0.7);
+
+    mser(gray, msers);
+    vector<Point> *bestMser = NULL;
+
+    cout << "SIZE+++++++" << msers.size() << endl;
+    
+    for_each(msers.begin(), msers.end(), [&] (vector<Point> &mser) 
+    {
+
+        Mat newSHOW = mserToMat(&mser);
+        // imshow("TEST SHOW", newSHOW);
+        // waitKey(0);
+
+        cout << "++++++++++++++++++++++++++++++++++++++++++" << endl;
+
+        Features featuresMSER = extractFeature(&mser);
+
+        cout << "FEATURES: " << featuresMSER.numberOfHoles << "\t"
+                            << featuresMSER.convexHullAreaRate << "\t"
+                            << featuresMSER.minRectAreaRate << "\t"
+                            << featuresMSER.skeletLengthRate << "\t"
+                            << featuresMSER.contourAreaRate << endl;
+
+        cout << "++++++++++++++++++++++++++++++++++++++++++" << endl;
+        if(featuresMSER.full)            
+        {
+
+            cout << "ALL good" << endl;
+
+            bool wellMatched = matchTemplate(featuresTPL,featuresMSER);
+
+            if(wellMatched)
+            {
+
+                cout << "WELL MATCHED" << endl;
+                double tmp = distance(&featuresTPL, &featuresMSER);
+                cout << "TMP ================================= " << tmp << endl;
+                if ( bestPoint > tmp ) {
+                    bestPoint = tmp;
+                    bestMser = &mser;
+                }
+            }
+        }
+    });
+
+    if (bestMser)
+    {
+                
+        bound = boundingRect(*bestMser);
+        rectangle(image, bound, colors.GREEN, 3);
+    }
+
+    return image;
+}
+
 int main( int argc, char** argv ){
   
   Mat inputTPl, imageTPL, imageTPL_GRAY;
@@ -298,9 +422,6 @@ int main( int argc, char** argv ){
         bitwise_not(drawing1,drawing1);
         cvtColor(drawing1, drawing1, CV_BGR2GRAY);
 
-        cout << " SIZE IS======== " << drawing1.size() << " = " << drawing1.cols/2 << " x " << drawing1.rows/2 << endl;
-        cout << " SIZE IS======== " << normalizedImage.size() << " = " << normalizedImage.cols/2 << " x " << normalizedImage.rows/2 << endl;
-
         cv::Rect roi( cv::Point( 10, 10 ), normalizedImage.size() );
         normalizedImage.copyTo( drawing1( roi ) );      
 
@@ -324,13 +445,42 @@ int main( int argc, char** argv ){
 
     vector<Point> normalizedMser = maxMser(&drawing1);
 
-    Features featuresTPL = extractFeature(&normalizedMser);
+    Features featuresTPL = extractFeatureT(&normalizedMser);
 
     cout << "PRINTING FROM MAIN: " << featuresTPL.numberOfHoles << "\t"
                             << featuresTPL.convexHullAreaRate << "\t"
                             << featuresTPL.minRectAreaRate << "\t"
                             << featuresTPL.skeletLengthRate << "\t"
                             << featuresTPL.contourAreaRate << endl;
+
+    VideoCapture cap(0);
+    if(!cap.isOpened()){
+        return -1;
+    }
+
+    namedWindow("MATCH",1);
+    Mat inputSCN, imageSCN, imageSCN_GRAY;
+    while(true){
+      
+      cap >> inputSCN;
+      cvtColor(inputSCN, imageSCN_GRAY, COLOR_BGR2GRAY);
+      imageSCN = processImage(inputSCN, featuresTPL);
+
+      imshow("MATCH",inputSCN);
+      if(waitKey(30) >= 0){
+            
+            break;
+        }
+      // Mat gray;
+  }
+
+  // Mat testSCN = imread(argv[2]);
+
+  // namedWindow("MATCH",1);
+  // // cvtColor(testSCN, testSCN, COLOR_BGR2GRAY); 
+  // Mat imageSCN = processImage(testSCN, featuresTPL);
+  // imshow("MATCH",imageSCN);
+  // waitKey(0);
 
   return 0;
 
