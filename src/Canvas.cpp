@@ -75,18 +75,20 @@ Canvas::Canvas(vector<Mat> matV){
 
     // canvas = cvCreateImage( cvSize(100 + size*width, 60 + size*height), 8, 3 );
     cout <<matV[0].type() << "_" << matV[0].channels()<<endl;
-    Mat canvas((100 + size*width),(60 + size*height),CV_8UC3, CV_RGB(1,1,1));
+    Mat canvas((100 + size*width),(60 + size*height),CV_8UC3, Scalar(1,1,1));
 
-    Mat image_roi;
+    
 
     for (i = 0, m = 20, n = 20; i < matV.size(); i++, m += (20 + size)) {
 
-        cout << "1 BEEEEEEEEEEGGIIIN" << endl;
+        Mat image_roi;
+
+        // cout << "1 BEEEEEEEEEEGGIIIN" << endl;
 
         img = matV[i];
 
-        cout << "Channels: " << img.channels() << "_" << canvas.channels() << endl;
-        cout << "Type: " << img.type() << "_" << canvas.type() << endl;
+        // cout << "Channels: " << img.channels() << "_" << canvas.channels() << endl;
+        // cout << "Type: " << img.type() << "_" << canvas.type() << endl;
 
         if(img.channels() != 3){
             cvtColor( img, img, CV_GRAY2BGR );
@@ -95,12 +97,12 @@ Canvas::Canvas(vector<Mat> matV){
             img.convertTo(img,CV_8UC3);
         }
 
-        cout << "Channels: " << img.channels() << "_" << canvas.channels() << endl;
-        cout << "Type: " << img.type() << "_" << canvas.type() << endl;
-        cout << "2 BEEEEEEEEEEGGIIIN" << endl;
+        // cout << "Channels: " << img.channels() << "_" << canvas.channels() << endl;
+        // cout << "Type: " << img.type() << "_" << canvas.type() << endl;
+        // cout << "2 BEEEEEEEEEEGGIIIN" << endl;
 
-        imshow("IMAGE", img);
-        waitKey(0);
+        // imshow("IMAGE", img);
+        // waitKey(0);
 
         // if(img == 0) {
         //     printf("Invalid arguments");
@@ -119,27 +121,28 @@ Canvas::Canvas(vector<Mat> matV){
             m = 20;
             n+= 20 + size;
         }
-        cout << " 3 BEEEEEEEEEEGGIIIN" << endl;
+        // cout << " 3 BEEEEEEEEEEGGIIIN" << endl;
 
         // cvSetImageROI(DispImage, cvRect(m, n, (int)( x/scale ), (int)( y/scale )));
-        Rect roi(m, n, (int)( x/scale ), (int)( y/scale ));
-        cout << "4 BEEEEEEEEEEGGIIIN" << endl;
-        image_roi = canvas(*roi);
-        cout << "5 BEEEEEEEEEEGGIIIN" << endl;        
+        Rect roi(n, m, (int)( x/scale ), (int)( y/scale ));
+        // cout << "CANVAS: " << canvas.size() << endl;
+        // cout << "ROI: " << roi.size() << "_" << roi.x << "_" << roi.y << endl;
+        // cout << "4 BEEEEEEEEEEGGIIIN" << endl;
+        image_roi = canvas(roi);
+        // cout << "5 BEEEEEEEEEEGGIIIN" << endl;        
 
-        resize(img, image_roi, image_roi.size());
-        
+        resize(img, image_roi, image_roi.size());        
 
-        imshow("HIIII", canvas);
-        waitKey(0);
-        cout << "1 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+        // imshow("HIIII", canvas);
+        // waitKey(0);
+        // cout << "1 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
     }
 
-    cout << "2 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+    // cout << "2 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
 
     this->resultCanvas = canvas.clone();
 
-    cout << "3 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+    // cout << "3 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
 
 }
 
@@ -223,7 +226,9 @@ void Canvas::show(){
 }
 
 Mat Canvas::getMat(){
-    return this->resultCanvas;
+    // imshow("TESTING", resultCanvas);
+    // waitKey(0);
+    return resultCanvas;
 }
 
 Canvas::~Canvas() {
