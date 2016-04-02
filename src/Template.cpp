@@ -61,7 +61,6 @@ Template::Template(Mat image) {
     cv::cvtColor(inputTPL, imageTPL_GRAY, COLOR_BGR2GRAY);
 
     namedWindow("TEMPLATE CALIBRATION", WINDOW_NORMAL);
-    namedWindow("TESTING MSER WITHIN TEMPLATE",WINDOW_NORMAL);
     createTrackbar("Max Area", "TEMPLATE CALIBRATION", &this->maxArea, 100);
     createTrackbar("Diversity", "TEMPLATE CALIBRATION", &this->diversity, 1000);
 
@@ -99,18 +98,20 @@ Template::Template(Mat image) {
         Mat testImage = image.clone();
         Mat imageMatch = match.findMatch(testImage);
 
+        Mat testTPL = drawing2.clone();
+
         // cvtColor(imageMatch,imageMatch,CV_BGR2GRAY);
         // cvtColor(drawing2,drawing2,CV_BGR2GRAY);
 
-        vector<Mat> testCanvas = {imageMatch,drawing2};
+        vector<Mat> testCanvas = {imageMatch,testTPL};
 
-        cout << "HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+        // cout << "HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
 
         Canvas canvas(testCanvas);
-        cout << "4 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+        // cout << "4 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
         Mat final = canvas.getMat();
 
-        cout << "5 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
+        // cout << "5 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
 
         // imshow("TESTING MSER WITHIN TEMPLATE", imageMatch);
 
