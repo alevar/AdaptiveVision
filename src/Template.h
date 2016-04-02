@@ -70,6 +70,8 @@ class Template {
 		vector<Point> maxMser(Mat*);
 		void detectRegions(Mat &, vector<vector<Point> > &);
 
+		void distort();
+
 		Mat inputTPL, imageTPL_GRAY, M;
 
 	    Point2f points[4];

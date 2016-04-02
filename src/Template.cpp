@@ -100,26 +100,14 @@ Template::Template(Mat image) {
 
         Mat testTPL = drawing2.clone();
 
-        // cvtColor(imageMatch,imageMatch,CV_BGR2GRAY);
-        // cvtColor(drawing2,drawing2,CV_BGR2GRAY);
-
         vector<Mat> testCanvas = {imageMatch,testTPL};
-
-        // cout << "HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
-
         Canvas canvas(testCanvas);
-        // cout << "4 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
         Mat final = canvas.getMat();
-
-        // cout << "5 HELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLDHELLO WORLD" << endl;
-
-        // imshow("TESTING MSER WITHIN TEMPLATE", imageMatch);
 
         imshow("TEMPLATE CALIBRATION",final);
 
         if(waitKey(30) >= 0){
             
-            // destroyWindow("HELLO MATCH HSV");
             delete roi;
             break;
         }
@@ -133,8 +121,6 @@ Template::Template(Mat image) {
     waitKey(1);
     waitKey(1);
     waitKey(1);
-
-    // cvReleaseImage(&imageTPL);
 }
 
 Mat Template::mserToMat(vector<Point> *mser)
@@ -210,6 +196,10 @@ void Template::detectRegions(Mat &gray, vector<vector<Point> > & vector){
 
 Mat Template::getTemplate(){
     return this->imageTPL;
+}
+
+void Template::distort(){
+    
 }
 
 Template::~Template() {
