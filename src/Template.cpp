@@ -69,6 +69,7 @@ Template::Template(Mat image) {
 
 
         this->maxMserTPL = Template::maxMser(&imageTPL_GRAY);
+        
         this->rect = cv::minAreaRect(maxMserTPL);
         rect.points(points);
 
@@ -93,10 +94,10 @@ Template::Template(Mat image) {
 
 
         // MATCHING TO THE ORIGINAL
-        match.setTemplate(&drawing1);
+        match.setTemplate(normalizedMser);
         match.setParams(this->maxArea, this->diversity);
         Mat testImage = image.clone();
-        Mat imageMatch = match.findMatch(testImage);
+        Mat imageMatch = match.findMatchTPL(testImage);
 
         Mat testTPL = drawing2.clone();
 
@@ -104,14 +105,29 @@ Template::Template(Mat image) {
         Canvas canvas(testCanvas);
         Mat final = canvas.getMat();
 
+        delete roi;
+
         imshow("TEMPLATE CALIBRATION",final);
 
         if(waitKey(30) >= 0){
             
-            delete roi;
+            
             break;
         }
     }
+    namedWindow("FINAL TEMPLATE");
+    imshow("FINAL TEMPLATE", drawing2);
+    waitKey(0);
+    cvDestroyWindow("FINAL TEMPLATE");
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+    waitKey(1);
+
     cvDestroyWindow("TEMPLATE CALIBRATION");
     waitKey(1);
     waitKey(1);
@@ -194,8 +210,17 @@ void Template::detectRegions(Mat &gray, vector<vector<Point> > & vector){
     
 }
 
-Mat Template::getTemplate(){
+Mat Template::getTemplateMAT(){
     return this->imageTPL;
+}
+
+vector<Point> Template::getTemplateNorm(){
+    return this->normalizedMser;
+}
+
+vector<int> Template::getParams(){
+    vector<int> params = {maxArea,diversity};
+    return params;
 }
 
 void Template::distort(){

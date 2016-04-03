@@ -50,7 +50,9 @@ class Template {
 
 		Template();
 		Template(Mat);		
-		Mat getTemplate();
+		Mat getTemplateMAT();
+		vector<Point> getTemplateNorm();
+		vector<int> getParams();
 		virtual ~Template();
 
 		Mat imageTPL;
