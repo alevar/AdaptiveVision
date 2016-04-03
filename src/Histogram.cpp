@@ -105,43 +105,55 @@ void Histogram::showHist(){
 
     if(hisRGB && !hisHSV){
 
-        namedWindow("Original Image");
-        namedWindow("Red Histogram");
-        namedWindow("Green Histogram");
-        namedWindow("Blue Histogram");
-        imshow("Original Image", this->imageRGB);
+        // namedWindow("Original Image");
+        // namedWindow("Red Histogram");
+        // namedWindow("Green Histogram");
+        // namedWindow("Blue Histogram");
+        // imshow("Original Image", this->imageRGB);
         imshow("Red Histogram", this->HistPlotR);
         imshow("Green Histogram", this->HistPlotG);
         imshow("Blue Histogram", this->HistPlotB);
-        waitKey(0);
+        // waitKey(0);
+        if(waitKey(30) >= 0){
+            
+            
+        }
 
     }
 
     else if(!hisRGB && hisHSV){
 
-        namedWindow("Original Image");
-        namedWindow("Red Histogram");
-        namedWindow("Green Histogram");
-        namedWindow("Blue Histogram");
-        imshow("Original Image", this->imageHSV);
+        // namedWindow("Original Image");
+        // namedWindow("Red Histogram");
+        // namedWindow("Green Histogram");
+        // namedWindow("Blue Histogram");
+        // imshow("Original Image", this->imageHSV);
         imshow("Hue Histogram", this->HistPlotR);
         imshow("Sat Histogram", this->HistPlotG);
         imshow("Val Histogram", this->HistPlotB);
-        waitKey(0);
+        // waitKey(0);
+        if(waitKey(30) >= 0){
+            
+            
+        }
 
     }
 
     else if(hisRGB && hisHSV){
 
-        namedWindow("Original Image");
-        namedWindow("Red Histogram");
-        namedWindow("Green Histogram");
-        namedWindow("Blue Histogram");
-        imshow("Original Image", this->imageRGB);
+        // namedWindow("Original Image");
+        // namedWindow("Red Histogram");
+        // namedWindow("Green Histogram");
+        // namedWindow("Blue Histogram");
+        // imshow("Original Image", this->imageRGB);
         imshow("Red Histogram", this->HistPlotR);
         imshow("Green Histogram", this->HistPlotG);
         imshow("Blue Histogram", this->HistPlotB);
-        waitKey(0);
+        // waitKey(0);
+        if(waitKey(30) >= 0){
+            
+            
+        }
 
     }
 

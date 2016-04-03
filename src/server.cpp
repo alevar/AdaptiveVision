@@ -84,10 +84,13 @@ int width;
 int height;
 
 MatchMSER match;
+Mat imageMatch;
+bool matchM = false;
 // Mat *img2;
 
 int main(int argc , char *argv[])
 {
+	// namedWindow("SERVER",WINDOW_NORMAL);
 
 
 	//=====================================================
@@ -263,7 +266,18 @@ int main(int argc , char *argv[])
 						// send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
 						send(childSocket,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
 
+						// namedWindow("SERVER",WINDOW_NORMAL);
+
 						while (connectionStatus){
+
+							if (matchM){
+								imshow("SERVER",imageMatch);
+								// waitKey(0);
+								if(waitKey(30) >= 0){
+            
+						            break;
+						        }
+							}
 
 							cout<<"the pid of the child is: "<<new_fork<< endl;
 
@@ -558,7 +572,9 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	Mat *img2 = new Mat(Size(height, width), CV_8UC3, sockData);
 
-	Mat imageMatch = match.findMatch(*img2);
+	imageMatch = match.findMatch(*img2);
+
+	matchM = true;
 
 	Histogram histTest(imageMatch);
 	histTest.calcHis();
@@ -568,7 +584,8 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	// Mat imageTPL = testTPL.getTemplate();
 	// imshow("SERVER", *img2);
-	imshow("SERVER", imageMatch);
+	// imshow("SERVER", imageMatch);
+	// waitKey(1);
 
 	delete img2;
 
