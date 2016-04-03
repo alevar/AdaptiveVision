@@ -97,7 +97,7 @@ int main(int argc , char *argv[])
 	// Mat im1 = imread("/home/sparrow/Pictures/Webcam/logoT.jpg");
 	// imshow("hello test", im1);
 
-	waitKey(0);
+	// waitKey(0);
 
 	struct Params {
 		int delta 				= 5;
@@ -180,8 +180,10 @@ int main(int argc , char *argv[])
   	inputTPL = imread(templatePath);
 
   	Template testTPL(inputTPL);
-	Mat imageTPL = testTPL.getTemplate();
-	match.setTemplate(&imageTPL);
+	vector<Point> normalizedMser = testTPL.getTemplateNorm();
+	vector<int> paramsTPL = testTPL.getParams();
+	match.setTemplate(normalizedMser);
+	match.setParams(paramsTPL[0],paramsTPL[1]);
 	// match.setImage(img2);
 	// imshow("Template", imageTPL);
 	// waitKey(0);
@@ -518,6 +520,8 @@ void processGet(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 }
 
+// cv::namedWindow("SERVER",WINDOW_NORMAL);
+
 void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnswer){
 	// if() // check if the client_ip is in the map
 
@@ -554,9 +558,6 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	Mat *img2 = new Mat(Size(height, width), CV_8UC3, sockData);
 
-	imshow("RECEIVED BY THE SERVER", *img2);
-	waitKey(0);
-
 	Mat imageMatch = match.findMatch(*img2);
 
 	Histogram histTest(imageMatch);
@@ -566,8 +567,8 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	// Template testTPL(*img2);
 
 	// Mat imageTPL = testTPL.getTemplate();
-	imshow("MSER MATCH", imageMatch);
-	waitKey(0);
+	// imshow("SERVER", *img2);
+	imshow("SERVER", imageMatch);
 
 	delete img2;
 
