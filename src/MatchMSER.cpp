@@ -30,6 +30,7 @@
 #include "MatchMSER.h"
 #include "Template.h"
 #include "Canvas.h"
+#include "Histogram.h"
 
 using namespace std;
 using namespace cv;
@@ -424,10 +425,8 @@ Mat MatchMSER::processImage(Mat imageMAT){
         // dilate(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
         // erode(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
 
-        cout << "1 DEBUG" << endl;
 
         this->bestMSER = mserToMat(bestMser);
-        cout << "2 DEBUG" << endl;
         // imshow("OLD BESTMSER",bestMSER);
 
         // // findContours(this->bestMSER, this->contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
@@ -447,37 +446,28 @@ Mat MatchMSER::processImage(Mat imageMAT){
 
         // this->clone = imageMAT.clone();
         Mat mask = Mat::zeros(imageMAT.rows, imageMAT.cols, CV_8UC1);
-        cout << "3 DEBUG" << endl;
         
         for (cv::Point p : *bestMser){
             mask.at<uchar>(p.y, p.x) = 255;
         }
-        cout << "4 DEBUG" << endl;
         
         // drawContours(mask, vector<vector<Point> >(1,*bestMser), -1, Scalar(255), CV_FILLED);
         Mat crop(imageMAT.rows, imageMAT.cols, CV_8UC3);
-        cout << "5 DEBUG" << endl;
         crop.setTo(Scalar(0,255,0));
-        cout << "6 DEBUG" << endl;
         imageMAT.copyTo(crop, mask);
-        cout << "7 DEBUG" << endl;
         normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
-        cout << "8 DEBUG" << endl;
 
-        cout << "SIZE bestMSER: " << bestMSER.size() << endl;
-        cout << "SIZE CROP" << crop.size() << endl;
 
         // ector<Mat> testCanvas = {imageMatch,testTPL};
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
 
-        // imshow("CROPPED",crop(bound));
-        // imshow("BESTMSER",bestMSER);
-        // imshow("MASK",mask);
-        // cout << "9 DEBUG" << endl;
-        // if(waitKey(30) >= 0){
+        imshow("CROPPED",crop(bound));
+        imshow("BESTMSER",bestMSER);
+        imshow("MASK",mask);
+        if(waitKey(30) >= 0){
 
-        // }
+        }
     }
 
     // if (msers.size() == 0) { 
