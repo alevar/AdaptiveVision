@@ -55,6 +55,16 @@ void MatchMSER::setTemplate(Mat *imgTPL){
 	this->imgTPL = imgTPL;
 }
 
+void MatchMSER::setTemplate(vector<Point> normalizedMser){
+    this->normalizedMser = normalizedMser;
+    this->featuresTPL = MatchMSER::extractFeatureTPL(&normalizedMser);
+    cout << "PRINTING FROM SETTEMPLATE: " << featuresTPL.numberOfHoles << "\t"
+                            << featuresTPL.convexHullAreaRate << "\t"
+                            << featuresTPL.minRectAreaRate << "\t"
+                            << featuresTPL.skeletLengthRate << "\t"
+                            << featuresTPL.contourAreaRate << endl;
+}
+
 void MatchMSER::setImage(Mat *imgMAT){
 	this->imgMAT = imgMAT;
 }
@@ -69,14 +79,26 @@ void MatchMSER::setParams(int maxArea, int diversity){
     this->diversity = diversity;
 }
 
-Mat MatchMSER::findMatch(Mat imageMAT){
+Mat MatchMSER::findMatchTPL(Mat imageMAT){
 
-    this->normalizedMser = MatchMSER::maxMser(this->imgTPL);
+    // this->normalizedMser = MatchMSER::maxMser(this->imgTPL);
 
     this->featuresTPL = MatchMSER::extractFeatureTPL(&normalizedMser);
+
+    cout << "PRINTING FROM FINDMATCHTPL: " << featuresTPL.numberOfHoles << "\t"
+                            << featuresTPL.convexHullAreaRate << "\t"
+                            << featuresTPL.minRectAreaRate << "\t"
+                            << featuresTPL.skeletLengthRate << "\t"
+                            << featuresTPL.contourAreaRate << endl;
 	
     Mat matched = MatchMSER::processImage(imageMAT);
 	return matched;
+}
+
+Mat MatchMSER::findMatch(Mat imageMAT){
+    
+    Mat matched = MatchMSER::processImage(imageMAT);
+    return matched;
 }
 
 // void MatchMSER::setParams(int *delta,int *minArea,int *maxArea,double *maxVariation,double *minDiversity,
@@ -124,9 +146,8 @@ Mat MatchMSER::mserToMat(vector<Point> *mser)
 int MatchMSER::findHoles(Mat *img){
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
+    Canny(*img, canny_output, minThresh, minThresh*2, 3 );
     findContours(*img, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
-    
-    if (hierarchy.size() == contours.size()) return 1;
     
     int result = 0;
     for (size_t i = 0; i < hierarchy.size(); i++) { 
@@ -196,22 +217,22 @@ Features MatchMSER::extractFeature(vector<Point> *mser){
     RotatedRect minRect = minAreaRect(*mser);
 
     int numberOfHoles = findHoles(&mserImg);
-    cout << "numberOfHoles: " << numberOfHoles << endl;
+    // cout << "numberOfHoles: " << numberOfHoles << endl;
 
     vector<Point> convexHull;
 
     cv::convexHull(*mser, convexHull);
     double convexHullAreaRate = (double)mser->size() / contourArea( convexHull );
-    cout << "convexHullAreaRate: " << convexHullAreaRate << endl;
+    // cout << "convexHullAreaRate: " << convexHullAreaRate << endl;
 
     double minRectAreaRate = (double)mser->size() / (double) minRect.size.area();
 
-    cout << "minRectAreaRate: " << minRectAreaRate << endl;
+    // cout << "minRectAreaRate: " << minRectAreaRate << endl;
 
     int leng = skeletLength(&mserImg);
     double skeletLengthRate = (double)leng / (double) mser->size();
 
-    cout << "skeletLengthRate: " << skeletLengthRate << endl;
+    // cout << "skeletLengthRate: " << skeletLengthRate << endl;
 
     double contourArea = contourAreas(&mserImg);
     // if (contourArea == 0.0){
@@ -221,7 +242,7 @@ Features MatchMSER::extractFeature(vector<Point> *mser){
     // if (contourAreaRate > 1.0){
     //     return result;
     // }
-    cout << "contourAreaRate: " << contourAreaRate << endl;
+    // cout << "contourAreaRate: " << contourAreaRate << endl;
 
     // vector<double> result = {(double)numberOfHoles,convexHullAreaRate,minRectAreaRate,skeletLengthRate,contourAreaRate};
 
@@ -278,11 +299,11 @@ Features MatchMSER::extractFeatureTPL(vector<Point> *mser){
         return result;
     }
 
-    cout << "skeletLengthRate: " << skeletLengthRate << endl;
-    cout << "minRectAreaRate: " << minRectAreaRate << endl;
-    cout << "convexHullAreaRate: " << convexHullAreaRate << endl;
-    cout << "numberOfHoles: " << numberOfHoles << endl;
-    cout << "contourAreaRate: " << contourAreaRate << endl;
+    // cout << "skeletLengthRate: " << skeletLengthRate << endl;
+    // cout << "minRectAreaRate: " << minRectAreaRate << endl;
+    // cout << "convexHullAreaRate: " << convexHullAreaRate << endl;
+    // cout << "numberOfHoles: " << numberOfHoles << endl;
+    // cout << "contourAreaRate: " << contourAreaRate << endl;
 
     result.numberOfHoles = (int)numberOfHoles;
     result.convexHullAreaRate = convexHullAreaRate;
@@ -332,9 +353,9 @@ Mat MatchMSER::processImage(Mat imageMAT){
     Rect bound;
     vector<Point> *bestMser = NULL;
 
-    cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+    // cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
     cvtColor(imageMAT, gray, CV_BGRA2GRAY);
-    cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+    // cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
 
     double newMaxArea = maxArea/(double)1000;
     double newDiversity = diversity/(double)1000;
@@ -357,7 +378,7 @@ Mat MatchMSER::processImage(Mat imageMAT){
         if(featuresMSER.full)            
         {
 
-            cout << "ALL good" << endl;
+            // cout << "ALL good" << endl;
 
             bool wellMatched = matchTemplate(featuresTPL,featuresMSER);
 

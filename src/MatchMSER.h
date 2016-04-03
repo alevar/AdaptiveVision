@@ -72,10 +72,12 @@ class MatchMSER {
 		MatchMSER(Mat*);
 		MatchMSER(Mat*, Mat*);
 		void setTemplate(Mat*);
+		void setTemplate(vector<Point>);
 		void setImage(Mat*);
 		void set(Mat*,Mat*);
 		void setParams(int, int);
 		Mat findMatch(Mat);
+		Mat findMatchTPL(Mat);
 
 		// void setParams(int*,int*,int*,double*,double*,int*,double*,double*,int*);
 		virtual ~MatchMSER();	    
@@ -104,6 +106,10 @@ class MatchMSER {
 
 		vector<Point> normalizedMser;
 		Features featuresTPL;
+
+		Mat canny_output;
+		int minThresh = 100;
+		int maxThresh = 255;
 
 		int maxArea = 10;
 		int diversity = 500;
