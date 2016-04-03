@@ -29,6 +29,7 @@
 
 #include "MatchMSER.h"
 #include "Template.h"
+#include "Canvas.h"
 
 using namespace std;
 using namespace cv;
@@ -389,6 +390,21 @@ Mat MatchMSER::processImage(Mat imageMAT){
                 // if ( bestPoint > tmp ) {
                     bestPoint = tmp;
                     bestMser = &mser;
+                    // this->bestMSER = mserToMat(&mser);
+                    // this->clone = imageMAT.clone();
+                    // this->mask = Mat::zeros(bestMSER.rows, bestMSER.cols, CV_8UC1);
+                    // drawContours(mask, vector<vector<Point> >(1,*bestMser), -1, Scalar(255), CV_FILLED);
+                    // Mat crop(bestMSER.rows, bestMSER.cols, CV_8UC3);
+                    // crop.setTo(Scalar(0,255,0));
+                    // clone.copyTo(crop, mask);
+                    // normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
+                    // imshow("CROPPED",crop);
+                    // if(waitKey(30) >= 0){
+
+                    // }
+                    // this->bestHUE = ;
+                    // this->bestHUE = ;
+                    // this->bestHUE = ;
                 // }
             }
         }
@@ -399,6 +415,69 @@ Mat MatchMSER::processImage(Mat imageMAT){
                 
         bound = boundingRect(*bestMser);
         rectangle(imageMAT, bound, this->colors.GREEN, 3);
+
+
+
+        // this->bestMSER = mserToMat(bestMser);
+        // erode(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        // dilate(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        // dilate(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        // erode(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
+        cout << "1 DEBUG" << endl;
+
+        this->bestMSER = mserToMat(bestMser);
+        cout << "2 DEBUG" << endl;
+        // imshow("OLD BESTMSER",bestMSER);
+
+        // // findContours(this->bestMSER, this->contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+        // findContours(this->bestMSER, this->contours, this->hierarchy,CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+
+        // for( int i = 0; i< this->contours.size(); i++ ) // iterate through each contour. 
+        // {
+        //     double a=contourArea( this->contours[i],false);  //  Find the area of contour
+        //     if(a>largest_area){
+        //         largest_area=a;
+        //         largest_contour_index=i;                //Store the index of largest contour
+        //         // bounding_rect=boundingRect(contours[i]); // Find the bounding rectangle for biggest contour
+        //     }
+
+        // }
+
+
+        // this->clone = imageMAT.clone();
+        Mat mask = Mat::zeros(imageMAT.rows, imageMAT.cols, CV_8UC1);
+        cout << "3 DEBUG" << endl;
+        
+        for (cv::Point p : *bestMser){
+            mask.at<uchar>(p.y, p.x) = 255;
+        }
+        cout << "4 DEBUG" << endl;
+        
+        // drawContours(mask, vector<vector<Point> >(1,*bestMser), -1, Scalar(255), CV_FILLED);
+        Mat crop(imageMAT.rows, imageMAT.cols, CV_8UC3);
+        cout << "5 DEBUG" << endl;
+        crop.setTo(Scalar(0,255,0));
+        cout << "6 DEBUG" << endl;
+        imageMAT.copyTo(crop, mask);
+        cout << "7 DEBUG" << endl;
+        normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
+        cout << "8 DEBUG" << endl;
+
+        cout << "SIZE bestMSER: " << bestMSER.size() << endl;
+        cout << "SIZE CROP" << crop.size() << endl;
+
+        // ector<Mat> testCanvas = {imageMatch,testTPL};
+        // Canvas canvas(testCanvas);
+        // Mat final = canvas.getMat();
+
+        // imshow("CROPPED",crop(bound));
+        // imshow("BESTMSER",bestMSER);
+        // imshow("MASK",mask);
+        // cout << "9 DEBUG" << endl;
+        // if(waitKey(30) >= 0){
+
+        // }
     }
 
     // if (msers.size() == 0) { 

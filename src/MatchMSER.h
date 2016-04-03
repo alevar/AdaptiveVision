@@ -111,6 +111,19 @@ class MatchMSER {
 		int minThresh = 100;
 		int maxThresh = 255;
 
+		Mat bestMSER;
+		Mat clone;
+		// Mat mask;
+		int bestHUE;
+		int bestSAT;
+		int bestVAL;
+
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+		int largest_area = 0;
+		int largest_contour_index=0;
+
+
 		int maxArea = 10;
 		int diversity = 500;
 
