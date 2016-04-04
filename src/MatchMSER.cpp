@@ -457,17 +457,21 @@ Mat MatchMSER::processImage(Mat imageMAT){
         imageMAT.copyTo(crop, mask);
         normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
 
-
+        Histogram *histTest = new Histogram(crop);
+        histTest->calcHis();
+        histTest->showHist();
         // ector<Mat> testCanvas = {imageMatch,testTPL};
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
 
-        imshow("CROPPED",crop(bound));
-        imshow("BESTMSER",bestMSER);
-        imshow("MASK",mask);
-        if(waitKey(30) >= 0){
+        // imshow("CROPPED",crop(bound));
+        // imshow("BESTMSER",bestMSER);
+        // imshow("MASK",mask);
+        // if(waitKey(30) >= 0){
 
-        }
+        // }
+        delete histTest;
+
     }
 
     // if (msers.size() == 0) { 

@@ -576,9 +576,9 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	matchM = true;
 
-	Histogram histTest(imageMatch);
-	histTest.calcHis();
-	histTest.showHist();
+	// Histogram histTest(imageMatch);
+	// histTest.calcHis();
+	// histTest.showHist();
 
 	// Template testTPL(*img2);
 
