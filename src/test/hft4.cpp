@@ -181,6 +181,8 @@ Features extractFeatureT(vector<Point> *mser){
 
     Mat mserImg = mserToMat(mser);
 
+    imshow("SHOWINGOFF", mserImg);
+
     erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
     dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
     dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
@@ -408,8 +410,6 @@ int main( int argc, char** argv ){
 
         maxMserTPL = maxMser(&imageTPL_GRAY);
 
-        mserImg = mserToMat(&maxMserTPL);
-
         rect = minAreaRect(maxMserTPL);
         rect.points(points);
 
@@ -421,9 +421,17 @@ int main( int argc, char** argv ){
         cvtColor(drawing1, drawing1, CV_BGR2GRAY);
 
         cv::Rect roi( cv::Point( 10, 10 ), normalizedImage.size() );
-        normalizedImage.copyTo( drawing1( roi ) );      
+        normalizedImage.copyTo( drawing1( roi ) );  
 
-        imshow("TEMPLATE CALIBRATION",drawing1);
+        vector<Point> normalizedMser = maxMser(&drawing1);
+
+        Mat drawing2 = mserToMat(&normalizedMser);
+
+        erode(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        dilate(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        dilate(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        erode(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        imshow("TEMPLATE CALIBRATION",drawing2);
 
         if(waitKey(30) >= 0){
             
