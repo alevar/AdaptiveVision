@@ -60,11 +60,11 @@ void MatchMSER::setTemplate(Mat *imgTPL){
 void MatchMSER::setTemplate(vector<Point> normalizedMser){
     this->normalizedMser = normalizedMser;
     this->featuresTPL = MatchMSER::extractFeatureTPL(&normalizedMser);
-    cout << "PRINTING FROM SETTEMPLATE: " << featuresTPL.numberOfHoles << "\t"
-                            << featuresTPL.convexHullAreaRate << "\t"
-                            << featuresTPL.minRectAreaRate << "\t"
-                            << featuresTPL.skeletLengthRate << "\t"
-                            << featuresTPL.contourAreaRate << endl;
+    // cout << "PRINTING FROM SETTEMPLATE: " << featuresTPL.numberOfHoles << "\t"
+    //                         << featuresTPL.convexHullAreaRate << "\t"
+    //                         << featuresTPL.minRectAreaRate << "\t"
+    //                         << featuresTPL.skeletLengthRate << "\t"
+    //                         << featuresTPL.contourAreaRate << endl;
 }
 
 void MatchMSER::setImage(Mat *imgMAT){
@@ -87,11 +87,11 @@ Mat MatchMSER::findMatchTPL(Mat imageMAT){
 
     this->featuresTPL = MatchMSER::extractFeatureTPL(&normalizedMser);
 
-    cout << "PRINTING FROM FINDMATCHTPL: " << featuresTPL.numberOfHoles << "\t"
-                            << featuresTPL.convexHullAreaRate << "\t"
-                            << featuresTPL.minRectAreaRate << "\t"
-                            << featuresTPL.skeletLengthRate << "\t"
-                            << featuresTPL.contourAreaRate << endl;
+    // cout << "PRINTING FROM FINDMATCHTPL: " << featuresTPL.numberOfHoles << "\t"
+    //                         << featuresTPL.convexHullAreaRate << "\t"
+    //                         << featuresTPL.minRectAreaRate << "\t"
+    //                         << featuresTPL.skeletLengthRate << "\t"
+    //                         << featuresTPL.contourAreaRate << endl;
 	
     Mat matched = MatchMSER::processImage(imageMAT);
 	return matched;
@@ -458,18 +458,29 @@ Mat MatchMSER::processImage(Mat imageMAT){
         normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
 
         Histogram *histTest = new Histogram(crop);
-        histTest->calcHis();
-        histTest->showHist();
-        // ector<Mat> testCanvas = {imageMatch,testTPL};
+        histTest->calcHisHSV();
+        vector<int> newValsMax = histTest->getVal();
+        // vector<int> newValsMin = histTest->getMin();
+        if(newValsMax.empty()){
+            cout << "OOPS< WE ARE EMPTY" << endl;
+        }
+        else{
+            for (int f = 0; f < 3; f++){
+                cout << "HISTOGRAM VALUES:::::" << newValsMax[f] << endl;
+            }
+        }
+        
+        // histTest->showHist();
+        // vector<Mat> testCanvas = {imageMatch,testTPL};
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
 
         // imshow("CROPPED",crop(bound));
         // imshow("BESTMSER",bestMSER);
         // imshow("MASK",mask);
-        // if(waitKey(30) >= 0){
+        if(waitKey(30) >= 0){
 
-        // }
+        }
         delete histTest;
 
     }
