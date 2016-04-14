@@ -8,6 +8,7 @@
 #include <sstream>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <algorithm>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -67,7 +68,7 @@ void Histogram::calcHisHSV(){
 
     hisHSV = true;
 
-    convertRGB2HSV(this->plot);
+    convertRGB2HSV(this->imageRGB);
 
     for (int i = 0; i < this->imageHSV.rows; i++)
     {
@@ -89,11 +90,94 @@ void Histogram::calcHisHSV(){
         line(this->HistPlotS, Point(i, 500), Point(i, 500-this->HistS[i]), Scalar(0, 255, 0),1,8,0);
         line(this->HistPlotV, Point(i, 500), Point(i, 500-this->HistV[i]), Scalar(255, 0, 0),1,8,0);
     }
+
+    auto biggest = max_element(begin(this->HistH), end(this->HistH));
+    int pos = distance(begin(this->HistH), biggest);
+
+    int minThresh = (int)((*biggest*20)/100);
+
+    int dist = *biggest;
+    int compDist;
+    int closest;
+
+    for (int i = 0; i < MAX_BIT+1; ++i)
+    {
+        compDist = this->HistH[i]-minThresh;
+        if(this->HistH[i]>minThresh && compDist<dist){
+            dist = compDist;
+            closest = i;
+        }
+    }
+
+    this->mmHue = {closest,pos+closest};
+
+    biggest = max_element(begin(this->HistS), end(this->HistS));
+    pos = distance(begin(this->HistS), biggest);
+
+    minThresh = (int)((*biggest*20)/100);
+
+    dist = *biggest;
+
+    for (int i = 0; i < MAX_BIT+1; ++i)
+    {
+        compDist = this->HistS[i]-minThresh;
+        if(this->HistS[i]>minThresh && compDist<dist){
+            dist = compDist;
+            closest = i;
+        }
+    }
+
+    this->mmSat = {closest,pos+closest};
+
+    biggest = max_element(begin(this->HistV), end(this->HistV));
+    pos = distance(begin(this->HistV), biggest);
+
+    minThresh = (int)((*biggest*20)/100);
+
+    dist = *biggest;
+
+    for (int i = 0; i < MAX_BIT+1; ++i)
+    {
+        compDist = this->HistV[i]-minThresh;
+        if(this->HistV[i]>minThresh && compDist<dist){
+            dist = compDist;
+            closest = i;
+        }
+    }
+
+    this->mmVal = {closest,pos+closest};
+
+
 }
 
 void Histogram::toHistogram(Mat){
 
 }
+
+// vector<int> Histogram::find20P(int[] arr){
+
+//     auto biggest = max_element(begin(arr), end(arr));
+//     int pos = distance(begin(arr), biggest);
+
+//     int minThresh = (int)((*biggest*20)/100);
+
+//     int distance = *biggest;
+//     int compDist;
+//     int closest;
+
+//     for (int i = 0; i < MAX_BIT+1; ++i)
+//     {
+//         compDist = arr[i]-minThresh;
+//         if(arr[i]>minThresh && compDist<distance){
+//             distance = compDist;
+//             closest = i;
+//         }
+//     }
+
+//     vector<int> result = {closest,pos+closest};
+
+//     return result;
+// }
 
 void Histogram::showHist(){
 
@@ -128,9 +212,9 @@ void Histogram::showHist(){
         // namedWindow("Green Histogram");
         // namedWindow("Blue Histogram");
         // imshow("Original Image", this->imageHSV);
-        imshow("Hue Histogram", this->HistPlotR);
-        imshow("Sat Histogram", this->HistPlotG);
-        imshow("Val Histogram", this->HistPlotB);
+        imshow("Hue Histogram", this->HistPlotH);
+        imshow("Sat Histogram", this->HistPlotS);
+        imshow("Val Histogram", this->HistPlotV);
         // waitKey(0);
         if(waitKey(30) >= 0){
             
@@ -165,6 +249,19 @@ void Histogram::showHist(){
 
 }
 
+vector<int> Histogram::getVal(){
+    vector<int> result = {};
+    result.insert( result.end(), this->mmHue.begin(), this->mmHue.end() );
+
+    cout << "++++++++++++++______________++++++++++++++++++++++++" << endl;
+    for (int i = 0; i < result.size(); ++i)
+    {
+        cout << result[i] << endl;
+    }
+    cout << "++++++++++++++______________++++++++++++++++++++++++" << endl;
+    return this->mmHue;
+}
+
 vector<int> Histogram::getMin(){
 
     return this->minValues;
@@ -180,4 +277,6 @@ Histogram::~Histogram() {
 
 void Histogram::convertRGB2HSV(Mat image){
     cvtColor(image, this->imageHSV, COLOR_BGR2HSV);
+    imshow("HSV",this->imageHSV);
+    imshow("IMAGE IN HSV", image);
 }

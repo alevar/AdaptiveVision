@@ -47,6 +47,7 @@ class Histogram {
 		void toHistogram(Mat);
 		void showHist();
 
+		vector<int> getVal();	// Outputs an array of all the values found in the order(minHue,maxHue,minSat,maxSat,minVal,maxVal)
 		vector<int> getMin();	// Outputs the minimum values found in the three computed histograms
 		vector<int> getMax();	// Outputs the maximum values found in the three computed histograms
 
@@ -95,7 +96,12 @@ class Histogram {
 		Mat imageHSV;
 		Mat imageRGB;
 
+		vector<int> mmHue;
+		vector<int> mmSat;
+		vector<int> mmVal;
+
 		void convertRGB2HSV(Mat);
+		// vector<int> find20P(int[]);
 
 };
 
