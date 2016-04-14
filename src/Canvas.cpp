@@ -71,7 +71,7 @@ Canvas::Canvas(vector<Mat> matV){
         size = 150;
     }
 
-    cout <<matV[0].type() << "_" << matV[0].channels()<<endl;
+    // cout <<matV[0].type() << "_" << matV[0].channels()<<endl;
     Mat canvas((100 + size*width),(60 + size*height),CV_8UC3, Scalar(1,1,1));
 
     
@@ -146,7 +146,7 @@ void Canvas::build(std::vector<Mat> matV){
         size = 150;
     }
 
-    cout <<matV[0].type() << "_" << matV[0].channels()<<endl;
+    // cout <<matV[0].type() << "_" << matV[0].channels()<<endl;
     Mat canvas((100 + size*width),(60 + size*height),CV_8UC3, Scalar(1,1,1));
 
     
