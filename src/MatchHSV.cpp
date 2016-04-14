@@ -117,7 +117,7 @@ void MatchHSV::thresholdHSV(){
 	    waitKey(1);
 	    waitKey(1);
 
-		cout << "VALUES ARE: " << hsv.lowH << endl;
+		// cout << "VALUES ARE: " << hsv.lowH << endl;
 
 		firstThreshold = true;
 	}
