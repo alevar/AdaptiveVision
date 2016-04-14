@@ -116,7 +116,7 @@ int main(int argc , char *argv[])
 
 	Params params;
 
-	cout << params.delta << endl;
+	// cout << params.delta << endl;
 
 	// match.setParams(&params.delta,&params.minArea,&params.maxArea,&params.maxVariation,&params.minDiversity,
 							// &params.maxEvolution,&params.areaThreshold,&params.minMargin,&params.edgeBlurSize);
@@ -262,7 +262,7 @@ int main(int argc , char *argv[])
 						bool connectionStatus = true;
 						Message message("READY","hi sexy");
 						string dataToSend = message.toString();
-						cout << "HI SEXY:::::::::"<<dataToSend<< endl;
+						// cout << "HI SEXY:::::::::"<<dataToSend<< endl;
 						// send(socket_desc,&dataLength ,sizeof(uint32_t) ,MSG_CONFIRM); // Send the data length
 						send(childSocket,dataToSend.c_str(),dataToSend.size(),MSG_CONFIRM);
 
@@ -313,7 +313,7 @@ int main(int argc , char *argv[])
 
 										cout << "CASE: GET" << endl;
 
-										cout<<sampleAnswer[string(client_ip)][1]<<endl;
+										// cout<<sampleAnswer[string(client_ip)][1]<<endl;
 
 										processGet(childSocket, client_ip, sampleAnswer);
 										// Would you like me to do anything else for you?

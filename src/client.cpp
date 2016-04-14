@@ -205,6 +205,11 @@ int main(int argc , char *argv[])
 	Mat imageToSend;
 	source >> image;
 
+	Histogram hist(image);
+	imshow("ORIGINAL", image);
+	hist.calcHisHSV();
+	hist.showHist();
+
 	MatchHSV match(&image);
 	// match.show();
 
