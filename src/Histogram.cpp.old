@@ -116,24 +116,111 @@ void Histogram::calcHisHSV(){
     vecV.erase (vecV.begin()+240,vecV.end());
     vecV.erase (vecV.begin(),vecV.begin()+1);
 
-    auto biggestR = max_element(vecH.begin(), vecH.end());
-    int posR = distance(vecH.begin(), biggestR);
+    auto biggest = max_element(vecH.begin(), vecH.end());
+    cout << "BIGGEST: " << *biggest << endl;
+    int pos = distance(vecH.begin(), biggest); 
+    cout << "POS RED: " << pos << endl;
 
-    auto biggestG = max_element(vecS.begin(), vecS.end());
-    int posG = distance(vecS.begin(), biggestG);
+    int minThresh = (int)((*biggest*10)/100);
 
-    auto biggestB = max_element(vecV.begin(), vecV.end());
-    int posB = distance(vecV.begin(), biggestB);
+    int dist = *biggest;
+    int compDist;
+    int closest;
 
-    Mat HSV(1,1, CV_8UC3, Scalar(posB,posG,posR));
+    for (int i = 0; i < vecH.size(); ++i)
+    {
+        compDist = vecH[i]-minThresh;
+        if(vecH[i]>minThresh && compDist<dist){
+            dist = compDist;
+            closest = i;
+        }
+    }
 
-    cvtColor(HSV, HSV, COLOR_BGR2HSV);
+    if(pos+closest > vecH.size()){
+        this->mmHue = {closest,vecH.size()};
+    }
+    else{
+        this->mmHue = {closest,pos+closest};
+    }
 
-    cout << "FULL HSV" << HSV << endl;
+    biggest = max_element(vecS.begin(), vecS.end());
+    pos = distance(vecS.begin(), biggest);
+    cout << "POS GREEN: " << pos << endl;
 
-    Vec3b hsvVALS=HSV.at<Vec3b>(0,0);
+    minThresh = (int)((*biggest*20)/100);
 
-    this->result = {hsvVALS.val[0],hsvVALS.val[1],hsvVALS.val[2]};
+    dist = *biggest;
+
+    for (int i = 0; i < vecS.size(); ++i)
+    {
+        compDist = vecS[i]-minThresh;
+        if(vecS[i]>minThresh && compDist<dist){
+            dist = compDist;
+            closest = i;
+        }
+    }
+
+    if(pos+closest > vecS.size()){
+        this->mmSat = {closest,vecS.size()};
+    }
+    else{
+        this->mmSat = {closest,pos+closest};
+    }
+
+    biggest = max_element(vecV.begin(), vecV.end());
+    pos = distance(vecV.begin(), biggest);
+    cout << "POS BLUE: " << pos << endl;
+
+    minThresh = (int)((*biggest*20)/100);
+
+    dist = *biggest;
+
+    for (int i = 0; i < vecV.size(); ++i)
+    {
+        compDist = vecV[i]-minThresh;
+        if(vecV[i]>minThresh && compDist<dist){
+            dist = compDist;
+            closest = i;
+        }
+    }
+
+    if(pos+closest > vecV.size()){
+        this->mmVal = {closest,vecV.size()};
+    }
+    else{
+        this->mmVal = {closest,pos+closest};
+    }
+
+    cout << "mmVAL: " << this->mmVal[0] << endl;
+
+    vector<int> result = {};
+    result.insert( result.end(), this->mmHue.begin(), this->mmHue.end() );
+    result.insert( result.end(), this->mmSat.begin(), this->mmSat.end() );
+    result.insert( result.end(), this->mmVal.begin(), this->mmVal.end() );
+
+    for (int i = 0; i < result.size(); ++i)
+    {
+        cout << result[i] << endl;
+    }
+
+    cout << "++++++++++++++______________++++++++++++++++++++++++" << endl;
+
+    Mat MinHSV(1,1, CV_8UC3, Scalar(result[0],result[2],result[4]));
+    cout << "MINRGB " << MinHSV << endl;
+    cvtColor(MinHSV, MinHSV, COLOR_BGR2HSV);
+    cout << "MINHSV " << MinHSV << endl;
+
+    Mat MaxHSV(1,1, CV_8UC3, Scalar(result[1],result[3],result[5]));
+    cout << "MAXRGB " << MaxHSV << endl;
+    cvtColor(MaxHSV, MaxHSV, COLOR_BGR2HSV);
+    cout << "MAXHSV " << MaxHSV << endl;
+
+    cout << "++++++++++++++______________++++++++++++++++++++++++" << endl;
+
+    // Vec3b hsvMIN=MinHSV.at<Vec3b>(0,0);
+    // Vec3b hsvMAX=MaxHSV.at<Vec3b>(0,0);
+
+    // this->resultHSVmM = {hsvMIN.val[0],hsvMIN.val[1],hsvMIN.val[2],hsvMAX.val[0],hsvMAX.val[1],hsvMAX.val[2]};
 
 }
 
@@ -242,8 +329,13 @@ vector<int> Histogram::getVal(){
     // result.insert( result.end(), this->mmSat.begin(), this->mmSat.end() );
     // result.insert( result.end(), this->mmVal.begin(), this->mmVal.end() );
 
-    cout << "HUE: " << this->result[0] << "SAT: " << this->result[1] << "VAL: " << this->result[2] << endl;
-    return this->result;
+    cout << "++++++++++++++______________++++++++++++++++++++++++" << endl;
+    for (int i = 0; i < resultHSVmM.size(); ++i)
+    {
+        cout << this->resultHSVmM[i] << endl;
+    }
+    cout << "++++++++++++++______________++++++++++++++++++++++++" << endl;
+    return this->mmHue;
 }
 
 vector<int> Histogram::getMin(){

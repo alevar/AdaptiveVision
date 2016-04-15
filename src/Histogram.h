@@ -100,6 +100,8 @@ class Histogram {
 		vector<int> mmSat;
 		vector<int> mmVal;
 
+		vector<int> result = {};
+
 		void convertRGB2HSV(Mat);
 		// vector<int> find20P(int[]);
 

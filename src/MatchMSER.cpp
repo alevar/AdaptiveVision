@@ -470,7 +470,7 @@ Mat MatchMSER::processImage(Mat imageMAT){
             }
         }
         
-        // histTest->showHist();
+        histTest->showHist();
         // vector<Mat> testCanvas = {imageMatch,testTPL};
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
