@@ -41,7 +41,7 @@ struct Thresh {
 bool threshSet = false;
 
 int distCams = 19;
-int viewAngle = 120;
+int viewAngle = 60;
 
 double finalAngle1;
 double finalAngle2;
@@ -88,15 +88,15 @@ int main( int argc, char** argv ){
 
     int frameHeight = 240;
     int frameWidth = 320;
-    double ratio = (double)frameWidth/(double)viewAngle;
 
     cap1.set(CV_CAP_PROP_FRAME_WIDTH,frameWidth);
     cap1.set(CV_CAP_PROP_FRAME_HEIGHT,frameHeight);
     cap2.set(CV_CAP_PROP_FRAME_WIDTH,frameWidth);
     cap2.set(CV_CAP_PROP_FRAME_HEIGHT,frameHeight);
 
-    namedWindow("CAM1",1);
-    namedWindow("CAM2",1);
+    namedWindow("HSV1",1);
+    createTrackbar("Low HUE", "HSV1", &viewAngle, 100);
+    namedWindow("HSV2",1);
 
     namedWindow("HELLO MATCH HSV", 1);
     createTrackbar("Low HUE", "HELLO MATCH HSV", &hsv.lowH, 255);
@@ -113,6 +113,8 @@ int main( int argc, char** argv ){
 
         cap1 >> inputSCN1;
         cap2 >> inputSCN2;
+
+        double ratio = (double)frameWidth/(double)viewAngle;
       
         if(!threshSet){
 
@@ -128,19 +130,19 @@ int main( int argc, char** argv ){
                 if(waitKey(30) >= 0){
                     threshSet = true;
                     inRange(inputTHRESH, Scalar(hsv.lowH, hsv.lowS, hsv.lowV), Scalar(hsv.highH, hsv.highS, hsv.highV), inputTHRESH);
-                    
+                    cvDestroyWindow("HELLO MATCH HSV");
+                    waitKey(1);
+                    waitKey(1);
+                    waitKey(1);
+                    waitKey(1);
+                    waitKey(1);
+                    waitKey(1);
+                    waitKey(1);
+                    waitKey(1);
                     // break;
                 }
             // }
-            // cvDestroyWindow("HELLO MATCH HSV");
-            // waitKey(1);
-            // waitKey(1);
-            // waitKey(1);
-            // waitKey(1);
-            // waitKey(1);
-            // waitKey(1);
-            // waitKey(1);
-            // waitKey(1);
+            
             
 
         }
@@ -153,9 +155,9 @@ int main( int argc, char** argv ){
             inRange(inputSCN2_THRESH, Scalar(hsv.lowH, hsv.lowS, hsv.lowV), Scalar(hsv.highH, hsv.highS, hsv.highV), inputSCN2_THRESH);
 
             erode(inputSCN1_THRESH, inputSCN1_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
-            dilate(inputSCN1_THRESH, inputSCN1_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
-            dilate(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
+            dilate(inputSCN1_THRESH, inputSCN1_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(20, 20)));
             erode(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
+            dilate(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(20, 20)));
 
 
             Canny(inputSCN1_THRESH, canny_output1, thresh.minThresh, thresh.minThresh*2, 3 );
@@ -202,21 +204,22 @@ int main( int argc, char** argv ){
                 }
             }
 
-            Scalar color(132,132,132);
+            Scalar color(0,255,0);
 
             circle( inputSCN1, Point2f(largestContour1[0],largestContour1[1]), (int)largestContour1[2], color, 2, 8, 0 );
+            circle( inputSCN2, Point2f(largestContour2[0],largestContour2[1]), (int)largestContour2[2], color, 2, 8, 0 );
 
             finalAngle1 = ((double)largestContour1[0]/ratio)-((double)viewAngle/2)+90;
-            finalAngle2 = ((double)largestContour2[0]/ratio)-((double)viewAngle/2)+90;
+            finalAngle2 = 0-(((double)largestContour2[0]/ratio)-((double)viewAngle/2)-90);
 
-            finalAngle1Rad = (finalAngle1*PI)/180;
-            finalAngle2Rad = (finalAngle2*PI)/180;
+            finalAngle1Rad = (finalAngle1*M_PI)/180;
+            finalAngle2Rad = (finalAngle2*M_PI)/180;
 
-            int testDist = (int)(20/(cos(finalAngle1Rad)/sin(finalAngle1Rad))+(cos(finalAngle2Rad)/sin(finalAngle2Rad)));
+            // int testDist = (int)(distCams/(cos(finalAngle1Rad)/sin(finalAngle1Rad))+(cos(finalAngle2Rad)/sin(finalAngle2Rad)));
 
-            finalDist = (int)((distCams*tan(finalAngle1Rad)*tan(finalAngle2Rad))/(tan(finalAngle1Rad)+tan(finalAngle2Rad)));
+            int testDist = (int)((distCams*tan(finalAngle1Rad)*tan(finalAngle2Rad))/(tan(finalAngle1Rad)+tan(finalAngle2Rad)));
 
-            cout << "finalDist: " << (finalDist/10)*10 << " TEST DIST: " << 0-(testDist/10)*10 << " POSITION1: " << finalAngle1Rad << " POSITION2: " << finalAngle2Rad << endl;
+            cout << " TEST DIST: " << (testDist/10)*10 << " POSITION1: " << finalAngle1 << " POSITION2: " << finalAngle2  << "    " << largestContour2[0] << endl;
 
             imshow("HSV1",inputSCN1_THRESH);
             imshow("HSV2",inputSCN2_THRESH);
