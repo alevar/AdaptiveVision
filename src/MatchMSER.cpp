@@ -355,6 +355,9 @@ Mat MatchMSER::processImage(Mat imageMAT){
     Rect bound;
     vector<Point> *bestMser = NULL;
 
+    foundMatch = false;
+    publicMatch = false;
+
     // cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
     cvtColor(imageMAT, gray, CV_BGRA2GRAY);
     // cout << "DEBUGGING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
@@ -371,11 +374,11 @@ Mat MatchMSER::processImage(Mat imageMAT){
     {
         Features featuresMSER = extractFeature(&mser);
 
-        cout << "FEATURES: " << featuresMSER.numberOfHoles << "\t"
-                            << featuresMSER.convexHullAreaRate << "\t"
-                            << featuresMSER.minRectAreaRate << "\t"
-                            << featuresMSER.skeletLengthRate << "\t"
-                            << featuresMSER.contourAreaRate << endl;
+        // cout << "FEATURES: " << featuresMSER.numberOfHoles << "\t"
+        //                     << featuresMSER.convexHullAreaRate << "\t"
+        //                     << featuresMSER.minRectAreaRate << "\t"
+        //                     << featuresMSER.skeletLengthRate << "\t"
+        //                     << featuresMSER.contourAreaRate << endl;
 
         if(featuresMSER.full)            
         {
@@ -459,18 +462,21 @@ Mat MatchMSER::processImage(Mat imageMAT){
 
         Histogram *histTest = new Histogram(crop);
         histTest->calcHisHSV();
-        vector<int> newValsMax = histTest->getVal();
+        updatedHSV = histTest->getVal();
         // vector<int> newValsMin = histTest->getMin();
-        if(newValsMax.empty()){
+        if(updatedHSV.empty()){
             cout << "OOPS< WE ARE EMPTY" << endl;
         }
         else{
-            for (int f = 0; f < 3; f++){
-                cout << "HISTOGRAM VALUES:::::" << newValsMax[f] << endl;
+            cout << "::::::::::::::::::::::::::::::::::::::::::" << endl;
+            for (int f = 0; f < updatedHSV.size(); f++){
+                cout << "HISTOGRAM VALUES:::::" << updatedHSV[f] << endl;
             }
+            foundMatch = true;
+            publicMatch = true;
         }
         
-        histTest->showHist();
+        // histTest->showHist();
         // vector<Mat> testCanvas = {imageMatch,testTPL};
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
@@ -490,6 +496,15 @@ Mat MatchMSER::processImage(Mat imageMAT){
     // };
 
     return imageMAT;
+}
+
+vector<int> MatchMSER::getHSV(){
+    if(foundMatch){
+        return this->updatedHSV;
+    }
+    else{
+        return {0};
+    }
 }
 
 vector<Point> MatchMSER::maxMser(Mat *gray)

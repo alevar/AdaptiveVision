@@ -193,7 +193,7 @@ void MatchHSV::extractSample(){
 	roi.width = (int(this->largestRadius*2)+tenPercent);
 	roi.height = (int(this->largestRadius*2)+tenPercent);
 
-	if (roi.x > 0 && roi.y > 0 && roi.width < inputORIG.cols && roi.height < inputORIG.rows)
+	if (0 <= roi.x && 0 <= roi.width && roi.x + roi.width <= inputORIG.cols && 0 <= roi.y && 0 <= roi.height && roi.y + roi.height <= inputORIG.rows)
 	{
 	    this->image_roi = this->inputCOPY(roi);
 	}

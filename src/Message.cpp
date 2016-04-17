@@ -38,7 +38,7 @@ bool messageDummy = createMap(messageOpCodeMap);
 bool createArgMap(unordered_map<string, int>& m) {
     m["PUT"] = 2;
     m["GET"] = 2;
-    m["ACK"] = 0;
+    m["ACK"] = 1;
     m["DEFAULT"] = 0;
     m["NEW_VALUE"] = 2;
     m["NOTHING"] = 0;

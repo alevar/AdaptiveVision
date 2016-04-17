@@ -39,7 +39,7 @@ bool dummy = create_map(OpCodeMap);
 bool create_arg_map(unordered_map<string, int>& m) {
     m["PUT"] = 2;
     m["GET"] = 2;
-    m["ACK"] = 0;
+    m["ACK"] = 1;
     m["DEFAULT"] = 0;
     m["NEW_VALUE"] = 2;
     m["NOTHING"] = 0;

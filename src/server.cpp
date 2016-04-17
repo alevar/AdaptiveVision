@@ -573,6 +573,18 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	Mat *img2 = new Mat(Size(height, width), CV_8UC3, sockData);
 
 	imageMatch = match.findMatch(*img2);
+	string hsvToSend;
+	cout << ";;;;;;;;;;;;;;;;;;;;;;;;;;+++++++++++++++++;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" << endl;
+	if(match.publicMatch){
+		vector<int> updatedHSV = match.getHSV();
+
+		hsvToSend = to_string(updatedHSV[0])+"&"+to_string(updatedHSV[1])+"&"+to_string(updatedHSV[2])+"&"+to_string(updatedHSV[3])+"&"+to_string(updatedHSV[4])+"&"+to_string(updatedHSV[5]);
+		cout << "UPDATE HSV = " << hsvToSend << endl;
+	}
+	else{
+		cout << "OOPS SEEMS LIKE NO MATCH WAS FOUND" << endl;
+	}
+	cout << ";;;;;;;;;;;;;;;;;;;;;;;;;;+++++++++++++++++;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;" << endl;
 
 	matchM = true;
 
@@ -593,8 +605,17 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	toAnalyze[numbytes] = '\0';
 	printf("The following has been received: %s \n", toAnalyze);
 
-	Message testm("ACK","hi");
-	string tests = testm.toString();
+	string tests;
+	if(match.publicMatch){
+		Message testm("ACK",hsvToSend);
+		tests = testm.toString();
+	}
+	else{
+		Message testm("ACK","null");
+		tests = testm.toString();
+	}
+	
+	cout << "FINAL ACKNOWLEDGEMENT RESULT: " << tests << endl;
 
 	send(socket , tests.c_str() , tests.size(), MSG_CONFIRM);
 

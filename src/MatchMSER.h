@@ -78,6 +78,9 @@ class MatchMSER {
 		void setParams(int, int);
 		Mat findMatch(Mat);
 		Mat findMatchTPL(Mat);
+		vector<int> getHSV();
+
+		bool publicMatch = false;
 
 		// void setParams(int*,int*,int*,double*,double*,int*,double*,double*,int*);
 		virtual ~MatchMSER();	    
@@ -123,9 +126,11 @@ class MatchMSER {
 		int largest_area = 0;
 		int largest_contour_index=0;
 
-
 		int maxArea = 10;
 		int diversity = 500;
+
+		vector<int> updatedHSV;
+		bool foundMatch;
 
 		// MserFeatureDetector mserDetector = MserFeatureDetector(params.delta, params.minArea, params.maxArea,
 		// 										params.maxVariation, params.minDiversity, params.maxEvolution,

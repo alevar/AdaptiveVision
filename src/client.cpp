@@ -201,10 +201,16 @@ int main(int argc , char *argv[])
 		return -1;
 	}
 
+	// int frameHeight = 240;
+ //    int frameWidth = 320;
+
+ //    source.set(CV_CAP_PROP_FRAME_WIDTH,frameWidth);
+ //    source.set(CV_CAP_PROP_FRAME_HEIGHT,frameHeight);
+
 	Mat image;
 	Mat imageToSend;
 
-	for (int i = 0; i < 100; ++i){
+	for (int i = 0; i < 24; ++i){
 		source >> image;
 	}
 	source >> image;
@@ -367,7 +373,7 @@ int main(int argc , char *argv[])
 
 			catch( char const* e ) { // reference to the base of a polymorphic object
 			     cout << "GENERAL EXCEPTION: " << endl;
-			     
+
 			      // e.what() << endl; // information from length_error printed
 			}
 
@@ -489,13 +495,11 @@ int main(int argc , char *argv[])
 
 				while(waitRecv){
 
-					if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
-					{
+					if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1){
 						perror("recv()");
 						exit(1);
 					}
-					else
-					{
+					else{
 						buf[numbytes] = '\0';
 						incomingData = buf;
 						waitRecv = false;
@@ -503,7 +507,6 @@ int main(int argc , char *argv[])
 						cout << incomingData << endl;
 						interimMessage.toMessage(incomingData);
 					}
-
 				}
 
 				if(interimMessage.getOpCode() == ACK){
@@ -580,16 +583,15 @@ int main(int argc , char *argv[])
 
 				while(waitRecv){
 
-					if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1)
-					{
+					if((numbytes = recv(socket_desc, buf, MAXDATASIZE-1, 0)) == -1){
 						perror("recv()");
 						exit(1);
 					}
-					else
+					else{
 						buf[numbytes] = '\0';
 						incomingData = buf;
 						waitRecv = false;
-
+					}
 				}
 
 				interimMessage.toMessage(incomingData);
