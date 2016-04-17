@@ -105,35 +105,60 @@ void Histogram::calcHisHSV(){
     }
 
     vector<int> vecH(this->HistH, this->HistH + sizeof this->HistH / sizeof this->HistH[0]);
-    vecH.erase (vecH.begin()+240,vecH.end());
+    vecH.erase (vecH.begin()+251,vecH.end());
     vecH.erase (vecH.begin(),vecH.begin()+1);
 
     vector<int> vecS(this->HistS, this->HistS + sizeof this->HistS / sizeof this->HistS[0]);
-    vecS.erase (vecS.begin()+240,vecS.end());
+    vecS.erase (vecS.begin()+251,vecS.end());
     vecS.erase (vecS.begin(),vecS.begin()+1);
 
     vector<int> vecV(this->HistV, this->HistV + sizeof this->HistV / sizeof this->HistV[0]);
-    vecV.erase (vecV.begin()+240,vecV.end());
+    vecV.erase (vecV.begin()+251,vecV.end());
     vecV.erase (vecV.begin(),vecV.begin()+1);
 
-    auto biggestR = max_element(vecH.begin(), vecH.end());
-    int posR = distance(vecH.begin(), biggestR);
+    this->result={};
+// STARTING ON NEW FUNCTIONALITY
 
-    auto biggestG = max_element(vecS.begin(), vecS.end());
-    int posG = distance(vecS.begin(), biggestG);
+    this->result.push_back(1+distance( begin(vecH), find_if( begin(vecH), end(vecH), [](int x) { return x != 0; })));
+    reverse(begin(vecH),end(vecH));
+    this->result.push_back(5+vecH.size()-distance( begin(vecH), find_if( begin(vecH), end(vecH), [](int x) { return x != 0; })));
 
-    auto biggestB = max_element(vecV.begin(), vecV.end());
-    int posB = distance(vecV.begin(), biggestB);
+    this->result.push_back(1+distance( begin(vecS), find_if( begin(vecS), end(vecS), [](int x) { return x != 0; })));
+    reverse(begin(vecS),end(vecS));
+    this->result.push_back(5+vecS.size()-distance( begin(vecS), find_if( begin(vecS), end(vecS), [](int x) { return x != 0; })));
 
-    Mat HSV(1,1, CV_8UC3, Scalar(posB,posG,posR));
+    this->result.push_back(1+distance( begin(vecV), find_if( begin(vecV), end(vecV), [](int x) { return x != 0; })));
+    reverse(begin(vecV),end(vecV));
+    this->result.push_back(5+vecV.size()-distance( begin(vecV), find_if( begin(vecV), end(vecV), [](int x) { return x != 0; })));
 
-    cvtColor(HSV, HSV, COLOR_BGR2HSV);
+    cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
 
-    cout << "FULL HSV" << HSV << endl;
+    for (int i = 0; i < this->result.size(); ++i){
+        cout << this->result[i] << endl;
+    }
+    
+    cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
 
-    Vec3b hsvVALS=HSV.at<Vec3b>(0,0);
+// END HERE
 
-    this->result = {hsvVALS.val[0],hsvVALS.val[1],hsvVALS.val[2]};
+    // auto biggestR = max_element(vecH.begin(), vecH.end());
+    // int posR = distance(vecH.begin(), biggestR);
+
+    // auto biggestG = max_element(vecS.begin(), vecS.end());
+    // int posG = distance(vecS.begin(), biggestG);
+
+    // auto biggestB = max_element(vecV.begin(), vecV.end());
+    // int posB = distance(vecV.begin(), biggestB);
+
+    // Mat HSV(1,1, CV_8UC3, Scalar(posB,posG,posR));
+
+    // cvtColor(HSV, HSV, COLOR_BGR2HSV);
+
+    // cout << "FULL HSV" << HSV << endl;
+
+    // Vec3b hsvVALS=HSV.at<Vec3b>(0,0);
+
+    // this->result = {hsvVALS.val[0],hsvVALS.val[1],hsvVALS.val[2]};
 
 }
 
