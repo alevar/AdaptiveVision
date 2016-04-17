@@ -1,10 +1,11 @@
-// g++ -std=c++11 -o hft3 hft3.cpp `pkg-config opencv --cflags --libs`
+// g++ -std=c++11 -o testTHR testTHR.cpp `pkg-config opencv --cflags --libs` -pthread
 
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <stdio.h>
+#include <thread>
 
 using namespace cv;
 using namespace std;
@@ -13,6 +14,12 @@ using namespace std;
 
 int maxArea = 10;
 int diversity = 500;
+
+Mat canny_output;
+int minThresh = 100;
+int maxThresh = 255;
+
+RNG rng(12345);
 
 struct Features {
   int numberOfHoles;
@@ -55,33 +62,12 @@ Mat mserToMat(vector<Point> *mser)
     return gray;
 }
 
-Mat canny_output;
-int minThresh = 100;
-int maxThresh = 255;
-
-RNG rng(12345);
-
 int findHoles(Mat *img){
     vector<vector<Point>> contours;
     vector<Vec4i> hierarchy;
 
     Canny(*img, canny_output, minThresh, minThresh*2, 3 );
-
-	// findContours(canny_output, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE );
-
     findContours(*img, contours, hierarchy, RETR_TREE, CHAIN_APPROX_NONE);
-
-    Mat drawing = Mat::zeros( canny_output.size(), CV_8UC3 );
-    for( int i = 0; i< contours.size(); i++ )
-    {
-       Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
-       drawContours( drawing, contours, i, color, 2, 8, hierarchy, 0, Point() );
-    }
-	namedWindow( "Contours", CV_WINDOW_AUTOSIZE );
-	imshow( "Contours", drawing );
-	waitKey(0);
-    
-    // if (hierarchy.size() == contours.size()) return 1;
     
     int result = 0;
     for (size_t i = 0; i < hierarchy.size(); i++) { 
@@ -139,6 +125,11 @@ Features extractFeature(vector<Point> *mser){
 
     Mat mserImg = mserToMat(mser);
 
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+    erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+
     if (mserImg.cols <= 2 || mserImg.rows <= 2){
         cout << "null" << endl; 
     }
@@ -146,7 +137,7 @@ Features extractFeature(vector<Point> *mser){
     RotatedRect minRect = minAreaRect(*mser);
 
     int numberOfHoles = findHoles(&mserImg);
-    cout << "numberOfHoles: " << numberOfHoles << endl;
+    cout << "numberOfHoles2: " << numberOfHoles << endl;
 
     vector<Point> convexHull;
 
@@ -164,18 +155,18 @@ Features extractFeature(vector<Point> *mser){
     cout << "skeletLengthRate: " << skeletLengthRate << endl;
 
     double contourArea = contourAreas(&mserImg);
-    if (contourArea == 0.0){
-        return result;
-    }
+    // if (contourArea == 0.0){
+    //     return result;
+    // }
     double contourAreaRate = (double)mser->size() / contourArea;
-    if (contourAreaRate > 1.0){
-        return result;
-    }
+    // if (contourAreaRate > 1.0){
+    //     return result;
+    // }
     cout << "contourAreaRate: " << contourAreaRate << endl;
 
     // vector<double> result = {(double)numberOfHoles,convexHullAreaRate,minRectAreaRate,skeletLengthRate,contourAreaRate};
 
-    result.numberOfHoles = (double)numberOfHoles;
+    result.numberOfHoles = (int)numberOfHoles;
     result.convexHullAreaRate = convexHullAreaRate;
     result.minRectAreaRate = minRectAreaRate;
     result.skeletLengthRate = skeletLengthRate;
@@ -190,6 +181,8 @@ Features extractFeatureT(vector<Point> *mser){
     Features result;
 
     Mat mserImg = mserToMat(mser);
+
+    imshow("SHOWINGOFF", mserImg);
 
     erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
     dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
@@ -234,7 +227,7 @@ Features extractFeatureT(vector<Point> *mser){
     cout << "numberOfHoles: " << numberOfHoles << endl;
     cout << "contourAreaRate: " << contourAreaRate << endl;
 
-    result.numberOfHoles = (double)numberOfHoles;
+    result.numberOfHoles = (int)numberOfHoles;
     result.convexHullAreaRate = convexHullAreaRate;
     result.minRectAreaRate = minRectAreaRate;
     result.skeletLengthRate = skeletLengthRate;
@@ -246,6 +239,8 @@ Features extractFeatureT(vector<Point> *mser){
 
 bool matchTemplate(Features featuresTPL, Features featuresMSER)
 {
+
+    cout << "TPL=== " << featuresTPL.numberOfHoles << " SCN=== " << featuresMSER.numberOfHoles << endl;
     if (featuresTPL.numberOfHoles != featuresMSER.numberOfHoles) { 
         return false; 
     }    
@@ -258,9 +253,9 @@ bool matchTemplate(Features featuresTPL, Features featuresMSER)
     if ((featuresTPL.skeletLengthRate - featuresMSER.skeletLengthRate) > 0.02) {
         return false;
     }
-    if ((featuresTPL.contourAreaRate - featuresMSER.contourAreaRate) > 0.1) {
-        return false;
-    }
+    // if ((featuresTPL.contourAreaRate - featuresMSER.contourAreaRate) > 0.1) {
+    //     return false;
+    // }
     
     return true;
 }
@@ -268,22 +263,22 @@ bool matchTemplate(Features featuresTPL, Features featuresMSER)
 vector<Point> maxMser(Mat *gray)
 {
 
-	double newMaxArea = maxArea/(double)1000;
-    double newDiversity = diversity/(double)1000;
+  double newMaxArea = maxArea/(double)1000;
+  double newDiversity = diversity/(double)1000;
 
-    MSER mser(21, (int)(newMaxArea*gray->cols*gray->rows), (int)(newDiversity*gray->cols*gray->rows), 1, 0.7);
+  MSER mser(21, (int)(newMaxArea*gray->cols*gray->rows), (int)(newDiversity*gray->cols*gray->rows), 1, 0.7);
 
-    vector<vector<Point> > msers;
+  vector<vector<Point> > msers;
 
-    mser(*gray, msers);
+  mser(*gray, msers);
 
-    if (msers.size() == 0) return vector<Point>();
-    
-    vector<Point> mserF = max_element(msers.begin(), msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
-        return m1.size() < m2.size();
-    })[0];
-    
-    return mserF;
+  if (msers.size() == 0) return vector<Point>();
+  
+  vector<Point> mserF = max_element(msers.begin(), msers.end(), [] (vector<Point> &m1, vector<Point> &m2) {
+      return m1.size() < m2.size();
+  })[0];
+  
+  return mserF;
 }
 
 Mat getPerspectiveMatrix(Point2f points[], Size2f size)
@@ -306,10 +301,6 @@ Mat getPerspectiveMatrix(Point2f points[], Size2f size)
     return result;
 }
 
-void detectRegions(Mat &gray, vector<vector<Point> > & vector){
-    mserDetector(gray, vector);
-}
-
 Mat normalizeImage(Mat *image, Mat *M ,float size)
 {
     Mat dst(Size(size, size), image->type());
@@ -322,23 +313,29 @@ Mat gray;
 vector<vector<Point> > msers;
 double bestPoint = 10.0;
 Rect bound;
-
 Mat processImage(Mat &image, Features featuresTPL){
+
+    cvtColor(image, gray, CV_BGRA2GRAY);
 
     double newMaxArea = maxArea/(double)1000;
     double newDiversity = diversity/(double)1000;
 
     MSER mser(21, (int)(newMaxArea*gray.cols*gray.rows), (int)(newDiversity*gray.cols*gray.rows), 1, 0.7);
-   
-    cvtColor(image, gray, CV_BGRA2GRAY);
-    
-    // detectRegions(gray,msers);
+
     mser(gray, msers);
     vector<Point> *bestMser = NULL;
-    
 
+    cout << "SIZE+++++++" << msers.size() << endl;
+    
     for_each(msers.begin(), msers.end(), [&] (vector<Point> &mser) 
     {
+
+        Mat newSHOW = mserToMat(&mser);
+        // imshow("TEST SHOW", newSHOW);
+        // waitKey(0);
+
+        cout << "++++++++++++++++++++++++++++++++++++++++++" << endl;
+
         Features featuresMSER = extractFeature(&mser);
 
         cout << "FEATURES: " << featuresMSER.numberOfHoles << "\t"
@@ -347,6 +344,7 @@ Mat processImage(Mat &image, Features featuresTPL){
                             << featuresMSER.skeletLengthRate << "\t"
                             << featuresMSER.contourAreaRate << endl;
 
+        cout << "++++++++++++++++++++++++++++++++++++++++++" << endl;
         if(featuresMSER.full)            
         {
 
@@ -360,17 +358,18 @@ Mat processImage(Mat &image, Features featuresTPL){
                 cout << "WELL MATCHED" << endl;
                 double tmp = distance(&featuresTPL, &featuresMSER);
                 cout << "TMP ================================= " << tmp << endl;
-                if ( bestPoint > tmp ) {
+                // if ( bestPoint > tmp ) {
                     bestPoint = tmp;
                     bestMser = &mser;
-                }
+                    cout << "BEST FOUND!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+                // }
             }
         }
     });
 
     if (bestMser)
     {
-                
+        cout << "BEST BUILD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
         bound = boundingRect(*bestMser);
         rectangle(image, bound, colors.GREEN, 3);
     }
@@ -379,8 +378,8 @@ Mat processImage(Mat &image, Features featuresTPL){
 }
 
 int main( int argc, char** argv ){
-	
-	Mat inputTPl, imageTPL, imageTPL_GRAY;
+  
+  Mat inputTPl, imageTPL, imageTPL_GRAY;
     Mat lambda( 2, 4, CV_32FC1 );
     Mat drawing = Mat::zeros( 200,200, imageTPL_GRAY.type() );
     lambda = Mat::zeros( 200, 200, imageTPL_GRAY.type() );
@@ -412,29 +411,31 @@ int main( int argc, char** argv ){
 
         maxMserTPL = maxMser(&imageTPL_GRAY);
 
-        mserImg = mserToMat(&maxMserTPL);
+        rect = minAreaRect(maxMserTPL);
+        rect.points(points);
 
-	    rect = minAreaRect(maxMserTPL);
-	    rect.points(points);
+        M = getPerspectiveMatrix(points,rect.size);
+        normalizedImage = normalizeImage(&imageTPL_GRAY,&M,rect.size.width);
 
-	    M = getPerspectiveMatrix(points,rect.size);
-	    normalizedImage = normalizeImage(&imageTPL_GRAY,&M,rect.size.width);
+        drawing1 = Mat::zeros( normalizedImage.cols+20,normalizedImage.rows+20, CV_8UC3 );
+        bitwise_not(drawing1,drawing1);
+        cvtColor(drawing1, drawing1, CV_BGR2GRAY);
 
-	    drawing1 = Mat::zeros( normalizedImage.cols+20,normalizedImage.rows+20, CV_8UC3 );
-	    bitwise_not(drawing1,drawing1);
-	    cvtColor(drawing1, drawing1, CV_BGR2GRAY);
+        cv::Rect roi( cv::Point( 10, 10 ), normalizedImage.size() );
+        normalizedImage.copyTo( drawing1( roi ) );  
 
-	    cout << " SIZE IS======== " << drawing1.size() << " = " << drawing1.cols/2 << " x " << drawing1.rows/2 << endl;
-	    cout << " SIZE IS======== " << normalizedImage.size() << " = " << normalizedImage.cols/2 << " x " << normalizedImage.rows/2 << endl;
+        vector<Point> normalizedMser = maxMser(&drawing1);
 
-		cv::Rect roi( cv::Point( 10, 10 ), normalizedImage.size() );
-		normalizedImage.copyTo( drawing1( roi ) );	    
+        Mat drawing2 = mserToMat(&normalizedMser);
 
-        imshow("TEMPLATE CALIBRATION",drawing1);
+        erode(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        dilate(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        dilate(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        erode(drawing2, drawing2, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+        imshow("TEMPLATE CALIBRATION",drawing2);
 
         if(waitKey(30) >= 0){
             
-            // destroyWindow("HELLO MATCH HSV");
             break;
         }
     }
@@ -465,22 +466,29 @@ int main( int argc, char** argv ){
     }
 
     namedWindow("MATCH",1);
-
+    Mat inputSCN, imageSCN, imageSCN_GRAY;
     while(true){
-	    Mat inputSCN, imageSCN, imageSCN_GRAY;
-	    cap >> inputSCN;
-	    cvtColor(inputSCN, imageSCN_GRAY, COLOR_BGR2GRAY);
-	    imageSCN = processImage(inputSCN, featuresTPL);
+      
+      cap >> inputSCN;
+      cvtColor(inputSCN, imageSCN_GRAY, COLOR_BGR2GRAY);
+      imageSCN = processImage(inputSCN, featuresTPL);
 
-	    imshow("MATCH",inputSCN);
-	    if(waitKey(30) >= 0){
+      imshow("MATCH",inputSCN);
+      if(waitKey(30) >= 0){
             
-            // destroyWindow("HELLO MATCH HSV");
             break;
         }
-	    Mat gray;
-	}
+      // Mat gray;
+  }
 
-	return 0;
+  // Mat testSCN = imread(argv[2]);
+
+  // namedWindow("MATCH",1);
+  // // cvtColor(testSCN, testSCN, COLOR_BGR2GRAY); 
+  // Mat imageSCN = processImage(testSCN, featuresTPL);
+  // imshow("MATCH",imageSCN);
+  // waitKey(0);
+
+  return 0;
 
 }
