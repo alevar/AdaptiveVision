@@ -192,7 +192,17 @@ void MatchHSV::extractSample(){
 	roi.y = (int(this->largestCenter.y-this->largestRadius-int(tenPercent/2)));
 	roi.width = (int(this->largestRadius*2)+tenPercent);
 	roi.height = (int(this->largestRadius*2)+tenPercent);
-	this->image_roi = this->inputCOPY(roi);
+
+	if (roi.x > 0 && roi.y > 0 && roi.width < inputORIG.cols && roi.height < inputORIG.rows)
+	{
+	    this->image_roi = this->inputCOPY(roi);
+	}
+	else
+	{
+		cout << "EXCEPTION ROI IN MATCHHSV" << endl;
+	    throw "Division by zero condition!";
+	}
+	
 }
 
 Mat MatchHSV::getSampleMAT(){

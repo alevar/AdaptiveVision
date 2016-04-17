@@ -203,23 +203,70 @@ int main(int argc , char *argv[])
 
 	Mat image;
 	Mat imageToSend;
+
+	for (int i = 0; i < 100; ++i){
+		source >> image;
+	}
 	source >> image;
 
+	cout << "1 DEBUG" << endl;
 	Histogram hist(image);
+	cout << "2 DEBUG" << endl;
 	imshow("ORIGINAL", image);
+	cout << "3 DEBUG" << endl;
 	hist.calcHisHSV();
+	cout << "4 DEBUG" << endl;
 	hist.showHist();
+	cout << "5 DEBUG" << endl;
 
 	MatchHSV match(&image);
+	cout << "6 DEBUG" << endl;
 	// match.show();
 
 	Mat imageSampleClone;
 	Mat imageSample;
 
-	match.compute();
-	match.extractSample();
-	imageSample = match.getSampleMAT();
-	imageSampleClone = imageSample.clone();
+	bool foundMatch = false;
+
+	while(!foundMatch){
+
+		source >> image;
+		cout << "1 DEBUG" << endl;
+		Histogram hist(image);
+		cout << "2 DEBUG" << endl;
+		imshow("ORIGINAL", image);
+		cout << "3 DEBUG" << endl;
+		hist.calcHisHSV();
+		cout << "4 DEBUG" << endl;
+		hist.showHist();
+		cout << "5 DEBUG" << endl;
+
+		try{
+			match.compute();
+			cout << "7 DEBUG" << endl;
+			match.extractSample();
+			cout << "8 DEBUG" << endl;
+			imageSample = match.getSampleMAT();
+			cout << "9 DEBUG" << endl;
+			imageSampleClone = imageSample.clone();
+
+			foundMatch = true;
+		}
+
+		catch(const std::overflow_error& e) {
+			cout << "OVERFLOW ERROR: " << e.what() << endl;
+		}
+
+		catch(const std::runtime_error& e) {
+			cout << "RUNTIME ERROR: " << e.what() << endl;
+		}
+
+		catch( char const* e ) { // reference to the base of a polymorphic object
+		     cout << "GENERAL EXCEPTION: " <<endl;
+		      // e.what() << endl; // information from length_error printed
+		}
+
+	}
 
 	// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
 
@@ -292,12 +339,39 @@ int main(int argc , char *argv[])
 
 	while(connectionStatus){
 
-		source >> image;
+		bool foundMatch = false;
 
-		match.compute();
-		match.extractSample();
-		imageSample = match.getSampleMAT();
-		imageSampleClone = imageSample.clone();
+		while(!foundMatch){
+			source >> image;
+
+			try{
+				cout << "DEBUG 1" << endl;
+				match.compute();
+				cout << "DEBUG 2" << endl;
+				match.extractSample();
+				cout << "DEBUG 3" << endl;
+				imageSample = match.getSampleMAT();
+				cout << "DEBUG 4" << endl;
+				imageSampleClone = imageSample.clone();
+
+				foundMatch = true;
+			}
+
+			catch(const std::overflow_error& e) {
+				cout << "OVERFLOW ERROR: " << e.what() << endl;
+			}
+
+			catch(const std::runtime_error& e) {
+				cout << "RUNTIME ERROR: " << e.what() << endl;
+			}
+
+			catch( char const* e ) { // reference to the base of a polymorphic object
+			     cout << "GENERAL EXCEPTION: " << endl;
+			     
+			      // e.what() << endl; // information from length_error printed
+			}
+
+		}
 
 		// image = imread("/home/sparrow/Pictures/Webcam/logoT.jpg",0);
 
@@ -316,6 +390,7 @@ int main(int argc , char *argv[])
 
 		workingOpcode = workingMessage.getOpCode();
 
+		
 		// The problem is that the receive operation is late
 		// Need to have a bool condition that says if a send was submitted the opration of the application
 		// should be halted before receive happend
