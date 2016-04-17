@@ -65,16 +65,11 @@ void Histogram::calcHis(){
 
     vector<int> testV(this->HistR, this->HistR + sizeof this->HistR / sizeof this->HistR[0]);
 
-    cout << "random value from vector is: " << testV.size() << endl;
-
     testV.erase (testV.begin()+240,testV.end());
     testV.erase (testV.begin(),testV.begin()+15);
-    cout << "random value from vector is: " << testV.size() << endl;
 
     auto biggest = max_element(testV.begin(), testV.end());
-    cout << "BIGGEST: " << *biggest << endl;
     int pos = distance(testV.begin(), biggest);
-    cout << "POS: " << pos << endl;
 }
 
 void Histogram::calcHisHSV(){
@@ -131,13 +126,13 @@ void Histogram::calcHisHSV(){
     reverse(begin(vecV),end(vecV));
     this->result.push_back(5+vecV.size()-distance( begin(vecV), find_if( begin(vecV), end(vecV), [](int x) { return x != 0; })));
 
-    cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
+    // cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
 
-    for (int i = 0; i < this->result.size(); ++i){
-        cout << this->result[i] << endl;
-    }
+    // for (int i = 0; i < this->result.size(); ++i){
+    //     cout << this->result[i] << endl;
+    // }
     
-    cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
+    // cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
 
 // END HERE
 
@@ -267,7 +262,6 @@ vector<int> Histogram::getVal(){
     // result.insert( result.end(), this->mmSat.begin(), this->mmSat.end() );
     // result.insert( result.end(), this->mmVal.begin(), this->mmVal.end() );
 
-    cout << "HUE: " << this->result[0] << "SAT: " << this->result[1] << "VAL: " << this->result[2] << endl;
     return this->result;
 }
 
