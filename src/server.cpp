@@ -27,6 +27,9 @@
 #include <getopt.h>
 #include <sys/stat.h>
 #include <sstream>
+#include <thread>
+#include <mutex>
+#include <cmath>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -557,9 +560,13 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	cout << "GETTING THE IMAGE" << endl;
 
 	Mat  img = Mat::zeros( height,width, CV_8UC3);
+
+	cout << "DEBUG 1" << endl;
 	
 	int  imgSize = img.total()*img.elemSize();
+	cout << "DEBUG 2" << endl;
 	uchar sockData[imgSize];
+	cout << "DEBUG 3" << endl;
 
 	int bytes = 0;
 
@@ -567,10 +574,12 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 	    if ((bytes = recv(socket, sockData +i, imgSize  - i, 0)) == -1)
 	        exit(1);
 	}
+	cout << "DEBUG 4" << endl;
 
 	// change the last loop to below statement
 
 	Mat *img2 = new Mat(Size(height, width), CV_8UC3, sockData);
+	cout << "DEBUG 5" << endl;
 
 	imageMatch = match.findMatch(*img2);
 	string hsvToSend;

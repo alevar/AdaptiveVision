@@ -116,7 +116,7 @@ class MatchMSER {
 
 		Mat bestMSER;
 		Mat clone;
-		// Mat mask;
+		Mat mask;
 		int bestHUE;
 		int bestSAT;
 		int bestVAL;

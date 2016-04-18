@@ -34,6 +34,9 @@ execution order for the client:
 #include <getopt.h>
 #include <sys/stat.h>
 #include <typeinfo>
+#include <thread>
+#include <mutex>
+#include <cmath>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/flann/miniflann.hpp"
@@ -76,6 +79,8 @@ void readme();
 void processGet();
 void processPut();
 void processEnd();
+
+vector<int> updatedHSV;
 
 int main(int argc , char *argv[])
 {
@@ -350,6 +355,27 @@ int main(int argc , char *argv[])
 		while(!foundMatch){
 			source >> image;
 
+			Mat testing;
+
+			if(!updatedHSV.empty()){
+				namedWindow("TESTING", 1);
+				createTrackbar("Low HUE", "TESTING", &updatedHSV[0], 255);
+				createTrackbar("High HUE", "TESTING", &updatedHSV[1], 255);
+				createTrackbar("Low SAT", "TESTING", &updatedHSV[2], 255);
+				createTrackbar("High SAT", "TESTING", &updatedHSV[3], 255);
+				createTrackbar("Low VAL", "TESTING", &updatedHSV[4], 255);
+				createTrackbar("High VAL", "TESTING", &updatedHSV[5], 255);
+
+				while(true){
+					cvtColor(image, testing, COLOR_BGR2HSV);
+					inRange(testing, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), testing);
+					imshow("TESTING", testing);
+					if(waitKey(30) >= 0){
+						break;
+					}
+				}
+			}
+
 			try{
 				cout << "DEBUG 1" << endl;
 				match.compute();
@@ -604,6 +630,64 @@ int main(int argc , char *argv[])
 			case ACK:
 			{
 				cout << "CASE: ACK" << endl;
+				cout << "ACK MESSAGE " << workingMessage.getInfo() << endl;
+
+				if(workingMessage.getInfo() != "null"){
+					istringstream ss(workingMessage.getInfo());
+
+					int i;
+
+					updatedHSV.clear();
+					
+					while(ss >> i){
+						updatedHSV.push_back(i);
+
+				        if (ss.peek() == '&')
+				            ss.ignore();
+						cout << "===================== TOKEN: " << i << endl;
+					}
+
+					// if(updatedHSV[0] >= 20){
+					// 	updatedHSV[0] = updatedHSV[0]-20;
+					// }
+					// else{
+					// 	updatedHSV[0] = 1;
+					// }
+					// if(updatedHSV[1] <= 235){
+					// 	updatedHSV[1] = updatedHSV[1]+20;
+					// }
+					// else{
+					// 	updatedHSV[5] = 255;
+					// }
+					// if(updatedHSV[2] >= 20){
+					// 	updatedHSV[2] = updatedHSV[2]-20;
+					// }
+					// else{
+					// 	updatedHSV[2] = 1;
+					// }
+					// if(updatedHSV[3] <= 235){
+					// 	updatedHSV[3] = updatedHSV[3]+20;
+					// }
+					// else{
+					// 	updatedHSV[3] = 255;
+					// }
+					// if(updatedHSV[4] >= 20){
+					// 	updatedHSV[4] = updatedHSV[4]-20;
+					// }
+					// else{
+					// 	updatedHSV[4] = 0;
+					// }
+					// if(updatedHSV[5] <= 235){
+					// 	updatedHSV[5] = updatedHSV[5]+20;
+					// }
+					// else{
+					// 	updatedHSV[5] = 255;
+					// }
+					// updatedHSV[4] = 50;
+					// updatedHSV[5] = 240;
+
+					match.setHSV(updatedHSV[0],updatedHSV[1],updatedHSV[2],updatedHSV[3],updatedHSV[4],updatedHSV[5]);
+				}
 
 				InstructionCode testCode;
 				Message testOpCode("PUT","lul");

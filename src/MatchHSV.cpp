@@ -70,6 +70,16 @@ void MatchHSV::setHSV(int *lowHue,int *highHue,int *lowSat,int *highSat,int *low
 
 }
 
+void MatchHSV::setHSV(int lowHue,int highHue,int lowSat,int highSat,int lowVal,int highVal){
+	this->hsv.lowH = lowHue;
+	this->hsv.highH = highHue;
+	this->hsv.lowS = lowSat;
+	this->hsv.highS = highSat;
+	this->hsv.lowV = lowVal;
+	this->hsv.highV = highVal;
+	// *sample.setHSV(lowHue, highHue, lowSat, highSat, lowVal, highVal);
+}
+
 void MatchHSV::setHSV(int *lowHue,int *highHue){
 	this->hsv.lowH = *lowHue;
 	this->hsv.highH = *highHue;

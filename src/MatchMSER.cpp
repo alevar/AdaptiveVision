@@ -456,7 +456,7 @@ Mat MatchMSER::processImage(Mat imageMAT){
         
         // drawContours(mask, vector<vector<Point> >(1,*bestMser), -1, Scalar(255), CV_FILLED);
         Mat crop(imageMAT.rows, imageMAT.cols, CV_8UC3);
-        crop.setTo(Scalar(0,255,0));
+        crop.setTo(Scalar(0,0,0));
         imageMAT.copyTo(crop, mask);
         normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
 
@@ -481,9 +481,9 @@ Mat MatchMSER::processImage(Mat imageMAT){
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
 
-        // imshow("CROPPED",crop(bound));
+        imshow("CROPPED",crop(bound));
         // imshow("BESTMSER",bestMSER);
-        // imshow("MASK",mask);
+        imshow("MASK",mask);
         if(waitKey(30) >= 0){
 
         }
