@@ -32,12 +32,12 @@ using namespace std;
 using namespace cv;
 
 struct hsvStruct {
-	int lowH = 66;			//Low pass value for Hue
-	int highH = 114;			//High pass value for Hue
-	int lowS = 101;			//Low pass value for Saturation
-	int highS = 201;		//High pass value for Saturation
-	int lowV = 105;			//Low pass value for Value
-	int highV = 173;		//High pass value for Value
+	int lowH = 15;			//Low pass value for Hue
+	int highH = 164;			//High pass value for Hue
+	int lowS = 33;			//Low pass value for Saturation
+	int highS = 139;		//High pass value for Saturation
+	int lowV = 132;			//Low pass value for Value
+	int highV = 189;		//High pass value for Value
 };
 
 struct Thresh {

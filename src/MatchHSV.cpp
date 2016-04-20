@@ -133,6 +133,7 @@ void MatchHSV::thresholdHSV(){
 	}
 
 	else{
+		cout << " " << this->hsv.lowH <<" " << this->hsv.lowS <<" " << this->hsv.lowV <<" " << this->hsv.highH <<" " << this->hsv.highS <<" " << this->hsv.highV << endl;
 		inRange(inputORIG, Scalar(this->hsv.lowH, this->hsv.lowS, this->hsv.lowV), Scalar(this->hsv.highH, this->hsv.highS, this->hsv.highV), inputORIG);
 	}
 
@@ -140,10 +141,15 @@ void MatchHSV::thresholdHSV(){
 
 void MatchHSV::noiseReduction(){
 	
-	erode(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	dilate(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-	erode(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
+	imshow("BEFORE EROSION DILUTION", inputORIG);
+
+	erode(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(7, 7)));
+	dilate(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(9, 9)));
+	dilate(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(9, 9)));
+	erode(inputORIG, inputORIG, getStructuringElement(MORPH_ELLIPSE, Size(7, 7)));
+
+	imshow("ERODED DILUTED", inputORIG);
+	waitKey(0);
 
 }
 
