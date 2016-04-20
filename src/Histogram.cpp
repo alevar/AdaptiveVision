@@ -76,9 +76,12 @@ void Histogram::calcHisHSV(){
 
     hisHSV = true;
 
-    // convertRGB2HSV(this->imageRGB);
+    convertRGB2HSV(this->imageRGB);
     Mat imageHSVT = imageRGB.clone();
     cvtColor(imageHSVT, imageHSVT, COLOR_BGR2HSV);
+    imshow("NEW TEST",imageRGB);
+    imshow("NEW TEST 2", imageHSVT);
+    // waitKey(0);
 
     for (int i = 0; i < imageHSVT.rows; i++)
     {
@@ -105,46 +108,158 @@ void Histogram::calcHisHSV(){
     cout << "PRINTING VECTORS OF HSV VALUES:::::::::: ";
     for (int i = 0; i < vecH.size(); ++i)
     {
-        cout << vecH[i] << " ";
+        cout << vecH[i] << ", ";
     }
     cout << endl;
-    vecH.erase (vecH.begin()+251,vecH.end());
+    vecH.erase (vecH.begin()+255,vecH.end());
     vecH.erase (vecH.begin(),vecH.begin()+1);
 
     vector<int> vecS(this->HistS, this->HistS + sizeof this->HistS / sizeof this->HistS[0]);    
     cout << "PRINTING VECTORS OF HSV VALUES:::::::::: ";
     for (int i = 0; i < vecS.size(); ++i)
     {
-        cout << vecS[i] << " ";
+        cout << vecS[i] << ", ";
     }
     cout << endl;
-    vecS.erase (vecS.begin()+251,vecS.end());
+    vecS.erase (vecS.begin()+255,vecS.end());
     vecS.erase (vecS.begin(),vecS.begin()+1);
 
     vector<int> vecV(this->HistV, this->HistV + sizeof this->HistV / sizeof this->HistV[0]);
     cout << "PRINTING VECTORS OF HSV VALUES:::::::::: ";
     for (int i = 0; i < vecV.size(); ++i)
     {
-        cout << vecV[i] << " ";
+        cout << vecV[i] << ", ";
     }
     cout << endl;
-    vecV.erase (vecV.begin()+251,vecV.end());
+    vecV.erase (vecV.begin()+255,vecV.end());
     vecV.erase (vecV.begin(),vecV.begin()+1);
 
     this->result={};
 // STARTING ON NEW FUNCTIONALITY
 
+    // auto biggestH = max_element(vecH.begin(), vecH.end());
+    // int gH = (int)*biggestH;
+    // int posH = distance(vecH.begin(), biggestH)+1;
+
+    // auto biggestS = max_element(vecS.begin(), vecS.end());
+    // int gS = (int)*biggestS;
+    // int posS = distance(vecS.begin(), biggestS)+1;
+
+    // auto biggestV = max_element(vecV.begin(), vecV.end());
+    // int gV = (int)*biggestV;
+    // int posV = distance(vecV.begin(), biggestV)+1;
+
+    // cout << "BIGGEST: " << (int)*biggestH << " " << (int)*biggestS << " " << (int)*biggestV << endl;
+    // cout << "BIGGEST: " << (int)*biggestH << " " << (int)*biggestS << " " << (int)*biggestV << endl;
+
+// ANOTHER TEST
+
     // this->result.push_back(1+distance( begin(vecH), find_if( begin(vecH), end(vecH), [](int x) { return x != 0; })));
     // reverse(begin(vecH),end(vecH));
-    // this->result.push_back(5+vecH.size()-distance( begin(vecH), find_if( begin(vecH), end(vecH), [](int x) { return x != 0; })));
+    // this->result.push_back(1+vecH.size()-distance( begin(vecH), find_if( begin(vecH), end(vecH), [](int x) { return x != 0; })));
 
     // this->result.push_back(1+distance( begin(vecS), find_if( begin(vecS), end(vecS), [](int x) { return x != 0; })));
     // reverse(begin(vecS),end(vecS));
-    // this->result.push_back(5+vecS.size()-distance( begin(vecS), find_if( begin(vecS), end(vecS), [](int x) { return x != 0; })));
+    // this->result.push_back(1+vecS.size()-distance( begin(vecS), find_if( begin(vecS), end(vecS), [](int x) { return x != 0; })));
 
     // this->result.push_back(1+distance( begin(vecV), find_if( begin(vecV), end(vecV), [](int x) { return x != 0; })));
     // reverse(begin(vecV),end(vecV));
-    // this->result.push_back(5+vecV.size()-distance( begin(vecV), find_if( begin(vecV), end(vecV), [](int x) { return x != 0; })));
+    // this->result.push_back(1+vecV.size()-distance( begin(vecV), find_if( begin(vecV), end(vecV), [](int x) { return x != 0; })));
+
+
+// ANOTHER TEST
+
+    // this->result.push_back(1+distance( begin(vecH), find_if( begin(vecH), end(vecH), [biggestH](int x) { return x >= *biggestH/5; })));
+    // reverse(begin(vecH),end(vecH));
+    // this->result.push_back(1+vecH.size()-distance( begin(vecH), find_if( begin(vecH), end(vecH), [biggestH](int x) { return x >= (*biggestH/5); })));
+
+    // this->result.push_back(1+distance( begin(vecS), find_if( begin(vecS), end(vecS), [biggestS](int x) { return x >= *biggestS/5; })));
+    // reverse(begin(vecS),end(vecS));
+    // this->result.push_back(1+vecS.size()-distance( begin(vecS), find_if( begin(vecS), end(vecS), [biggestS](int x) { return x >= (*biggestS/5); })));
+
+    // this->result.push_back(1+distance( begin(vecV), find_if( begin(vecV), end(vecV), [biggestV](int x) { return x >= *biggestV/5; })));
+    // reverse(begin(vecV),end(vecV));
+    // this->result.push_back(1+vecV.size()-distance( begin(vecV), find_if( begin(vecV), end(vecV), [biggestV](int x) { return x >= (*biggestV/5); })));
+
+// YET ANOTHER TEST
+
+    // this->result.push_back(1+(std::upper_bound (begin(vecH), end(vecH), (gH/5))-begin(vecH)));
+    // reverse(begin(vecH),end(vecH));
+    // this->result.push_back(1+vecH.size()-(std::upper_bound (begin(vecH), end(vecH), (gH/5))-begin(vecH)));
+
+    // this->result.push_back(1+(std::upper_bound (begin(vecS), end(vecS), (gS/5))-begin(vecS)));
+    // reverse(begin(vecS),end(vecS));
+    // this->result.push_back(1+vecS.size()-(std::upper_bound (begin(vecS), end(vecS), (gS/5))-begin(vecS)));
+
+    // this->result.push_back(1+(std::upper_bound (begin(vecV), end(vecV), (gV/5))-begin(vecV)));
+    // reverse(begin(vecV),end(vecV));
+    // this->result.push_back(1+vecV.size()-(std::upper_bound (begin(vecV), end(vecV), (gV/5))-begin(vecV)));
+
+    // cout << "BIGGEST: " << (int)*biggestH << " " << (int)*biggestS << " " << (int)*biggestV << endl;
+    // cout << "BIGGEST: " << gH << " " << gS << " " << gV << endl;
+
+// YET ANOTHER YET ANOTHER TEST
+
+    vector<int> newTestH = {};
+    for (int i = 0; i < vecH.size(); ++i){
+        if(i<2 || i>vecH.size()-2){
+            newTestH.push_back(vecH[i]);
+        }
+        else{
+
+            int mean = (*prev(prev(vecH.begin()+i))+*prev(vecH.begin()+i)+*(vecH.begin()+i)+*next(vecH.begin()+i)+*next(next(vecH.begin()+i)))/5;
+            newTestH.push_back(mean);
+        }
+    }
+
+    auto biggestH = max_element(begin(newTestH), end(newTestH));
+    int minThreshH = (int)((*biggestH*1)/100);
+
+    this->result.push_back(1+distance( begin(newTestH), find_if( begin(newTestH), end(newTestH), [minThreshH](int x) { return x >= minThreshH; })));
+    reverse(begin(newTestH),end(newTestH));
+    this->result.push_back(1+newTestH.size()-distance( begin(newTestH), find_if( begin(newTestH), end(newTestH), [minThreshH](int x) { return x >= minThreshH; })));
+    reverse(begin(newTestH),end(newTestH));
+
+    vector<int> newTestS = {};
+    for (int i = 0; i < vecS.size(); ++i){
+        if(i<2 || i>vecS.size()-2){
+            newTestS.push_back(vecS[i]);
+        }
+        else{
+
+            int mean = (*prev(prev(vecS.begin()+i))+*prev(vecS.begin()+i)+*(vecS.begin()+i)+*next(vecS.begin()+i)+*next(next(vecS.begin()+i)))/5;
+            newTestS.push_back(mean);
+        }
+    }
+
+    auto biggestS = max_element(begin(newTestS), end(newTestS));
+    int minThreshS = (int)((*biggestS*1)/100);
+
+    this->result.push_back(1+distance( begin(newTestS), find_if( begin(newTestS), end(newTestS), [minThreshS](int x) { return x >= minThreshS; })));
+    reverse(begin(newTestS),end(newTestS));
+    this->result.push_back(1+newTestS.size()-distance( begin(newTestS), find_if( begin(newTestS), end(newTestS), [minThreshS](int x) { return x >= minThreshS; })));
+    reverse(begin(newTestS),end(newTestS));
+
+    vector<int> newTestV = {};
+    for (int i = 0; i < vecV.size(); ++i){
+        if(i<2 || i>vecV.size()-2){
+            newTestV.push_back(vecV[i]);
+        }
+        else{
+
+            int mean = (*prev(prev(vecV.begin()+i))+*prev(vecV.begin()+i)+*(vecV.begin()+i)+*next(vecV.begin()+i)+*next(next(vecV.begin()+i)))/5;
+            newTestV.push_back(mean);
+        }
+    }
+
+    auto biggestV = max_element(begin(newTestV), end(newTestV));
+    int minThreshV = (int)((*biggestV*1)/100);
+
+    this->result.push_back(1+distance( begin(newTestV), find_if( begin(newTestV), end(newTestV), [minThreshV](int x) { return x >= minThreshV; })));
+    reverse(begin(newTestV),end(newTestV));
+    this->result.push_back(1+newTestV.size()-distance( begin(newTestV), find_if( begin(newTestV), end(newTestV), [minThreshV](int x) { return x >= minThreshV; })));
+    reverse(begin(newTestV),end(newTestV));
+
 
     // cout << "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" << endl;
 
@@ -156,14 +271,14 @@ void Histogram::calcHisHSV(){
 
 // END HERE
 
-    auto biggestR = max_element(vecH.begin(), vecH.end());
-    int posR = distance(vecH.begin(), biggestR)+1;
+    // auto biggestR = max_element(vecH.begin(), vecH.end());
+    // int posR = distance(vecH.begin(), biggestR)+1;
 
-    auto biggestG = max_element(vecS.begin(), vecS.end());
-    int posG = distance(vecS.begin(), biggestG)+1;
+    // auto biggestG = max_element(vecS.begin(), vecS.end());
+    // int posG = distance(vecS.begin(), biggestG)+1;
 
-    auto biggestB = max_element(vecV.begin(), vecV.end());
-    int posB = distance(vecV.begin(), biggestB)+1;
+    // auto biggestB = max_element(vecV.begin(), vecV.end());
+    // int posB = distance(vecV.begin(), biggestB)+1;
 
     // Mat HSV(1,1, CV_8UC3, Scalar(posB,posG,posR));
 
@@ -173,7 +288,7 @@ void Histogram::calcHisHSV(){
 
     // Vec3b hsvVALS=HSV.at<Vec3b>(0,0);
 
-    this->result = {posR-20,posR+20,posG-20,posG+20,posB-20,posB+20};
+    // this->result = {posR-25,posR+25,posG-20,posG+20,posB-20,posB+20};
 
 }
 
