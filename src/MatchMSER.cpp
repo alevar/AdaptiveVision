@@ -268,7 +268,6 @@ Features MatchMSER::extractFeatureTPL(vector<Point> *mser){
     dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
     dilate(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
     erode(mserImg, mserImg, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
-
     Mat drawingT = Mat::zeros( mserImg.cols+20,mserImg.rows+20, CV_8UC3 );
 
     cvtColor(drawingT, drawingT, CV_BGR2GRAY);
@@ -460,17 +459,30 @@ Mat MatchMSER::processImage(Mat imageMAT){
         imageMAT.copyTo(crop, mask);
         normalize(mask.clone(), mask, 0.0, 255.0, CV_MINMAX, CV_8UC1);
 
-        Histogram *histTest = new Histogram(crop);
+        Mat alpha;   
+        inRange(crop, Scalar(0,250,0),  Scalar(0,260,0),alpha);    
+        bitwise_not(alpha,alpha);
+
+        //split source  
+        Mat bgr[3];   
+        split(crop,bgr);   
+
+        //Merge to final image including alpha   
+        Mat tmp[4] = { bgr[0],bgr[1],bgr[2],alpha};   
+        Mat dst;   
+        merge(tmp,4,dst);
+
+        Histogram *histTest = new Histogram(dst);
         histTest->calcHisHSV();
-        updatedHSV = histTest->getVal();
+        this->updatedHSV = histTest->getVal();
         // vector<int> newValsMin = histTest->getMin();
-        if(updatedHSV.empty()){
+        if(this->updatedHSV.empty()){
             cout << "OOPS< WE ARE EMPTY" << endl;
         }
         else{
             cout << "::::::::::::::::::::::::::::::::::::::::::" << endl;
-            for (int f = 0; f < updatedHSV.size(); f++){
-                cout << "HISTOGRAM VALUES:::::" << updatedHSV[f] << endl;
+            for (int f = 0; f < this->updatedHSV.size(); f++){
+                cout << "HISTOGRAM VALUES:::::" << this->updatedHSV[f] << endl;
             }
             foundMatch = true;
             publicMatch = true;
@@ -481,12 +493,12 @@ Mat MatchMSER::processImage(Mat imageMAT){
         // Canvas canvas(testCanvas);
         // Mat final = canvas.getMat();
 
-        imshow("CROPPED",crop(bound));
+        // imshow("CROPPED",crop(bound));
         // imshow("BESTMSER",bestMSER);
-        imshow("MASK",mask);
-        if(waitKey(30) >= 0){
+        // imshow("MASK",mask);
+        // if(waitKey(30) >= 0){
 
-        }
+        // }
         delete histTest;
 
     }

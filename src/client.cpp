@@ -223,11 +223,11 @@ int main(int argc , char *argv[])
 	cout << "1 DEBUG" << endl;
 	Histogram hist(image);
 	cout << "2 DEBUG" << endl;
-	imshow("ORIGINAL", image);
+	// imshow("ORIGINAL", image);
 	cout << "3 DEBUG" << endl;
 	hist.calcHisHSV();
 	cout << "4 DEBUG" << endl;
-	hist.showHist();
+	// hist.showHist();
 	cout << "5 DEBUG" << endl;
 
 	MatchHSV match(&image);
@@ -245,11 +245,11 @@ int main(int argc , char *argv[])
 		cout << "1 DEBUG" << endl;
 		Histogram hist(image);
 		cout << "2 DEBUG" << endl;
-		imshow("ORIGINAL", image);
+		// imshow("ORIGINAL", image);
 		cout << "3 DEBUG" << endl;
 		hist.calcHisHSV();
 		cout << "4 DEBUG" << endl;
-		hist.showHist();
+		// hist.showHist();
 		cout << "5 DEBUG" << endl;
 
 		try{
@@ -358,22 +358,23 @@ int main(int argc , char *argv[])
 			Mat testing;
 
 			if(!updatedHSV.empty()){
-				namedWindow("TESTING", 1);
-				createTrackbar("Low HUE", "TESTING", &updatedHSV[0], 255);
-				createTrackbar("High HUE", "TESTING", &updatedHSV[1], 255);
-				createTrackbar("Low SAT", "TESTING", &updatedHSV[2], 255);
-				createTrackbar("High SAT", "TESTING", &updatedHSV[3], 255);
-				createTrackbar("Low VAL", "TESTING", &updatedHSV[4], 255);
-				createTrackbar("High VAL", "TESTING", &updatedHSV[5], 255);
+				// namedWindow("TESTING", 1);
+				// createTrackbar("Low HUE", "TESTING", &updatedHSV[0], 255);
+				// createTrackbar("High HUE", "TESTING", &updatedHSV[1], 255);
+				// createTrackbar("Low SAT", "TESTING", &updatedHSV[2], 255);
+				// createTrackbar("High SAT", "TESTING", &updatedHSV[3], 255);
+				// createTrackbar("Low VAL", "TESTING", &updatedHSV[4], 255);
+				// createTrackbar("High VAL", "TESTING", &updatedHSV[5], 255);
 
-				while(true){
+				// while(true){
 					cvtColor(image, testing, COLOR_BGR2HSV);
 					inRange(testing, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), testing);
 					imshow("TESTING", testing);
 					if(waitKey(30) >= 0){
 						break;
 					}
-				}
+					waitKey(0);
+				// }
 			}
 
 			try{
@@ -683,10 +684,12 @@ int main(int argc , char *argv[])
 					// else{
 					// 	updatedHSV[5] = 255;
 					// }
-					// updatedHSV[4] = 50;
-					// updatedHSV[5] = 240;
+					// updatedHSV[2] = 0;
+					// updatedHSV[3] = 150;
+					// updatedHSV[4] = 100;
+					// updatedHSV[5] = 255;
 
-					match.setHSV(updatedHSV[0],updatedHSV[1],updatedHSV[2],updatedHSV[3],updatedHSV[4],updatedHSV[5]);
+					match.setHSV(updatedHSV[0]-20,updatedHSV[1]+20,updatedHSV[2]-20,updatedHSV[3]+20,updatedHSV[4]-20,updatedHSV[5]+20);
 				}
 
 				InstructionCode testCode;

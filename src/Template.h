@@ -91,7 +91,7 @@ class Template {
 		// int edgeBlurSize = 0;
 
 		int maxArea = 10;
-		int diversity = 500;
+		int diversity = 580;
 
 		const Scalar RED = Scalar(0, 0, 255);
 		const Scalar GREEN = Scalar(0, 255, 0);
