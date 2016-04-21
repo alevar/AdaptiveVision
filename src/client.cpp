@@ -242,15 +242,15 @@ int main(int argc , char *argv[])
 	while(!foundMatch){
 
 		source >> image;
-		cout << "1 DEBUG" << endl;
-		Histogram hist(image);
-		cout << "2 DEBUG" << endl;
-		// imshow("ORIGINAL", image);
-		cout << "3 DEBUG" << endl;
-		hist.calcHisHSV();
-		cout << "4 DEBUG" << endl;
-		// hist.showHist();
-		cout << "5 DEBUG" << endl;
+		// cout << "1 DEBUG" << endl;
+		// Histogram hist(image);
+		// cout << "2 DEBUG" << endl;
+		// // imshow("ORIGINAL", image);
+		// cout << "3 DEBUG" << endl;
+		// hist.calcHisHSV();
+		// cout << "4 DEBUG" << endl;
+		// // hist.showHist();
+		// cout << "5 DEBUG" << endl;
 
 		try{
 			match.compute();
@@ -367,13 +367,14 @@ int main(int argc , char *argv[])
 				// createTrackbar("High VAL", "TESTING", &updatedHSV[5], 255);
 
 				// while(true){
+					cout << updatedHSV[0] << "," << updatedHSV[2] << "," << updatedHSV[4] << "," << updatedHSV[1] << "," << updatedHSV[3] << "," << updatedHSV[5] << endl;
 					cvtColor(image, testing, COLOR_BGR2HSV);
 					inRange(testing, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), testing);
 					imshow("TESTING", testing);
 					if(waitKey(30) >= 0){
 						break;
 					}
-					waitKey(0);
+					// waitKey(0);
 				// }
 			}
 
@@ -689,7 +690,7 @@ int main(int argc , char *argv[])
 					// updatedHSV[4] = 100;
 					// updatedHSV[5] = 255;
 
-					match.setHSV(updatedHSV[0]-20,updatedHSV[1]+20,updatedHSV[2]-20,updatedHSV[3]+20,updatedHSV[4]-20,updatedHSV[5]+20);
+					match.setHSV(updatedHSV[0],updatedHSV[1],updatedHSV[2],updatedHSV[3],updatedHSV[4],updatedHSV[5]);
 				}
 
 				InstructionCode testCode;
