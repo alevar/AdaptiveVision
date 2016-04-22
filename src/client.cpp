@@ -352,7 +352,7 @@ void secCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample){
 	    }
 	    cout << "DEBUG 8" << endl;
 
-	    circle( imageSec, Point2f(largestContour2[0],largestContour2[1]), (int)largestContour2[2], color, 2, 8, 0 );
+	    // circle( imageSec, Point2f(largestContour2[0],largestContour2[1]), (int)largestContour2[2], color, 2, 8, 0 );
 	    cout << "DEBUG 9" << endl;
 	    // finalAngle2 = ((double)largestContour2[0]/ratioT)-((double)viewAngle/2)+90;
 
@@ -362,16 +362,45 @@ void secCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample){
 
 void mainCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample){
 	bool foundMatch = false;
+	Mat inputSCN1_THRESH;
 
 	while(!foundMatch){
 		source >> image;
 
-		Mat testing;
-
 		if(!updatedHSV.empty()){
 
-			cvtColor(image, testing, COLOR_BGR2HSV);
-			inRange(testing, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), testing);
+			cvtColor(image, inputSCN1_THRESH, COLOR_BGR2HSV);
+			inRange(inputSCN1_THRESH, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), inputSCN1_THRESH);
+			erode(inputSCN1_THRESH, inputSCN1_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
+		    dilate(inputSCN1_THRESH, inputSCN1_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(20, 20)));
+		    cout << "DEBUG 5" << endl;
+
+		    Canny(inputSCN1_THRESH, canny_output1, thresh.minThresh, thresh.minThresh*2, 3 );
+		    cout << "DEBUG 6" << endl;
+		    findContours(canny_output1, contours1, hierarchy1, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+		    cout << "DEBUG 7" << endl;
+
+		    vector<vector<Point>> contours_poly1(contours1.size());
+		    vector<Point2f> center1(contours1.size());
+		    vector<float> radius1(contours1.size());
+
+		    if(contours1.size()>0){
+
+		        for( int i = 0; i < contours1.size(); i++ )
+		        {
+		            double area1 = contourArea(contours1[i],false);
+		            if(area1>largest_area1){
+		                largest_area1 = area1;
+		                largest_contour_index1 = i;
+		            }
+		            if(i == contours1.size()-1){
+		                minEnclosingCircle( Mat (contours1[largest_contour_index1]), largestCenter1, largestRadius1); // Allows better estimation of the real size of the object, independent of the rotation
+		                largestContour1 = {largestCenter1.x,largestCenter1.y, largestRadius1};
+		            }
+		        }
+		    }
+		    cout << "DEBUG 8" << endl;
+
 		}
 
 		try{
