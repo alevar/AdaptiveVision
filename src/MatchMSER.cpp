@@ -415,11 +415,6 @@ Mat MatchMSER::processImage(Mat imageMAT){
 
     if (bestMser)
     {
-                
-        bound = boundingRect(*bestMser);
-        rectangle(imageMAT, bound, this->colors.GREEN, 3);
-
-
 
         // this->bestMSER = mserToMat(bestMser);
         // erode(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
@@ -487,6 +482,10 @@ Mat MatchMSER::processImage(Mat imageMAT){
             foundMatch = true;
             publicMatch = true;
         }
+
+        
+        bound = boundingRect(*bestMser);
+        rectangle(imageMAT, bound, this->colors.GREEN, 3);
         
         // histTest->showHist();
         // vector<Mat> testCanvas = {imageMatch,testTPL};
