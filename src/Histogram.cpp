@@ -79,9 +79,6 @@ void Histogram::calcHisHSV(){
     convertRGB2HSV(this->imageRGB);
     Mat imageHSVT = imageRGB.clone();
     cvtColor(imageHSVT, imageHSVT, COLOR_BGR2HSV);
-    imshow("NEW TEST",imageRGB);
-    imshow("NEW TEST 2", imageHSVT);
-    // waitKey(0);
 
     for (int i = 0; i < imageHSVT.rows; i++)
     {
@@ -213,7 +210,7 @@ void Histogram::calcHisHSV(){
     }
 
     auto biggestH = max_element(begin(newTestH), end(newTestH));
-    int minThreshH = (int)((*biggestH*1)/100);
+    int minThreshH = (int)((*biggestH*8)/100);
 
     this->result.push_back(1+distance( begin(newTestH), find_if( begin(newTestH), end(newTestH), [minThreshH](int x) { return x >= minThreshH; })));
     reverse(begin(newTestH),end(newTestH));
