@@ -81,17 +81,17 @@ void processGet();
 void processPut();
 void processEnd();
 void protocol(int, Mat*, MessageStack*, MatchHSV*);
-void mainCam(MatchHSV*, Mat*, Mat*, int*);
+void mainCam(MatchHSV*, Mat*, Mat*);
 void secCam(MatchHSV*, Mat*, Mat*);
 
 vector<int> updatedHSV;
 
 bool imageReady = false;
 
-VideoCapture source(0); // open the default camera
+VideoCapture source(1); // open the default camera
 Mat image;
-// VideoCapture sourceSec(2); // open the default camera
-// Mat imageSec;
+VideoCapture sourceSec(2); // open the default camera
+Mat imageSec;
 
 vector<vector<Point> > contours1;
 vector<vector<Point> > contours2;
@@ -211,23 +211,23 @@ int main(int argc , char *argv[])
 	if(!source.isOpened()){
 		return -1;
 	}
-	// if(!sourceSec.isOpened()){
-	// 	return -1;
-	// }
+	if(!sourceSec.isOpened()){
+		return -1;
+	}
 	
 	Mat imageToSend;
 
 	for (int i = 0; i < 24; ++i){
 		source >> image;
-		// sourceSec >> imageSec;
+		sourceSec >> imageSec;
 	}
 	source >> image;
-	// sourceSec >> imageSec;
+	sourceSec >> imageSec;
 
 	Histogram hist(image);
 	hist.calcHisHSV();
 	MatchHSV match(&image);
-	// MatchHSV matchSec(&imageSec);
+	MatchHSV matchSec(&imageSec);
 
 	Mat imageSampleClone;
 	Mat imageSample;
@@ -300,84 +300,82 @@ int main(int argc , char *argv[])
 	double counter = 0;
 	double acc = 0;
 
-	int counterFullSize = 0;
-
 	while(connectionStatus){
 
 		clock_t begin = clock();
 
-		thread t2(mainCam,&match,&imageSampleClone,&imageSample, &counterFullSize);
-		// thread t3(secCam,&matchSec,&imageSampleCloneSec,&imageSampleSec);
+		thread t2(mainCam,&match,&imageSampleClone,&imageSample);
+		thread t3(secCam,&matchSec,&imageSampleCloneSec,&imageSampleSec);
 		t2.join();
-		// t3.join();
+		t3.join();
 
 		clock_t end = clock();
 		acc = double(end - begin) / CLOCKS_PER_SEC;
 		counter++;
-		// if(counter%100 == 0){
-		// 	cout << "TIME PASSED " << acc/counter << endl;
-		// }	
+		if(counter%100 == 0){
+			cout << "TIME PASSED " << acc/counter << endl;
+		}	
 	}
 	 
 	return 0;
 }
 
-// void secCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample){
+void secCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample){
 
-// 	cout << "DEBUG 1" << endl;
+	cout << "DEBUG 1" << endl;
 
-// 	sourceSec >> imageSec;
-// 	cout << "DEBUG 2" << endl;
+	sourceSec >> imageSec;
+	cout << "DEBUG 2" << endl;
 
-// 	Mat inputSCN2_THRESH;
+	Mat inputSCN2_THRESH;
 
-// 	if(!updatedHSV.empty()){
+	if(!updatedHSV.empty()){
 
-// 		cvtColor(imageSec, inputSCN2_THRESH, COLOR_BGR2HSV);
-// 		cout << "DEBUG 3" << endl;
+		cvtColor(imageSec, inputSCN2_THRESH, COLOR_BGR2HSV);
+		cout << "DEBUG 3" << endl;
 
-// 	    inRange(inputSCN2_THRESH, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), inputSCN2_THRESH);
-// 	    cout << "DEBUG 4" << endl;
+	    inRange(inputSCN2_THRESH, Scalar(updatedHSV[0], updatedHSV[2], updatedHSV[4]), Scalar(updatedHSV[1], updatedHSV[3], updatedHSV[5]), inputSCN2_THRESH);
+	    cout << "DEBUG 4" << endl;
 
-// 	    erode(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
-// 	    dilate(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(20, 20)));
-// 	    cout << "DEBUG 5" << endl;
+	    erode(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(10, 10)));
+	    dilate(inputSCN2_THRESH, inputSCN2_THRESH, getStructuringElement(MORPH_ELLIPSE, Size(20, 20)));
+	    cout << "DEBUG 5" << endl;
 
-// 	    Canny(inputSCN2_THRESH, canny_output2, thresh.minThresh, thresh.minThresh*2, 3 );
-// 	    cout << "DEBUG 6" << endl;
-// 	    findContours(canny_output2, contours2, hierarchy2, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
-// 	    cout << "DEBUG 7" << endl;
+	    Canny(inputSCN2_THRESH, canny_output2, thresh.minThresh, thresh.minThresh*2, 3 );
+	    cout << "DEBUG 6" << endl;
+	    findContours(canny_output2, contours2, hierarchy2, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+	    cout << "DEBUG 7" << endl;
 
-// 	    vector<vector<Point>> contours_poly2(contours2.size());
-// 	    vector<Point2f> center2(contours2.size());
-// 	    vector<float> radius2(contours2.size());
+	    vector<vector<Point>> contours_poly2(contours2.size());
+	    vector<Point2f> center2(contours2.size());
+	    vector<float> radius2(contours2.size());
 
-// 	    if(contours2.size()>0){
+	    if(contours2.size()>0){
 
-// 	        for( int i = 0; i < contours2.size(); i++ )
-// 	        {
-// 	            double area2 = contourArea(contours2[i],false);
-// 	            if(area2>largest_area2){
-// 	                largest_area2 = area2;
-// 	                largest_contour_index2 = i;
-// 	            }
-// 	            if(i == contours2.size()-1){
-// 	                minEnclosingCircle( Mat (contours2[largest_contour_index2]), largestCenter2, largestRadius2); // Allows better estimation of the real size of the object, independent of the rotation
-// 	                largestContour2 = {largestCenter2.x,largestCenter2.y, largestRadius2};
-// 	            }
-// 	        }
-// 	    }
-// 	    cout << "DEBUG 8" << endl;
+	        for( int i = 0; i < contours2.size(); i++ )
+	        {
+	            double area2 = contourArea(contours2[i],false);
+	            if(area2>largest_area2){
+	                largest_area2 = area2;
+	                largest_contour_index2 = i;
+	            }
+	            if(i == contours2.size()-1){
+	                minEnclosingCircle( Mat (contours2[largest_contour_index2]), largestCenter2, largestRadius2); // Allows better estimation of the real size of the object, independent of the rotation
+	                largestContour2 = {largestCenter2.x,largestCenter2.y, largestRadius2};
+	            }
+	        }
+	    }
+	    cout << "DEBUG 8" << endl;
 
-// 	    // circle( imageSec, Point2f(largestContour2[0],largestContour2[1]), (int)largestContour2[2], color, 2, 8, 0 );
-// 	    cout << "DEBUG 9" << endl;
-// 	    // finalAngle2 = ((double)largestContour2[0]/ratioT)-((double)viewAngle/2)+90;
+	    // circle( imageSec, Point2f(largestContour2[0],largestContour2[1]), (int)largestContour2[2], color, 2, 8, 0 );
+	    cout << "DEBUG 9" << endl;
+	    // finalAngle2 = ((double)largestContour2[0]/ratioT)-((double)viewAngle/2)+90;
 
-// 	    // finalAngle2Rad = (finalAngle2*M_PI)/180;
-// 	}
-// }
+	    // finalAngle2Rad = (finalAngle2*M_PI)/180;
+	}
+}
 
-void mainCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample, int *counter){
+void mainCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample){
 	bool foundMatch = false;
 	Mat inputSCN1_THRESH;
 
@@ -392,29 +390,10 @@ void mainCam(MatchHSV *match, Mat *imageSampleClone, Mat *imageSample, int *coun
 		}
 
 		try{
-			if(*counter < 20){
-				match->compute();
-				match->extractSample();
-				*imageSample = match->getSampleMAT();
-				*imageSampleClone = imageSample->clone();
-				*counter = *counter+1;
-				cout << "++++++++++++++++++++++++++++++++++" << endl;
-				cout << "++++++++++++++++++++++++++++++++++" << endl;
-				cout << "++++++++++++++++++++++++++++++++++" << endl;
-				cout << "COUNTER:   " << *counter << endl;
-				cout << "++++++++++++++++++++++++++++++++++" << endl;
-				cout << "++++++++++++++++++++++++++++++++++" << endl;
-				cout << "++++++++++++++++++++++++++++++++++" << endl;
-			}
-			else{
-				match->compute();
-				*imageSample = image.clone();
-				*imageSampleClone = imageSample->clone();
-				*counter = 0;
-				// imshow("FULLSIZE",*imageSample);
-				// waitKey(0);
-			}
-			
+			match->compute();
+			match->extractSample();
+			*imageSample = match->getSampleMAT();
+			*imageSampleClone = imageSample->clone();
 			imageReady = true;
 
 			foundMatch = true;
@@ -503,8 +482,20 @@ void protocol(int socket_desc, Mat *sample, MessageStack *instructionStack, Matc
 
 	while(connectionStatus){
 
-		// if(imageReady){
+		if(imageReady){
+			Mat *workingSample = new Mat();
+			*workingSample = sample->clone();
 
+			imshow("WORKING SAMPLE", *workingSample);
+			if(waitKey(30) >= 0){
+				break;
+			}
+
+			widthToSend = int(workingSample->size().width);
+			heightToSend = int(workingSample->size().height);
+
+			imageToSend = (workingSample->reshape(0,1));
+			imgSize = (workingSample->total())*(workingSample->elemSize());
 
 			workingMessage = instructionStack->pop();
 			workingOpcode = workingMessage.getOpCode();
@@ -512,30 +503,6 @@ void protocol(int socket_desc, Mat *sample, MessageStack *instructionStack, Matc
 			switch(workingOpcode){
 				case PUT:
 				{
-
-					Mat *workingSampleTEST = new Mat();
-					*workingSampleTEST = sample->clone();
-					Mat *workingSample = new Mat();
-					resize(*workingSampleTEST, *workingSample, Size(), 0.5, 0.5, INTER_CUBIC);
-
-					// imshow("WORKING SAMPLE", *workingSample);
-					// if(waitKey(30) >= 0){
-					// 	break;
-					// }
-
-					widthToSend = int(workingSample->size().width);
-					heightToSend = int(workingSample->size().height);
-
-					cout << "height: " << heightToSend << endl;
-					cout << "width: " << widthToSend << endl;
-
-					// imshow("SAMPLE TO SEND", *workingSample);
-					// waitKey(0);
-
-					imageToSend = (workingSample->reshape(0,1));
-					imgSize = (workingSample->total())*(workingSample->elemSize());
-
-
 					/*=====================================================
 					============== SUBMITTING A PUT REQUEST ===============
 					=======================================================
@@ -809,7 +776,7 @@ void protocol(int socket_desc, Mat *sample, MessageStack *instructionStack, Matc
 					continue;
 				}
 			}
-		// }
+		}
 		// delete workingSample;
 	}
 }

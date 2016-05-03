@@ -1,0 +1,17 @@
+3. Integrate Histogram
+4. Communicate new HSV values
+
+===========================================================
+
+1. Add proper support for multithreading.
+    a. First Client
+    2. Second server
+
+===========================================================
+
+2. Add stereoscopic image processing
+
+===========================================================
+
+1. Edit Messaging protocol to allow multiple different values to be passed
+2. Attempt transforming Messaging into a separate class

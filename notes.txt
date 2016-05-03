@@ -1,0 +1,4 @@
+NOTES:
+
+Coding a TCP/IP Stack:
+http://www.saminiir.com/lets-code-tcp-ip-stack-1-ethernet-arp

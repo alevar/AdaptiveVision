@@ -415,7 +415,6 @@ Mat MatchMSER::processImage(Mat imageMAT){
 
     if (bestMser)
     {
-
         // this->bestMSER = mserToMat(bestMser);
         // erode(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));
         // dilate(bestMSER, bestMSER, getStructuringElement(MORPH_ELLIPSE, Size(8, 8)));

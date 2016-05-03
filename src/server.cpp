@@ -559,7 +559,7 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	cout << "GETTING THE IMAGE" << endl;
 
-	Mat  img = Mat::zeros( height,width, CV_8UC3);
+	Mat  img = Mat::zeros( width,height, CV_8UC3);
 
 	cout << "DEBUG 1" << endl;
 	
@@ -578,8 +578,15 @@ void processPut(int socket, char *client_ip, map<string,vector<int> > sampleAnsw
 
 	// change the last loop to below statement
 
-	Mat *img2 = new Mat(Size(height, width), CV_8UC3, sockData);
+	Mat *img2 = new Mat(Size(width, height), CV_8UC3, sockData);
 	cout << "DEBUG 5" << endl;
+
+	if(img2->empty()){
+		cout << "DID NOT PASS THE IS EMPTY TEST" << endl;
+		return;
+	}
+
+	cout << "PASSED THE IS EMPTY TEST" << endl;
 
 	imageMatch = match.findMatch(*img2);
 	string hsvToSend;
